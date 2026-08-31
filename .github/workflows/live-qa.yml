@@ -1,0 +1,16 @@
+name: VeroSpace Production Live QA
+on:
+  push:
+    branches: [verospace-production-qa]
+permissions:
+  contents: read
+jobs:
+  live-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser driver library
+        run: npm install --no-save playwright-core@1.55.0
+      - name: Run production acceptance QA
+        run: node .qa/qa.mjs
