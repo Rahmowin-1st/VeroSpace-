@@ -1,0 +1,44 @@
+name: Finalize VeroSpace FullMaster
+
+on:
+  push:
+    branches:
+      - verospace-fullmaster-finalize
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Reconstruct canonical source and verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          gzip -dc .staging/script.js.gz > script.js
+          cat .staging/styles.part* > /tmp/styles.css.gz
+          gzip -dc /tmp/styles.css.gz > styles.css
+
+          echo '287662ea69e8f9c5ad0702416a0d9d32e4b2c31620d7a10bfd901474afa4a856  script.js' | sha256sum -c -
+          echo '81f949534acb7edb6c6dd42ccd54627acaf607293c687547b33ea421da155d29  styles.css' | sha256sum -c -
+          echo '2f9a2e12f52b9b1ea42125aff6d101cdb0860c73ec306fff5e9be08b5da55274  api/consultation.js' | sha256sum -c -
+          echo '9480f7dd0f65ecf60b0c5f09df68ad530c68f00f65e28da522b0475e1a1c0037  index.html' | sha256sum -c -
+
+          if find . -type f \( -iname '*.mp4' -o -iname '*.webm' -o -iname '*.mov' \) -print -quit | grep -q .; then
+            echo 'Unexpected video asset present' >&2
+            exit 1
+          fi
+
+          rm -rf .staging .github/workflows/finalize-master.yml
+          rmdir .github/workflows 2>/dev/null || true
+          rmdir .github 2>/dev/null || true
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Finalize VeroSpace FullMaster production source'
+          git push origin HEAD:${GITHUB_REF_NAME}

@@ -1,27 +1,48 @@
-# VeroSpace Landing Page
+# VeroSpace — Full Experience Master
 
-Premium interior design / renovation lead-generation concept.
+Cumulative working build for the VeroSpace premium interior design / renovation landing page.
 
-## Included
-- Exact uploaded VeroSpace logo
-- Uploaded featured-home photo
-- Uploaded walkthrough video, preprocessed to 3x visual speed
-- Scroll-scrubbed video: forward when scrolling down, reverse when scrolling up
-- Rounded/shadowed visual system, navy + gold lighting accents
-- Responsive desktop/mobile layouts
-- Functional navigation, service accordions, project modal, project reel, consultation form validation
-- No backend or API keys
+## Preserved
+- VeroSpace liquid-glass visual system
+- independent desktop + mobile navigation layouts
+- Mobile Master + Mobile Scroll Master behavior
+- no video/story section or video asset
+- Chrome/Android long-press suppression outside editable fields
+- in-site consultation form with required-field validation
+- Vercel Function + Resend delivery flow
+- 3s minimum sending state, success/failure/offline full-screen states, 15s offline window
 
-## Run locally
-Serve this folder with any static server, e.g.:
+## Desktop Master additions
+- cinematic hero scale and layered depth
+- compacting liquid-glass header with active-section navigation
+- persistent desktop journey/progress rail + back-to-top control
+- native-scroll visual choreography (no wheel hijacking)
+- scroll-responsive ambient depth and section parallax
+- cursor-following restrained lighting field
+- magnetic CTAs and controls
+- cursor-aware project / testimonial tilt
+- staggered reveal choreography
+- spatial project cards and richer hover states
+- sticky service overview and deeper active service rows
+- animated material meters and editorial material scene
+- connected process journey with depth feedback
+- richer proof/testimonial glass scenes
+- mouse-drag horizontal More Spaces reel
+- sticky desktop contact narrative with refined form focus states
+- reduced-motion fallback
 
-```bash
-python -m http.server 8080
-```
-Then open http://localhost:8080
+## QA performed
+- JavaScript syntax check: pass
+- Vercel API function syntax + mocked method/validation/success paths: pass
+- CSS parsing: 0 top-level parse errors
+- HTML IDs unique
+- internal anchors/data-scroll targets resolve
+- 5 required consultation fields preserved
+- no `mailto:` flow
+- no video tags/assets
+- desktop controls are isolated to desktop media rules; Mobile Master remains in place
 
-## Form
-The demo form validates and opens a pre-filled email draft to `hello@verospace.studio`. Replace the address or connect the client's real form/CRM at final handoff.
+Browser screenshot automation is blocked by the execution environment administrator, so final visual browser/device QA must still be run on the deployed preview before production freeze.
 
-## External portfolio imagery
-The concept uses selected Unsplash images loaded from `images.unsplash.com`, based on free-to-use Unsplash results found during research. The uploaded VeroSpace image remains local.
+## Deployment
+Static Vercel-ready project. Keep `index.html`, `styles.css`, `script.js`, `vercel.json`, `api/consultation.js`, and `assets/` at repository root as packaged.

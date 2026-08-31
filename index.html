@@ -19,26 +19,82 @@
       <img src="assets/verospace-logo.png" alt="VeroSpace logo" />
     </a>
     <nav class="desktop-nav" aria-label="Primary navigation">
+      <a href="#top">Home</a>
       <a href="#projects">Projects</a>
-      <a href="#story">Story</a>
       <a href="#services">Services</a>
       <a href="#process">Process</a>
     </nav>
     <button class="pill-button header-cta" data-scroll="#contact">Book consultation</button>
     <button class="menu-button" aria-label="Open menu" aria-expanded="false">
-      <span></span><span></span>
+      <span></span><span></span><span></span>
     </button>
-    <div class="mobile-menu" aria-hidden="true">
-      <a href="#projects">Projects</a>
-      <a href="#story">Story</a>
-      <a href="#services">Services</a>
-      <a href="#process">Process</a>
-      <button class="pill-button" data-scroll="#contact">Book consultation</button>
+    <div class="mobile-menu" id="siteMenu" aria-hidden="true">
+      <div class="menu-refraction" aria-hidden="true"></div>
+      <div class="menu-head">
+        <span class="menu-kicker">Navigate</span>
+        <span class="menu-brand-state"><i></i> VeroSpace</span>
+      </div>
+      <div class="menu-layout">
+        <nav class="menu-links" aria-label="Expanded navigation">
+          <a href="#top"><span>01</span><strong>Home</strong><i>↗</i></a>
+          <a href="#projects"><span>02</span><strong>Projects</strong><i>↗</i></a>
+          <a href="#services"><span>03</span><strong>Services</strong><i>↗</i></a>
+          <a href="#process"><span>04</span><strong>Process</strong><i>↗</i></a>
+        </nav>
+        <div class="menu-project-card">
+          <p class="menu-card-eyebrow">Start a project</p>
+          <h2>Turn your space into something considered.</h2>
+          <p>Share the essentials without leaving VeroSpace.</p>
+          <button class="pill-button menu-consultation" data-scroll="#contact">
+            <span>Book consultation</span><i>↗</i>
+          </button>
+          <small>Private · in-site consultation</small>
+        </div>
+      </div>
     </div>
   </header>
+  <button class="menu-backdrop" type="button" aria-label="Close navigation" tabindex="-1"></button>
+
+  <div class="vs-page-progress" aria-hidden="true"><i></i></div>
+
+  <nav class="mobile-journey-dock" aria-label="Quick page navigation">
+    <a href="#home" data-section-link="home" aria-label="Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5v7.5h-5v-5H9v5H4z"/></svg><small>Home</small>
+    </a>
+    <a href="#projects" data-section-link="projects" aria-label="Projects">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg><small>Work</small>
+    </a>
+    <a href="#services" data-section-link="services" aria-label="Services">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 14.2 8.8 20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg><small>Services</small>
+    </a>
+    <a href="#process" data-section-link="process" aria-label="Process">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h4v4H5zM15 14h4v4h-4zM9 8h4c2 0 3 1 3 3v3M8 16h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><small>Process</small>
+    </a>
+    <a href="#contact" data-section-link="contact" aria-label="Contact">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><small>Start</small>
+    </a>
+  </nav>
+
+  <div class="mobile-section-status" aria-hidden="true">
+    <span class="mobile-section-status-label">Home</span><i></i>
+  </div>
+
+  <aside class="desktop-journey" aria-label="Page progress and section navigation">
+    <div class="desktop-journey-head"><span class="desktop-journey-count">01</span><strong class="desktop-journey-label">Home</strong></div>
+    <div class="desktop-journey-track" aria-hidden="true"><i></i></div>
+    <nav class="desktop-journey-links" aria-label="Sections">
+      <a href="#home" data-desktop-section="home"><i></i><span>Home</span></a>
+      <a href="#projects" data-desktop-section="projects"><i></i><span>Work</span></a>
+      <a href="#services" data-desktop-section="services"><i></i><span>Services</span></a>
+      <a href="#process" data-desktop-section="process"><i></i><span>Process</span></a>
+      <a href="#contact" data-desktop-section="contact"><i></i><span>Start</span></a>
+    </nav>
+    <button class="desktop-back-top" type="button" aria-label="Back to top"><span>↑</span></button>
+  </aside>
+  <div class="desktop-pointer-light" aria-hidden="true"></div>
 
   <main>
-    <section class="hero section-shell reveal" aria-labelledby="hero-title">
+    <section class="hero section-shell reveal" id="home" aria-labelledby="hero-title">
       <div class="hero-copy">
         <p class="eyebrow">Premium interior design · renovation</p>
         <h1 id="hero-title">Homes designed to feel <em>exceptional.</em></h1>
@@ -52,8 +108,20 @@
         </div>
       </div>
       <div class="hero-media light-card">
-        <img src="https://images.unsplash.com/photo-1771371428960-35a50c2d4e7c?auto=format&fit=crop&w=2200&q=82" alt="Bright modern luxury living room" />
+        <img src="assets/verospace-featured-home.jpg" alt="VeroSpace open-plan residential interior" />
         <div class="hero-media-badge"><b>VeroSpace</b><span>Residential · 2026</span></div>
+      </div>
+      <nav class="hero-dock" aria-label="VeroSpace quick navigation">
+        <a href="#projects">Projects</a>
+        <a href="#services">Services</a>
+        <a href="#process">Process</a>
+        <a href="#contact">Get in touch</a>
+      </nav>
+      <div class="hero-rail" aria-label="Hero shortcuts">
+        <a class="hero-orb" href="#services" aria-label="View services">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h5v5H5zM14 5h5v5h-5zM5 14h5v5H5zM14 14h5v5h-5z"/></svg>
+        </a>
+        <a class="hero-scroll" href="#projects" aria-label="Scroll to projects"><span>Scroll</span><i></i></a>
       </div>
     </section>
 
@@ -80,51 +148,47 @@
       </div>
     </section>
 
-    <section class="scroll-story" id="story" aria-labelledby="story-title">
-      <div class="story-sticky">
-        <div class="story-intro">
-          <p class="eyebrow">A project in motion</p>
-          <h2 id="story-title">From empty space to lived-in calm.</h2>
-        </div>
-        <div class="story-stage light-card">
-          <video id="scrollVideo" muted playsinline preload="auto" src="assets/verospace-scroll-3x.mp4" aria-label="VeroSpace interior walkthrough"></video>
-          <div class="video-vignette"></div>
-          <div class="chapter chapter-0 active"><span>01</span><h3>Vision</h3><p>Understand how the home should feel and function.</p></div>
-          <div class="chapter chapter-1"><span>02</span><h3>Planning</h3><p>Resolve layout, circulation, light, and daily use.</p></div>
-          <div class="chapter chapter-2"><span>03</span><h3>Transformation</h3><p>Coordinate finishes, joinery, furniture, and execution.</p></div>
-          <div class="chapter chapter-3"><span>04</span><h3>Final space</h3><p>Refine every detail until the home feels complete.</p></div>
-          <div class="story-progress"><div id="storyProgress"></div></div>
-        </div>
-        <p class="scroll-hint">Scroll to move through the space · scroll back to reverse</p>
-      </div>
-    </section>
-
     <section class="services section-shell" id="services" aria-labelledby="services-title">
-      <div class="section-heading reveal">
+      <div class="section-heading reveal section-heading-visual">
         <p class="eyebrow">Services</p>
-        <h2 id="services-title">One studio. One coherent home.</h2>
+        <h2 id="services-title">What we shape.</h2>
+        <p>Five clear parts. One joined result.</p>
       </div>
-      <div class="service-list">
-        <details class="service-item reveal" open>
-          <summary><span>01</span><h3>Full interior design</h3><b>+</b></summary>
-          <p>Complete direction for layout, finishes, furniture, lighting, and styling—built around one consistent vision.</p>
-        </details>
-        <details class="service-item reveal">
-          <summary><span>02</span><h3>Renovation planning</h3><b>+</b></summary>
-          <p>A clear renovation roadmap covering priorities, sequencing, design decisions, and coordination before construction begins.</p>
-        </details>
-        <details class="service-item reveal">
-          <summary><span>03</span><h3>Space planning</h3><b>+</b></summary>
-          <p>Layouts that improve circulation, storage, furniture placement, and the way every room is actually used.</p>
-        </details>
-        <details class="service-item reveal">
-          <summary><span>04</span><h3>Material & lighting selection</h3><b>+</b></summary>
-          <p>Finishes, fixtures, and lighting chosen as one palette so the home feels layered, warm, and deliberate.</p>
-        </details>
-        <details class="service-item reveal">
-          <summary><span>05</span><h3>Project coordination</h3><b>+</b></summary>
-          <p>Design decisions organized for contractors and trades, with focused review points through delivery.</p>
-        </details>
+      <div class="services-grid">
+        <aside class="service-glance light-card reveal" aria-label="Service overview">
+          <div class="glance-kicker">At a glance</div>
+          <h3>Layout, materials, light and delivery — held together.</h3>
+          <div class="glance-pills">
+            <span>Layout</span><span>Storage</span><span>Lighting</span><span>Finishes</span><span>Furniture</span><span>Styling</span>
+          </div>
+          <div class="glance-meters">
+            <div><i></i><span>Plan</span></div>
+            <div><i></i><span>Refine</span></div>
+            <div><i></i><span>Deliver</span></div>
+          </div>
+        </aside>
+        <div class="service-list">
+          <details class="service-item reveal" open>
+            <summary><span>01</span><h3>Full interior design</h3><b>+</b></summary>
+            <div class="service-body"><p>Layout, finishes, furniture and styling.</p><div class="service-tags"><span>Layout</span><span>Palette</span><span>Styling</span></div></div>
+          </details>
+          <details class="service-item reveal">
+            <summary><span>02</span><h3>Renovation planning</h3><b>+</b></summary>
+            <div class="service-body"><p>Scope, sequence and decisions before works start.</p><div class="service-tags"><span>Scope</span><span>Timeline</span><span>Budget</span></div></div>
+          </details>
+          <details class="service-item reveal">
+            <summary><span>03</span><h3>Space planning</h3><b>+</b></summary>
+            <div class="service-body"><p>Rooms that flow better, store better and live better.</p><div class="service-tags"><span>Flow</span><span>Storage</span><span>Function</span></div></div>
+          </details>
+          <details class="service-item reveal">
+            <summary><span>04</span><h3>Materials & lighting</h3><b>+</b></summary>
+            <div class="service-body"><p>A joined palette for warmth, tone and mood.</p><div class="service-tags"><span>Materials</span><span>Lighting</span><span>Fixtures</span></div></div>
+          </details>
+          <details class="service-item reveal">
+            <summary><span>05</span><h3>Project coordination</h3><b>+</b></summary>
+            <div class="service-body"><p>Clear reviews, trade notes and final delivery.</p><div class="service-tags"><span>Specs</span><span>Reviews</span><span>Handover</span></div></div>
+          </details>
+        </div>
       </div>
     </section>
 
@@ -132,40 +196,66 @@
       <div class="showcase-image light-card"><img src="https://images.unsplash.com/photo-1782805134528-9b4e58e20069?auto=format&fit=crop&w=1800&q=82" alt="Luxury navy and marble bathroom" /></div>
       <div class="showcase-copy">
         <p class="eyebrow">Material intelligence</p>
-        <h2>Light, texture and proportion do the heavy lifting.</h2>
-        <p>VeroSpace avoids decoration for decoration’s sake. Materials are selected for how they age, reflect light, connect rooms, and support everyday use.</p>
-        <div class="material-chips"><span>Brushed brass</span><span>Warm oak</span><span>Veined stone</span><span>Soft linen</span></div>
+        <h2>Materials that carry the room.</h2>
+        <p>Fewer finishes. Better light. Stronger proportion.</p>
+        <div class="material-chips"><span>Brass</span><span>Oak</span><span>Stone</span><span>Linen</span></div>
+        <div class="material-facts">
+          <div><strong>Light</strong><span>shapes mood</span></div>
+          <div><strong>Texture</strong><span>adds depth</span></div>
+          <div><strong>Scale</strong><span>keeps balance</span></div>
+        </div>
       </div>
     </section>
 
     <section class="process section-shell" id="process" aria-labelledby="process-title">
-      <div class="section-heading reveal">
+      <div class="section-heading reveal section-heading-visual">
         <p class="eyebrow">Process</p>
-        <h2 id="process-title">Clear from first conversation to final reveal.</h2>
+        <h2 id="process-title">Five steps. No fog.</h2>
+        <p>You always know what comes next.</p>
       </div>
       <ol class="process-steps">
-        <li class="reveal"><span>01</span><h3>Consult</h3><p>Goals, property, scope, budget and priorities.</p></li>
-        <li class="reveal"><span>02</span><h3>Concept</h3><p>Direction, mood, layout and design language.</p></li>
-        <li class="reveal"><span>03</span><h3>Design</h3><p>Materials, lighting, furniture and specifications.</p></li>
-        <li class="reveal"><span>04</span><h3>Build</h3><p>Coordinated decisions and focused review points.</p></li>
-        <li class="reveal"><span>05</span><h3>Reveal</h3><p>Final styling, adjustments and handover.</p></li>
+        <li class="reveal"><span>01</span><h3>Consult</h3><p>Goals, space, budget.</p><small>Brief</small></li>
+        <li class="reveal"><span>02</span><h3>Concept</h3><p>Mood, plan, direction.</p><small>Vision</small></li>
+        <li class="reveal"><span>03</span><h3>Design</h3><p>Finishes, light, details.</p><small>Specification</small></li>
+        <li class="reveal"><span>04</span><h3>Build</h3><p>Trades, reviews, control.</p><small>Execution</small></li>
+        <li class="reveal"><span>05</span><h3>Reveal</h3><p>Styling, checks, handover.</p><small>Finish</small></li>
       </ol>
     </section>
 
-    <section class="proof-band reveal">
-      <div><strong>Designed around real life.</strong><span>Not trend-chasing rooms.</span></div>
-      <div><strong>One visual language.</strong><span>Across every room and detail.</span></div>
-      <div><strong>Decisions made clearly.</strong><span>Before they become expensive changes.</span></div>
+    <section class="proof-band reveal" aria-label="VeroSpace principles">
+      <div><strong>Real life first.</strong><span>Beauty that works daily.</span></div>
+      <div><strong>One language.</strong><span>Every room feels related.</span></div>
+      <div><strong>Less waste.</strong><span>Better decisions earlier.</span></div>
     </section>
 
     <section class="testimonials section-shell" aria-labelledby="testimonials-title">
-      <div class="section-heading reveal">
+      <div class="section-heading reveal section-heading-visual">
         <p class="eyebrow">Client perspective</p>
-        <h2 id="testimonials-title">The result should feel effortless.</h2>
+        <h2 id="testimonials-title">How it should feel.</h2>
+        <p>Calm. Clear. Easy to live in.</p>
       </div>
-      <div class="quote-grid">
-        <blockquote class="reveal">“We finally have a home that looks considered without feeling precious. Every room works better.”<footer>— Fictional client · Ridge House</footer></blockquote>
-        <blockquote class="reveal">“VeroSpace gave us fewer, better decisions. The renovation felt controlled instead of overwhelming.”<footer>— Fictional client · Walnut Kitchen</footer></blockquote>
+      <div class="quote-grid quote-grid-modern">
+        <article class="quote-card reveal">
+          <div class="quote-badge">01</div>
+          <h3>Considered, not precious.</h3>
+          <p>Every room works better.</p>
+          <div class="quote-tags"><span>Ease</span><span>Function</span><span>Warmth</span></div>
+          <footer>Fictional client · Ridge House</footer>
+        </article>
+        <article class="quote-card reveal">
+          <div class="quote-badge">02</div>
+          <h3>Controlled, not overwhelming.</h3>
+          <p>Fewer, better decisions.</p>
+          <div class="quote-tags"><span>Clarity</span><span>Calm</span><span>Control</span></div>
+          <footer>Fictional client · Walnut Kitchen</footer>
+        </article>
+        <article class="quote-card reveal quote-card-emphasis">
+          <div class="quote-badge">03</div>
+          <h3>Looks refined. Feels easy.</h3>
+          <p>The home should impress quietly — and work every day.</p>
+          <div class="quote-tags"><span>Refined</span><span>Practical</span><span>Timeless</span></div>
+          <footer>VeroSpace standard</footer>
+        </article>
       </div>
     </section>
 
@@ -182,14 +272,35 @@
       <div class="contact-copy reveal">
         <p class="eyebrow">Start a project</p>
         <h2 id="contact-title">Tell us what you want your home to become.</h2>
-        <p>This portfolio uses fictional project content. For a real client, this form becomes their live lead-intake route.</p>
+        <p>Share the essentials of your space. Your request is sent securely without leaving VeroSpace.</p>
       </div>
       <form class="contact-form light-card reveal" id="consultationForm" novalidate>
-        <label>Full name<input name="name" autocomplete="name" required placeholder="Your name" /></label>
-        <label>Email<input name="email" type="email" autocomplete="email" required placeholder="you@example.com" /></label>
-        <label>Project type<select name="project" required><option value="">Choose one</option><option>Full-home interior design</option><option>Renovation</option><option>Kitchen / bathroom</option><option>Single-room design</option></select></label>
-        <label>Budget range<select name="budget" required><option value="">Choose one</option><option>$25k–$50k</option><option>$50k–$100k</option><option>$100k–$250k</option><option>$250k+</option></select></label>
-        <label class="full">Tell us about the space<textarea name="message" required rows="5" placeholder="Property, rooms, goals, timeline..."></textarea></label>
+        <label class="vs-hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label>
+        <label>
+          <span class="field-head">Full name <span class="required-pill">Required</span></span>
+          <input name="name" autocomplete="name" required placeholder="Your name" aria-describedby="nameError" />
+          <span class="field-error" id="nameError" data-error-for="name" role="alert"></span>
+        </label>
+        <label>
+          <span class="field-head">Email <span class="required-pill">Required</span></span>
+          <input name="email" type="email" autocomplete="email" required placeholder="you@example.com" aria-describedby="emailError" />
+          <span class="field-error" id="emailError" data-error-for="email" role="alert"></span>
+        </label>
+        <label>
+          <span class="field-head">Project type <span class="required-pill">Required</span></span>
+          <select name="project" required aria-describedby="projectError"><option value="">Choose one</option><option>Full-home interior design</option><option>Renovation</option><option>Kitchen / bathroom</option><option>Single-room design</option></select>
+          <span class="field-error" id="projectError" data-error-for="project" role="alert"></span>
+        </label>
+        <label>
+          <span class="field-head">Budget range <span class="required-pill">Required</span></span>
+          <select name="budget" required aria-describedby="budgetError"><option value="">Choose one</option><option>$25k–$50k</option><option>$50k–$100k</option><option>$100k–$250k</option><option>$250k+</option></select>
+          <span class="field-error" id="budgetError" data-error-for="budget" role="alert"></span>
+        </label>
+        <label class="full">
+          <span class="field-head">Tell us about the space <span class="required-pill">Required</span></span>
+          <textarea name="message" required minlength="3" rows="5" placeholder="Property, rooms, goals, timeline..." aria-describedby="messageError"></textarea>
+          <span class="field-error" id="messageError" data-error-for="message" role="alert"></span>
+        </label>
         <div class="full form-footer"><button class="pill-button primary" type="submit">Request consultation</button><p id="formStatus" role="status"></p></div>
       </form>
     </section>
@@ -209,6 +320,22 @@
     <dl><div><dt>Scope</dt><dd id="dialogScope"></dd></div><div><dt>Focus</dt><dd id="dialogFocus"></dd></div></dl>
     <button class="pill-button primary" data-scroll="#contact">Discuss a similar project</button>
   </dialog>
+
+
+  <div class="send-overlay" id="sendOverlay" aria-hidden="true">
+    <div class="send-edge" aria-hidden="true"></div>
+    <div class="send-panel" role="status" aria-live="assertive" aria-atomic="true">
+      <div class="send-symbol is-sending" id="sendSymbol" aria-hidden="true">
+        <div class="send-ring"></div>
+        <div class="send-core">V</div>
+        <svg class="send-result-icon send-check" viewBox="0 0 64 64" focusable="false"><path d="M17 33.5 27.2 44 48 20" /></svg>
+        <svg class="send-result-icon send-cross" viewBox="0 0 64 64" focusable="false"><path d="M20 20 44 44M44 20 20 44" /></svg>
+        <svg class="send-result-icon send-offline" viewBox="0 0 64 64" focusable="false"><path d="M14 25c10-9 26-9 36 0M21 33c6-5 16-5 22 0M28 41c2.5-2 5.5-2 8 0M15 15l34 34" /></svg>
+      </div>
+      <p class="send-status" id="sendStatus">Sending…</p>
+      <p class="send-note" id="sendNote">Your request stays inside VeroSpace.</p>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
