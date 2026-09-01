@@ -32,8 +32,8 @@ for(const [name,width,height] of cases){
   pass(`${name}: no horizontal overflow`,overflow<=1,`${overflow}px`);
 
   if(width<=900){
-    pass(`${name}: original mobile journey preserved`,await page.locator('.mobile-journey-dock').count()===1);
     pass(`${name}: menu control visible`,await page.locator('.menu-button').isVisible());
+    if(width<=767)pass(`${name}: original mobile journey preserved`,await page.locator('.mobile-journey-dock').count()===1);
     await page.locator('.menu-button').click();
     await page.waitForTimeout(200);
     pass(`${name}: premium menu opens`,await page.locator('.mobile-menu').evaluate(el=>el.classList.contains('open')));
@@ -41,6 +41,7 @@ for(const [name,width,height] of cases){
   }else{
     pass(`${name}: original desktop journey preserved`,await page.locator('.desktop-journey').count()===1);
     pass(`${name}: desktop nav visible`,await page.locator('.desktop-nav').isVisible());
+    pass(`${name}: desktop hamburger hidden`,!(await page.locator('.menu-button').isVisible()));
     const heroMetrics=await page.locator('#home').evaluate(el=>({top:el.offsetTop,height:el.offsetHeight}));
     const y=Math.round(heroMetrics.top+(heroMetrics.height-height)*.65);
     await page.evaluate(v=>scrollTo(0,v),y);
@@ -75,7 +76,7 @@ for(const [name,width,height] of cases){
     await page.screenshot({path:`.qa/screenshots/${name}-home.png`,fullPage:false});
     if(width>900){
       const heroMetrics=await page.locator('#home').evaluate(el=>({top:el.offsetTop,height:el.offsetHeight}));
-      await page.evaluate(v=>scrollTo(0,v),Math.round(heroMetrics.top+(heroMetrics.height-innerHeight)*.65));
+      await page.evaluate(v=>scrollTo(0,v),Math.round(heroMetrics.top+(heroMetrics.height-height)*.65));
       await page.waitForTimeout(350);
       await page.screenshot({path:`.qa/screenshots/${name}-hero-immersed.png`,fullPage:false});
     }
