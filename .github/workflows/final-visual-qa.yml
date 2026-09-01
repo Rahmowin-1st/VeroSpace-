@@ -1,0 +1,31 @@
+name: VeroSpace Final Visual QA
+
+on:
+  push:
+    branches:
+      - verospace-ultra-upgrade-2026-09-01
+  workflow_dispatch:
+
+jobs:
+  final-visual-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start server
+        run: |
+          python3 -m http.server 4173 > /tmp/verospace-final-http.log 2>&1 &
+          sleep 2
+      - name: Final responsive gates
+        run: node .qa/final-visual-qa.mjs
+      - name: Upload final screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verospace-final-visual-qa
+          path: .qa/final-screenshots
+          if-no-files-found: ignore
