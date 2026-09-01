@@ -1,0 +1,41 @@
+name: VeroSpace Cinematic QA
+
+on:
+  push:
+    branches: [verospace-cinematic-v3-2026-09-01]
+  workflow_dispatch:
+
+jobs:
+  cinematic-qa:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static syntax
+        run: |
+          node --check base-script.js
+          node --check cinematic.js
+          test -s base-styles.css
+          test -s cinematic.css
+          test -s cinematic-bridge.css
+          grep -q "cinematic.css" styles.css
+          grep -q "cinematic.js" script.js
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start static server
+        run: |
+          mkdir -p .qa/screenshots
+          python3 -m http.server 4173 > /tmp/verospace-cinematic-http.log 2>&1 &
+          echo $! > /tmp/verospace-cinematic-http.pid
+          sleep 2
+      - name: Cinematic responsive QA
+        run: node .qa/cinematic-qa.mjs
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verospace-cinematic-screenshots
+          path: .qa/screenshots
+          if-no-files-found: ignore
