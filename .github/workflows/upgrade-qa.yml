@@ -1,0 +1,42 @@
+name: VeroSpace Upgrade QA
+
+on:
+  push:
+    branches:
+      - verospace-ultra-upgrade-2026-09-01
+  workflow_dispatch:
+
+jobs:
+  responsive-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Static syntax
+        run: |
+          node --check upgrade.js
+          node --check base-script.js
+          test -s upgrade.css
+          test -s base-styles.css
+          grep -q "base-styles.css" styles.css
+          grep -q "upgrade.css" styles.css
+          grep -q "base-script.js" script.js
+          grep -q "upgrade.js" script.js
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start static server
+        run: |
+          python3 -m http.server 4173 > /tmp/verospace-http.log 2>&1 &
+          echo $! > /tmp/verospace-http.pid
+          sleep 2
+      - name: Responsive interaction QA
+        run: node .qa/upgrade-qa.mjs
+      - name: Upload QA screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verospace-upgrade-screenshots
+          path: .qa/screenshots
+          if-no-files-found: ignore
