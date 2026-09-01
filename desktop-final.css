@@ -1,2 +1,0 @@
-/* Final desktop cleanup after screenshot review. Desktop already has full navigation, so the touch menu control must not render. */
-@media(min-width:901px){.menu-button{display:none!important}}
