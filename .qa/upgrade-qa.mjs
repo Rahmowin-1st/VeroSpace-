@@ -30,6 +30,10 @@ for(const size of sizes){
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
   check(overflow<=1,`${size.name}: no horizontal overflow (${overflow}px)`);
 
+  if(['mobile-390','desktop-1366','desktop-1920'].includes(size.name)){
+    await page.screenshot({path:`.qa/screenshots/${size.name}-initial.png`,fullPage:false});
+  }
+
   if(size.width<=900){
     const nextTop=await page.locator('#projects').evaluate(el=>el.getBoundingClientRect().top);
     check(nextTop>=size.height-12,`${size.name}: home owns first viewport (${Math.round(nextTop)} >= ${size.height-12})`);
@@ -42,10 +46,31 @@ for(const size of sizes){
     check(menuStyle.bg.includes('linear-gradient'),`${size.name}: colored menu background`);
     check(menuStyle.filter==='none'||menuStyle.filter==='',`${size.name}: menu shell is not transparent glass`);
     check(await page.locator('.upgrade-menu-links a').count()===4,`${size.name}: simplified four-link menu`);
+    if(size.name==='mobile-390')await page.screenshot({path:'.qa/screenshots/mobile-390-menu.png',fullPage:false});
     await menuButton.click();
   }else{
     const heroBottom=await page.locator('#home').evaluate(el=>el.getBoundingClientRect().bottom);
     check(heroBottom<=size.height+12,`${size.name}: complete home fits viewport (${Math.round(heroBottom)} <= ${size.height+12})`);
+    const layout=await page.evaluate(()=>{
+      const c=document.querySelector('.hero-copy').getBoundingClientRect();
+      const m=document.querySelector('.hero-media').getBoundingClientRect();
+      const h=document.querySelector('.hero').getBoundingClientRect();
+      return {copyRight:c.right,mediaLeft:m.left,mediaWidth:m.width,heroWidth:h.width,mediaPosition:getComputedStyle(document.querySelector('.hero-media')).position};
+    });
+    check(layout.mediaLeft>=layout.copyRight-8,`${size.name}: desktop hero is side-by-side`);
+    check(layout.mediaWidth<layout.heroWidth*.68,`${size.name}: desktop image does not swallow hero`);
+    check(layout.mediaPosition==='relative',`${size.name}: desktop media stays in grid flow`);
+  }
+
+  if(['mobile-390','desktop-1366'].includes(size.name)){
+    const imgs=page.locator('.project-card .project-image img');
+    for(let i=0;i<await imgs.count();i++){
+      const img=imgs.nth(i);
+      await img.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(180);
+      const loaded=await img.evaluate(el=>el.complete&&el.naturalWidth>0);
+      check(loaded,`${size.name}: project image ${i+1} loaded`);
+    }
   }
 
   await page.locator('#projects').scrollIntoViewIfNeeded();
@@ -53,12 +78,11 @@ for(const size of sizes){
   await page.waitForTimeout(200);
   check(await page.locator('#projectDialog[open]').isVisible(),`${size.name}: project modal opens`);
   check(await page.locator('.upgrade-dialog-media img').isVisible(),`${size.name}: project modal shows image`);
+  if(size.name==='mobile-390')await page.screenshot({path:'.qa/screenshots/mobile-390-project.png',fullPage:false});
+  if(size.name==='desktop-1366')await page.screenshot({path:'.qa/screenshots/desktop-1366-project.png',fullPage:false});
   await page.locator('.dialog-close').click();
 
   check(pageErrors.length===0,`${size.name}: no page errors${pageErrors.length?` — ${pageErrors.join(' | ')}`:''}`);
-  if(['mobile-390','desktop-1366','desktop-1920'].includes(size.name)){
-    await page.screenshot({path:`.qa/screenshots/${size.name}.png`,fullPage:true});
-  }
   await page.close();
 }
 await browser.close();
