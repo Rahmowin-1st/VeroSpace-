@@ -12,6 +12,7 @@
   const clamp=v=>Math.min(1,Math.max(0,v));
   const mix=(a,b,t)=>a+(b-a)*t;
   const smooth=t=>t*t*(3-2*t);
+  const setImportant=(prop,value)=>media.style.setProperty(prop,value,'important');
   let raf=0;
   function frame(){
     raf=0;
@@ -23,12 +24,18 @@
     root.classList.toggle('hero-immersed',inHero&&p>.34);
     if(!mobile.matches&&!reduced.matches){
       const t=smooth(clamp(p/.56));
-      media.style.left=`${mix(48,0,t)}%`;
-      media.style.top=`${mix(13,0,t)}%`;
-      media.style.width=`${mix(48,100,t)}%`;
-      media.style.height=`${mix(74,100,t)}%`;
-      media.style.borderRadius=`${mix(46,0,t)}px`;
-      if(image)image.style.filter=`saturate(.92) contrast(1.04) brightness(${mix(.98,.72,t)})`;
+      setImportant('left',`${mix(48,0,t)}%`);
+      setImportant('top',`${mix(13,0,t)}%`);
+      setImportant('width',`${mix(48,100,t)}%`);
+      setImportant('height',`${mix(74,100,t)}%`);
+      setImportant('border-radius',`${mix(46,0,t)}px`);
+      if(image)image.style.setProperty('filter',`saturate(.92) contrast(1.04) brightness(${mix(.98,.72,t)})`,'important');
+    }else if(!mobile.matches){
+      setImportant('left','48%');
+      setImportant('top','13%');
+      setImportant('width','48%');
+      setImportant('height','74%');
+      setImportant('border-radius','46px');
     }
     const show=smooth(clamp((p-.22)/.26));
     if(immersive){immersive.style.opacity=String(show);immersive.style.transform=`translateY(${mix(30,0,show)}px)`;}
