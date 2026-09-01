@@ -63,7 +63,18 @@ for(const [name,width,height,mobile] of cases){
       await page.screenshot({path:`qa-artifacts/${name}-projects-scroll.png`,fullPage:false});
     }
 
-    const firstProject=page.locator('.project-card').first();await firstProject.scrollIntoViewIfNeeded();await page.waitForTimeout(80);await firstProject.locator('button').click();await page.waitForTimeout(120);
+    let modalButton;
+    if(mobile){
+      const firstProject=page.locator('.project-card').first();
+      await firstProject.scrollIntoViewIfNeeded();
+      await page.waitForTimeout(80);
+      modalButton=firstProject.locator('button');
+    }else{
+      modalButton=page.locator('.project-card.focus .project-open').first();
+      await modalButton.waitFor({state:'visible',timeout:5000});
+    }
+    await modalButton.click({timeout:5000});
+    await page.waitForTimeout(120);
     const modal=await page.evaluate(()=>{const d=document.querySelector('dialog'),img=d?.querySelector('img'),r=d?.getBoundingClientRect();return{open:!!d?.open,img:!!img,nw:img?.naturalWidth||0,top:r?.top||0,bottom:r?.bottom||0}});
     assert.ok(modal.open,`${name}: project modal did not open`);assert.ok(modal.img&&modal.nw>0,`${name}: project image missing in modal`);assert.ok(modal.top>=0&&modal.bottom<=height+2,`${name}: modal exceeds viewport`);
     await page.screenshot({path:`qa-artifacts/${name}-modal.png`,fullPage:false});await page.keyboard.press('Escape');
