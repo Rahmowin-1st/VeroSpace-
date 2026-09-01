@@ -1,0 +1,67 @@
+name: VeroSpace Preview QA
+on:
+  push:
+    branches: [verospace-final-qa]
+    paths:
+      - '.github/workflows/verospace-preview-qa.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TARGET_URL: 'https://verospace-landing-rnv1qsd6l-shahboz.vercel.app/?_vercel_share=hcO4PeMVP9HwYPY6eu9SlwSefazXiQv8'
+      CLEAN_URL: 'https://verospace-landing-rnv1qsd6l-shahboz.vercel.app/'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Run viewport and interaction QA
+        run: |
+          cat > /tmp/qa.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          const target=process.env.TARGET_URL,clean=process.env.CLEAN_URL;
+          const viewports=[[320,700],[360,780],[390,844],[430,932],[768,1024],[1024,768],[1366,768],[1440,900],[1600,900],[1920,1080]];
+          const failures=[]; const report={viewports:[],assets:{},menu:[],projects:[],form:{},scroll:{},console:[]};
+          const fail=(name,detail)=>failures.push({name,detail});
+          const browser=await chromium.launch({headless:true});
+          for(const [width,height] of viewports){
+            const context=await browser.newContext({viewport:{width,height}}); const page=await context.newPage();
+            const errs=[]; page.on('console',m=>{if(m.type()==='error')errs.push('console:'+m.text())}); page.on('pageerror',e=>errs.push('pageerror:'+e.message));
+            await page.goto(target,{waitUntil:'networkidle',timeout:60000}); await page.goto(clean,{waitUntil:'networkidle',timeout:60000});
+            const m0=await page.evaluate(()=>({y:scrollY,sw:document.documentElement.scrollWidth,iw:innerWidth,ih:innerHeight,projectTop:document.querySelector('#projects')?.getBoundingClientRect().top,hero:document.querySelector('.hero')?.getBoundingClientRect().toJSON(),btns:[...document.querySelectorAll('.hero-actions button')].map(b=>({text:b.textContent.trim(),r:b.getBoundingClientRect().toJSON()})),forbidden:document.querySelectorAll('.mobile-journey-dock,.hero-dock,.hero-rail').length}));
+            await page.waitForTimeout(2200); const y1=await page.evaluate(()=>scrollY);
+            const inside=m0.btns.every(({r})=>r.left>=-1&&r.right<=width+1&&r.top>=-1&&r.bottom<=height+1);
+            const touch=width<=768?m0.btns.every(({r})=>r.height>=44):true;
+            const row={width,height,y0:m0.y,yAfter:m0.y===0?y1:y1,scrollWidth:m0.sw,innerWidth:m0.iw,projectTop:Math.round(m0.projectTop??-1),heroBottom:Math.round(m0.hero?.bottom??-1),cta:m0.btns.map(x=>x.text),ctaInside:inside,touch,forbidden:m0.forbidden,errors:errs}; report.viewports.push(row);
+            if(m0.y!==0||y1!==0)fail(`viewport-${width}`,'initial scroll moved'); if(m0.sw>m0.iw)fail(`viewport-${width}`,`horizontal overflow ${m0.sw}>${m0.iw}`); if((m0.projectTop??0)<height-2)fail(`viewport-${width}`,`projects leaks into first viewport: top=${m0.projectTop}, h=${height}`); if(m0.btns.length!==2||m0.btns[0]?.text!=='Book a consultation'||m0.btns[1]?.text!=='Explore projects')fail(`viewport-${width}`,'hero CTA mismatch'); if(!inside)fail(`viewport-${width}`,'hero CTA outside viewport'); if(!touch)fail(`viewport-${width}`,'mobile CTA target below 44px'); if(m0.forbidden)fail(`viewport-${width}`,'forbidden dock/rail exists'); if(errs.length)fail(`viewport-${width}`,'console/page errors: '+errs.join(' | '));
+            await context.close();
+          }
+          {
+            const context=await browser.newContext({viewport:{width:1024,height:768}}); const page=await context.newPage(); await page.goto(target,{waitUntil:'networkidle',timeout:60000}); await page.goto(clean,{waitUntil:'networkidle',timeout:60000});
+            for(const path of ['/assets/verospace-featured-home.jpg','/assets/verospace-logo.png']){
+              const a=await page.evaluate(async p=>{const r=await fetch(p,{cache:'no-store'}); const b=await r.blob(); let dec={ok:false,w:0,h:0}; try{const bm=await createImageBitmap(b);dec={ok:true,w:bm.width,h:bm.height};bm.close()}catch{} return {status:r.status,mime:r.headers.get('content-type'),size:b.size,...dec}},path); report.assets[path]=a; if(a.status!==200||!a.mime?.startsWith('image/')||!a.ok||a.size<1000)fail('asset-'+path,JSON.stringify(a));
+            }
+            await page.locator('.project-card img').first().scrollIntoViewIfNeeded(); await page.waitForFunction(()=>[...document.querySelectorAll('.project-card img')].every(i=>i.complete&&i.naturalWidth>0),null,{timeout:30000}).catch(()=>{}); const imgs=await page.evaluate(()=>[...document.querySelectorAll('.project-card img')].map(i=>({src:i.currentSrc||i.src,w:i.naturalWidth,h:i.naturalHeight}))); report.assets.projects=imgs; if(imgs.length!==5||imgs.some(i=>!i.w))fail('project-images',JSON.stringify(imgs));
+            const count=await page.locator('.project-card').count(); if(count!==5)fail('project-count',String(count));
+            for(let i=0;i<count;i++){await page.locator('.project-open').nth(i).click(); const d=page.locator('#projectDialog'); await d.waitFor({state:'visible'}); await page.waitForFunction(()=>document.querySelector('#dialogImage')?.naturalWidth>0,null,{timeout:20000}).catch(()=>{}); const data=await page.evaluate(()=>({title:document.querySelector('#dialogTitle')?.textContent.trim(),scope:document.querySelector('#dialogScope')?.textContent.trim(),focus:document.querySelector('#dialogFocus')?.textContent.trim(),result:document.querySelector('#dialogResult')?.textContent.trim(),img:document.querySelector('#dialogImage')?.naturalWidth||0,cta:[...document.querySelectorAll('#projectDialog [data-scroll]')].map(x=>x.textContent.trim())})); report.projects.push(data); if(!data.title||!data.scope||!data.focus||!data.result||!data.img||!data.cta.includes('Discuss a similar project'))fail(`project-${i+1}`,JSON.stringify(data)); await page.locator('.dialog-close').click();}
+            const concept=await page.locator('#projects').innerText(); if(!/Concept portfolio studies/i.test(concept))fail('concept-disclosure','missing concept disclosure');
+            await context.close();
+          }
+          for(const [width,height] of [[390,844],[1440,900]]){
+            const context=await browser.newContext({viewport:{width,height}}); const page=await context.newPage(); await page.goto(target,{waitUntil:'networkidle',timeout:60000}); await page.goto(clean,{waitUntil:'networkidle',timeout:60000}); const y0=await page.evaluate(()=>scrollY); const btn=page.locator('.menu-button'); await btn.click(); await page.waitForTimeout(400);
+            const data=await page.evaluate(()=>{const m=document.querySelector('.site-menu'),s=getComputedStyle(m),links=[...m.querySelectorAll('.menu-links a')].map(a=>a.getBoundingClientRect().toJSON()); const overlaps=links.some((a,i)=>links.slice(i+1).some(b=>!(a.bottom<=b.top||b.bottom<=a.top||a.right<=b.left||b.right<=a.left))); return {open:m.classList.contains('open'),bg:s.backgroundImage,bgColor:s.backgroundColor,rect:m.getBoundingClientRect().toJSON(),overlaps,active:document.activeElement?.className}}); let trapped=true; for(let i=0;i<12;i++){await page.keyboard.press('Tab'); trapped=trapped&&await page.evaluate(()=>document.querySelector('.site-menu').contains(document.activeElement));} await page.keyboard.press('Escape'); await page.waitForTimeout(250); const esc=await page.evaluate(()=>({open:document.querySelector('.site-menu').classList.contains('open'),focus:document.activeElement?.className,y:scrollY})); await btn.click(); await page.locator('.menu-close').click(); const closeOpen=await page.locator('.site-menu').evaluate(m=>m.classList.contains('open')); report.menu.push({width,y0,data,trapped,esc,closeOpen}); if(!data.open||!data.bg.includes('linear-gradient')||data.overlaps||!trapped||esc.open||Math.abs(esc.y-y0)>1||!String(esc.focus).includes('menu-button')||closeOpen)fail(`menu-${width}`,JSON.stringify({data,trapped,esc,closeOpen})); await context.close();
+          }
+          {
+            const context=await browser.newContext({viewport:{width:390,height:844}}); const page=await context.newPage(); const errs=[]; page.on('console',m=>{if(m.type()==='error')errs.push(m.text())}); page.on('pageerror',e=>errs.push(e.message)); await page.goto(target,{waitUntil:'networkidle',timeout:60000}); await page.goto(clean,{waitUntil:'networkidle',timeout:60000}); const staticCode=await page.evaluate(async()=>({js:await (await fetch('/script.js')).text(),css:await (await fetch('/styles.css')).text(),snapHtml:getComputedStyle(document.documentElement).scrollSnapType,snapBody:getComputedStyle(document.body).scrollSnapType})); if(/scrollTop\s*=|scrollTo\s*\(/.test(staticCode.js)||/addEventListener\s*\(\s*['\"]scroll/.test(staticCode.js))fail('scroll-code','scroll mutation/listener found'); if(/scroll-snap/.test(staticCode.css)||staticCode.snapHtml!=='none'||staticCode.snapBody!=='none')fail('scroll-snap',JSON.stringify({snapHtml:staticCode.snapHtml,snapBody:staticCode.snapBody})); const supported=await page.evaluate(()=>PerformanceObserver.supportedEntryTypes?.includes('longtask')); if(supported)await page.evaluate(()=>{window.__lt=[];new PerformanceObserver(l=>window.__lt.push(...l.getEntries().map(e=>e.duration))).observe({type:'longtask',buffered:true})}); const y0=await page.evaluate(()=>scrollY); await page.mouse.wheel(0,620); await page.waitForTimeout(250); const yDown=await page.evaluate(()=>scrollY); await page.mouse.wheel(0,620); await page.waitForTimeout(250); const yDown2=await page.evaluate(()=>scrollY); await page.mouse.wheel(0,-700); await page.waitForTimeout(250); const yUp=await page.evaluate(()=>scrollY); await page.waitForTimeout(1800); const yStable=await page.evaluate(()=>scrollY); const lt=supported?await page.evaluate(()=>({count:window.__lt.length,max:Math.max(0,...window.__lt)})):null; report.scroll={y0,yDown,yDown2,yUp,yStable,snapHtml:staticCode.snapHtml,snapBody:staticCode.snapBody,longtasks:lt}; if(!(yDown>y0&&yDown2>yDown&&yUp<yDown2&&Math.abs(yStable-yUp)<2))fail('native-scroll',JSON.stringify(report.scroll)); if(lt&&lt.max>120)fail('scroll-longtask',JSON.stringify(lt)); report.console.push(...errs); if(errs.length)fail('scroll-console',errs.join(' | ')); await context.close();
+          }
+          {
+            const context=await browser.newContext({viewport:{width:390,height:844}}); const page=await context.newPage(); await page.goto(target,{waitUntil:'networkidle',timeout:60000}); await page.goto(clean,{waitUntil:'networkidle',timeout:60000}); await page.locator('#contact').scrollIntoViewIfNeeded(); let postCount=0; page.on('request',r=>{if(r.url().includes('/api/consultation')&&r.method()==='POST')postCount++}); await page.locator('#consultationForm button[type="submit"]').click(); await page.waitForTimeout(300); const state=await page.evaluate(()=>({status:document.querySelector('#formStatus')?.textContent.trim(),active:document.activeElement?.getAttribute('name'),invalid:document.querySelector('[name="name"]')?.getAttribute('aria-invalid')})); const guard=await page.evaluate(async()=>{const r=await fetch('/api/consultation');return {status:r.status,body:await r.text()}}); report.form={postCount,state,guard}; if(postCount!==0||state.active!=='name'||state.invalid!=='true'||guard.status!==405)fail('form-guard',JSON.stringify(report.form)); await context.close();
+          }
+          await browser.close(); console.log('QA_REPORT_START'); console.log(JSON.stringify({...report,failures},null,2)); console.log('QA_REPORT_END'); if(failures.length){console.error(`PREVIEW RED: ${failures.length} failure(s)`); process.exit(1)} console.log('PREVIEW GREEN');
+          EOF
+          node /tmp/qa.mjs
