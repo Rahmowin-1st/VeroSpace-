@@ -1,342 +1,185 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="description" content="VeroSpace — premium interior design and renovation for distinctive homes." />
-  <title>VeroSpace — Interior Design & Renovation</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#071522">
+<meta name="description" content="VeroSpace — interior design, renovation planning and project coordination for complete home transformations.">
+<title>VeroSpace — One vision, every detail</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#081827;--navy2:#102942;--cream:#f6efe5;--paper:#fffaf3;--gold:#e1ba72;--gold2:#a47838;--ink:#102033;--muted:#66717d;--line:rgba(16,32,51,.12);--shell:min(1280px,calc(100% - 40px));--shadow:0 26px 80px rgba(5,18,32,.15),0 5px 18px rgba(5,18,32,.07);--hero-p:0;--projects-p:0}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:98px}body{margin:0;overflow-x:clip;background:linear-gradient(180deg,#fffaf4,#f3ece2 50%,#fffaf5);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif}button,input,select,textarea{font:inherit}button,a{color:inherit}button{cursor:pointer}img{display:block;width:100%}a{text-decoration:none}.shell{width:var(--shell);margin-inline:auto}.serif{font-family:"Playfair Display",serif}.eyebrow{margin:0 0 14px;color:#96703a;text-transform:uppercase;letter-spacing:.18em;font-size:11px;font-weight:700}.ambient{position:fixed;z-index:-2;pointer-events:none;border-radius:50%;filter:blur(90px);opacity:.28}.ambient.a{width:42vw;height:42vw;right:-12vw;top:8vh;background:rgba(222,183,111,.44)}.ambient.b{width:38vw;height:38vw;left:-16vw;top:56vh;background:rgba(61,98,139,.20)}
+
+/* header */
+.site-header{position:fixed;z-index:80;top:16px;left:50%;transform:translateX(-50%);width:min(1280px,calc(100% - 28px));height:74px;padding:7px 9px;display:grid;grid-template-columns:60px 1fr auto;align-items:center;gap:18px;border:1px solid rgba(255,255,255,.72);border-radius:30px;background:linear-gradient(145deg,rgba(255,255,255,.68),rgba(244,231,208,.42));backdrop-filter:blur(20px) saturate(1.25);box-shadow:0 18px 55px rgba(4,17,30,.12),inset 0 1px 0 rgba(255,255,255,.95);transition:height .35s ease,top .35s ease,background .35s ease,box-shadow .35s ease}.site-header.scrolled{top:10px;height:66px;background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(244,231,208,.50));box-shadow:0 14px 42px rgba(4,17,30,.16),inset 0 1px 0 rgba(255,255,255,.96)}.brand{width:58px;height:58px;padding:5px;border-radius:50%;overflow:hidden;display:grid;place-items:center;background:radial-gradient(circle at 30% 10%,#fff,#fffaf0 62%,#e9d4ac);border:1px solid rgba(164,119,55,.22);box-shadow:0 9px 26px rgba(7,20,35,.10),inset 0 1px 0 #fff}.brand img{width:100%;height:100%;border-radius:50%;object-fit:contain}.desktop-nav{display:flex;justify-content:center;gap:6px}.desktop-nav a{position:relative;padding:11px 15px;border-radius:999px;color:#526071;font-size:13px;font-weight:650;transition:.25s}.desktop-nav a:hover,.desktop-nav a.active{color:var(--navy);background:rgba(255,255,255,.42)}.desktop-nav a.active:after{content:"";position:absolute;left:16px;right:16px;bottom:5px;height:2px;border-radius:99px;background:var(--gold)}.header-cta,.primary-btn{position:relative;overflow:hidden;border:1px solid rgba(255,255,255,.56);border-radius:999px;background:radial-gradient(circle at 20% 0,rgba(255,255,255,.52),transparent 40%),linear-gradient(135deg,#f1d397,#d6ab60 60%,#bc8c44);color:#112238;font-weight:750;box-shadow:0 14px 34px rgba(112,77,29,.22),inset 0 1px 0 rgba(255,255,255,.90),inset 0 -2px 0 rgba(100,65,21,.12);transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s ease,filter .28s ease}.header-cta{min-height:52px;padding:0 21px}.header-cta:before,.primary-btn:before{content:"";position:absolute;left:12%;right:12%;top:1px;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.92),transparent)}.menu-button{display:none;width:50px;height:50px;border-radius:50%;border:1px solid rgba(255,255,255,.72);background:rgba(255,255,255,.52);box-shadow:0 10px 28px rgba(7,20,35,.11),inset 0 1px 0 rgba(255,255,255,.95);place-content:center;gap:5px}.menu-button span{display:block;width:21px;height:2px;border-radius:99px;background:#12283f;transform-origin:center;transition:.32s}.menu-button.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}.menu-button.open span:nth-child(2){opacity:0}.menu-button.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+.menu-backdrop{position:fixed;z-index:70;inset:0;border:0;background:rgba(3,11,20,.64);opacity:0;visibility:hidden;pointer-events:none;transition:.3s}.menu-backdrop.open{opacity:1;visibility:visible;pointer-events:auto}.mobile-menu{position:fixed;z-index:79;top:92px;right:max(14px,calc((100vw - 1280px)/2));width:min(560px,calc(100vw - 28px));padding:16px;border:1px solid rgba(225,186,114,.18);border-radius:30px;background:radial-gradient(circle at 90% 0,rgba(225,186,114,.16),transparent 31%),linear-gradient(145deg,#102941,#081a2b);color:#fff;box-shadow:0 38px 110px rgba(0,0,0,.42);opacity:0;visibility:hidden;pointer-events:none;transform:translateY(-14px) scale(.97);transform-origin:top right;transition:opacity .28s ease,transform .42s cubic-bezier(.16,1,.3,1),visibility .28s ease}.mobile-menu.open{opacity:1;visibility:visible;pointer-events:auto;transform:none}.menu-top{display:flex;justify-content:space-between;align-items:center;padding:4px 5px 13px;border-bottom:1px solid rgba(255,255,255,.09);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.58)}.menu-top b{display:flex;align-items:center;gap:7px;color:rgba(255,255,255,.72)}.menu-top b:before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 0 5px rgba(225,186,114,.09)}.menu-links{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px}.menu-links a{min-height:84px;padding:15px;border-radius:21px;background:#142f4b;border:1px solid rgba(255,255,255,.08);display:grid;grid-template-columns:1fr auto;grid-template-rows:auto 1fr;transition:transform .24s ease,background .24s ease}.menu-links small{font-size:9px;color:#d9b36d;letter-spacing:.10em}.menu-links strong{align-self:end;font-family:"Playfair Display",serif;font-size:24px;font-weight:500}.menu-links i{grid-column:2;grid-row:1/3;align-self:center;font-style:normal;color:#d9b36d}.menu-start{margin-top:10px;padding:18px;border-radius:23px;background:#f4ead9;color:#102033}.menu-start small{display:block;color:#9a7238;text-transform:uppercase;letter-spacing:.14em;font-weight:700;font-size:9px}.menu-start h2{margin:8px 0 14px;font-family:"Playfair Display",serif;font-size:28px;line-height:1.02;font-weight:500}.menu-start button{width:100%;min-height:48px;border:0;border-radius:999px;background:var(--navy);color:#fff;font-weight:700}
+
+/* hero */
+.hero{height:184svh;min-height:1120px;position:relative;background:linear-gradient(180deg,#fffaf4,#f0e5d6);isolation:isolate}.hero-stage{position:sticky;top:0;height:100svh;height:100dvh;min-height:650px;overflow:hidden}.hero-stage:after{content:"";position:absolute;z-index:4;inset:0;pointer-events:none;background:linear-gradient(180deg,transparent 58%,rgba(5,14,24,calc(var(--hero-p)*.18)))}.hero-copy{position:absolute;z-index:8;left:max(5vw,calc((100vw - 1280px)/2));top:50%;width:min(590px,43vw);transform:translate3d(0,calc(-50% - var(--hero-p)*40px),0);opacity:calc(1 - var(--hero-p)*1.36);will-change:transform,opacity}.hero h1{margin:0;max-width:620px;font-family:"Playfair Display",serif;font-weight:500;font-size:clamp(60px,min(6vw,9.7vh),96px);line-height:.89;letter-spacing:-.057em;text-wrap:balance}.hero h1 em{display:block;margin-top:.04em;color:#9a7034;font-weight:500}.hero-lede{margin:22px 0 0;max-width:510px;font-size:clamp(16px,1.2vw,19px);line-height:1.55;color:#566474}.hero-actions{display:flex;align-items:center;gap:18px;margin-top:27px}.primary-btn{min-height:56px;padding:0 24px}.secondary-link{padding:10px 0;font-size:13px;font-weight:750;color:#2d4056}.secondary-link:after{content:" ↘";color:#a6793a}.hero-media{position:absolute;z-index:2;left:49%;top:11%;width:47%;height:78%;overflow:hidden;border-radius:44px;background:#b8b5ae;box-shadow:0 34px 105px rgba(8,22,38,.22),0 8px 26px rgba(8,22,38,.09);will-change:left,top,width,height,border-radius}.hero-media img{height:100%;object-fit:cover;object-position:center;transform:scale(1.035);filter:saturate(.94) contrast(1.04) brightness(.98);will-change:transform,filter}.hero-media:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(4,12,22,.01) 45%,rgba(4,12,22,.48) 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);pointer-events:none}.media-caption{position:absolute;z-index:3;left:24px;right:24px;bottom:22px;display:flex;justify-content:space-between;align-items:end;color:#fff;text-shadow:0 3px 18px rgba(0,0,0,.34)}.media-caption strong{font-family:"Playfair Display",serif;font-size:22px;font-weight:500}.media-caption span{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:rgba(255,255,255,.7)}.hero-signal{position:absolute;z-index:8;left:max(5vw,calc((100vw - 1280px)/2));bottom:28px;display:flex;align-items:center;gap:11px;color:#687582;font-size:9px;font-weight:750;letter-spacing:.16em;text-transform:uppercase;opacity:calc(1 - var(--hero-p)*2)}.hero-signal i{position:relative;width:62px;height:1px;overflow:hidden;background:rgba(20,35,54,.18)}.hero-signal i:after{content:"";position:absolute;inset:0;background:#a57a3b;animation:signal 1.8s ease-in-out infinite;transform:translateX(-100%)}@keyframes signal{55%,100%{transform:translateX(100%)}}.hero-immersive{position:absolute;z-index:8;left:8vw;right:8vw;bottom:9vh;color:#fff;opacity:0;transform:translateY(28px);pointer-events:none;text-shadow:0 4px 30px rgba(0,0,0,.30)}.hero-immersive small{letter-spacing:.17em;text-transform:uppercase;color:rgba(255,255,255,.68);font-size:9px}.hero-immersive h2{max-width:900px;margin:11px 0 0;font-family:"Playfair Display",serif;font-size:clamp(50px,5.7vw,88px);font-weight:500;line-height:.94;letter-spacing:-.045em}.hero-immersive p{max-width:540px;margin:16px 0 0;color:rgba(255,255,255,.80);font-size:15px;line-height:1.55}
+
+/* bridge */
+.promise{padding:112px 0 122px;display:grid;grid-template-columns:minmax(0,.9fr) minmax(520px,1.1fr);gap:clamp(48px,6vw,88px);align-items:end}.promise h2,.section-head h2,.showcase h2,.contact h2{font-family:"Playfair Display",serif;font-weight:500;letter-spacing:-.045em}.promise h2{margin:0;max-width:650px;font-size:clamp(44px,4.6vw,68px);line-height:.97}.promise-copy>p:last-child{max-width:560px;margin:20px 0 0;color:var(--muted);font-size:15px;line-height:1.65}.promise-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.promise-card{position:relative;min-height:220px;padding:20px;border:1px solid rgba(255,255,255,.82);border-radius:28px;background:radial-gradient(circle at 82% 0,rgba(223,183,111,.22),transparent 42%),linear-gradient(145deg,rgba(255,255,255,.80),rgba(245,236,222,.68));box-shadow:var(--shadow);display:flex;flex-direction:column;justify-content:flex-end;overflow:hidden;transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s ease}.promise-card:before{content:"";position:absolute;right:-40px;top:-40px;width:115px;height:115px;border-radius:50%;border:1px solid rgba(165,121,58,.18);box-shadow:0 0 0 22px rgba(165,121,58,.035),0 0 0 44px rgba(165,121,58,.018)}.promise-card span{position:absolute;left:20px;top:18px;color:#9a7338;font-size:9px;letter-spacing:.14em}.promise-card h3{margin:0 0 7px;font-family:"Playfair Display",serif;font-size:28px;font-weight:500}.promise-card p{margin:0;color:#6b7581;font-size:12px;line-height:1.5}
+
+/* projects */
+.projects{position:relative;height:485svh;background:radial-gradient(circle at 88% 10%,rgba(208,165,91,.13),transparent 28%),linear-gradient(145deg,#081522,#0e2135 56%,#081624);color:#fff}.projects-stage{position:sticky;top:0;height:100svh;height:100dvh;min-height:650px;overflow:hidden;padding:108px max(5vw,calc((100vw - 1280px)/2)) 38px;display:grid;grid-template-rows:auto 1fr;gap:22px}.section-head{display:grid;grid-template-columns:1fr auto;gap:24px;align-items:end;position:relative;z-index:5}.section-head h2{margin:0;max-width:760px;font-size:clamp(46px,4.8vw,72px);line-height:.95}.section-head>p:last-child{max-width:340px;margin:0;color:rgba(255,255,255,.58);font-size:12px;line-height:1.5;text-align:right}.projects .eyebrow{color:#dcba79}.project-track{position:relative;z-index:4;display:flex;align-items:center;gap:30px;width:max-content;height:100%;padding-right:18vw;will-change:transform}.project-card{position:relative;flex:0 0 min(68vw,960px);height:min(67vh,680px);overflow:hidden;border-radius:38px;background:#1a2735;border:1px solid rgba(255,255,255,.08);box-shadow:0 34px 90px rgba(0,0,0,.30);opacity:.65;transform:scale(.965);transition:opacity .35s,transform .35s}.project-card.focus{opacity:1;transform:scale(1)}.project-card img{height:100%;object-fit:cover;transition:transform 1s cubic-bezier(.2,.8,.2,1)}.project-card.focus img{transform:scale(1.03)}.project-card:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 36%,rgba(4,10,17,.83) 100%)}.project-meta{position:absolute;z-index:3;left:30px;right:30px;bottom:27px}.project-meta small{color:#e0bc79;font-size:9px;letter-spacing:.16em}.project-meta h3{margin:6px 0 7px;font-family:"Playfair Display",serif;font-size:clamp(36px,3.7vw,56px);font-weight:500;line-height:.95}.project-meta p{margin:0 0 14px;color:rgba(255,255,255,.68);font-size:12px}.project-open{min-height:42px;padding:0 15px;border-radius:999px;border:1px solid rgba(255,255,255,.20);background:rgba(255,255,255,.12);backdrop-filter:blur(12px);color:#fff;font-weight:700;font-size:11px;box-shadow:inset 0 1px 0 rgba(255,255,255,.16)}.project-scroll-ui{position:absolute;z-index:6;right:max(5vw,calc((100vw - 1280px)/2));bottom:30px;display:flex;align-items:center;gap:12px;color:rgba(255,255,255,.58);font-size:9px;letter-spacing:.13em;text-transform:uppercase}.project-scroll-ui .bar{width:150px;height:2px;background:rgba(255,255,255,.14)}.project-scroll-ui i{display:block;height:100%;background:var(--gold);transform-origin:left;transform:scaleX(var(--projects-p))}.project-scroll-ui strong{color:#fff;font-size:11px}
+
+/* services */
+.services{padding:126px 0 112px}.light-head{margin-bottom:42px}.light-head .eyebrow{margin-bottom:12px}.light-head h2{margin:0;max-width:760px;font-family:"Playfair Display",serif;font-size:clamp(44px,4.7vw,70px);font-weight:500;line-height:.96;letter-spacing:-.045em}.light-head>p:last-child{max-width:560px;margin:17px 0 0;color:var(--muted);font-size:14px;line-height:1.6}.service-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:26px;align-items:start}.service-visual{position:sticky;top:106px;min-height:520px;padding:28px;border-radius:36px;background:radial-gradient(circle at 80% 0,rgba(225,186,114,.23),transparent 38%),linear-gradient(145deg,rgba(255,255,255,.78),rgba(244,234,217,.64));border:1px solid rgba(255,255,255,.84);box-shadow:var(--shadow);overflow:hidden}.service-visual:after{content:"";position:absolute;width:310px;height:310px;right:-130px;bottom:-150px;border-radius:50%;border:1px solid rgba(165,121,58,.16);box-shadow:0 0 0 30px rgba(165,121,58,.035),0 0 0 60px rgba(165,121,58,.018)}.service-visual h3{margin:22px 0 18px;max-width:440px;font-family:"Playfair Display",serif;font-size:clamp(34px,3.1vw,49px);font-weight:500;line-height:1.03}.service-pills{display:flex;flex-wrap:wrap;gap:7px}.service-pills span{padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.56);border:1px solid rgba(255,255,255,.72);font-size:10px;color:#5f6874}.service-bars{display:grid;gap:13px;margin-top:34px}.service-bars div{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;color:#747e89;font-size:9px;text-transform:uppercase;letter-spacing:.12em}.service-bars i{display:block;height:7px;border-radius:99px;background:linear-gradient(90deg,#b68948,#e4c27d);box-shadow:inset 0 1px 0 rgba(255,255,255,.46)}.service-bars div:nth-child(2) i{width:82%}.service-bars div:nth-child(3) i{width:66%}.service-list{display:grid;gap:9px}.service-item{border:1px solid rgba(255,255,255,.74);border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(245,236,223,.50));box-shadow:0 13px 38px rgba(7,20,35,.08),inset 0 1px 0 rgba(255,255,255,.88);overflow:hidden;transition:transform .3s,box-shadow .3s}.service-item summary{list-style:none;min-height:86px;padding:0 18px;display:grid;grid-template-columns:36px 1fr 40px;gap:10px;align-items:center;cursor:pointer}.service-item summary::-webkit-details-marker{display:none}.service-item summary span{font-size:9px;color:#9c7337;letter-spacing:.1em}.service-item summary h3{margin:0;font-family:"Playfair Display",serif;font-size:30px;font-weight:500}.service-item summary b{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.66);border:1px solid rgba(255,255,255,.84);font-size:20px;font-weight:500;transition:transform .3s}.service-item[open] summary b{transform:rotate(45deg)}.service-body{padding:0 18px 20px 64px;color:#697480;font-size:13px;line-height:1.5}.service-body p{margin:0}.service-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}.service-tags span{padding:7px 9px;border-radius:999px;background:rgba(255,255,255,.66);border:1px solid rgba(16,32,51,.07);font-size:9px;color:#596777}
+
+/* showcase */
+.showcase{padding:56px 0 118px;display:grid;grid-template-columns:1.08fr .92fr;gap:66px;align-items:center}.showcase-image{height:660px;border-radius:40px;overflow:hidden;box-shadow:var(--shadow)}.showcase-image img{height:100%;object-fit:cover;transform:scale(1.08) translateY(var(--showcase-y,0px));will-change:transform}.showcase h2{margin:0 0 18px;max-width:560px;font-size:clamp(44px,4.4vw,66px);line-height:.98}.showcase-copy>p:last-of-type{max-width:440px;color:var(--muted);font-size:15px;line-height:1.6}.material-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}.material-chips span{padding:9px 12px;border-radius:999px;background:rgba(255,255,255,.70);border:1px solid rgba(255,255,255,.86);box-shadow:0 8px 20px rgba(8,22,38,.06);font-size:10px}.material-facts{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:12px}.material-facts div{padding:14px;border-radius:20px;background:rgba(255,255,255,.65);border:1px solid rgba(255,255,255,.82);box-shadow:0 10px 24px rgba(8,22,38,.06)}.material-facts strong{display:block;font-family:"Playfair Display",serif;font-size:20px;font-weight:500}.material-facts span{display:block;margin-top:3px;color:#777f88;font-size:9px}
+
+/* process + proof */
+.process{padding:86px 0 108px}.process-list{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin:0;padding:0;list-style:none}.process-list:before{content:"";position:absolute;left:5%;right:5%;top:48px;height:2px;background:linear-gradient(90deg,rgba(225,186,114,.12),rgba(190,139,62,.66),rgba(225,186,114,.12))}.process-list li{position:relative;min-height:235px;padding:20px;border:1px solid rgba(255,255,255,.78);border-radius:28px;background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(245,236,222,.50));box-shadow:0 13px 36px rgba(7,20,35,.07),inset 0 1px 0 rgba(255,255,255,.90);transition:transform .32s,box-shadow .32s}.process-list li span{width:34px;height:34px;display:grid;place-items:center;border-radius:50%;background:linear-gradient(135deg,#eccd91,#c99b54);color:#fff;font-size:9px;box-shadow:0 0 0 6px rgba(201,155,84,.08)}.process-list h3{margin:31px 0 7px;font-family:"Playfair Display",serif;font-size:28px;font-weight:500}.process-list p{margin:0;color:#6b7580;font-size:12px;line-height:1.45}.process-list small{position:absolute;left:20px;bottom:18px;color:#9b7338;font-size:8px;text-transform:uppercase;letter-spacing:.12em;font-weight:700}.proof{margin-bottom:112px;padding:14px;display:grid;grid-template-columns:repeat(3,1fr);gap:10px;border-radius:34px;background:linear-gradient(145deg,#0b2035,#183651);color:#fff;box-shadow:0 30px 80px rgba(7,20,35,.18)}.proof article{min-height:175px;padding:22px;border-radius:24px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.10);display:flex;flex-direction:column;justify-content:flex-end}.proof strong{font-family:"Playfair Display",serif;font-size:27px;font-weight:500;line-height:1.02}.proof p{margin:9px 0 0;color:rgba(255,255,255,.68);font-size:12px;line-height:1.45}
+
+/* contact */
+.contact{padding:90px 0 120px;display:grid;grid-template-columns:.76fr 1.24fr;gap:72px;align-items:start}.contact-copy{position:sticky;top:110px}.contact h2{margin:0 0 18px;max-width:580px;font-size:clamp(44px,4.5vw,68px);line-height:.97}.contact-copy>p:last-child{max-width:480px;margin:0;color:var(--muted);font-size:14px;line-height:1.6}.contact-form{padding:28px;display:grid;grid-template-columns:1fr 1fr;gap:16px;border-radius:36px;background:linear-gradient(145deg,rgba(255,255,255,.72),rgba(244,234,216,.52));border:1px solid rgba(255,255,255,.82);box-shadow:var(--shadow)}.contact-form label{display:grid;gap:7px;color:#5a6674;font-size:11px;font-weight:700}.contact-form .full{grid-column:1/-1}.contact-form input,.contact-form select,.contact-form textarea{width:100%;min-height:52px;padding:13px 14px;border-radius:17px;border:1px solid rgba(16,32,51,.10);outline:0;background:rgba(255,255,255,.68);color:var(--ink);box-shadow:inset 0 1px 0 rgba(255,255,255,.84);transition:border-color .25s,box-shadow .25s,transform .25s}.contact-form textarea{min-height:126px;resize:vertical}.contact-form input:focus,.contact-form select:focus,.contact-form textarea:focus{border-color:rgba(180,132,62,.58);box-shadow:0 0 0 4px rgba(190,139,62,.10),0 10px 25px rgba(8,22,38,.06);transform:translateY(-1px)}.field-head{display:flex;justify-content:space-between;gap:8px;align-items:center}.required{padding:3px 7px;border-radius:999px;border:1px solid rgba(168,62,62,.26);color:#a94747;font-size:7px;text-transform:uppercase;letter-spacing:.08em}.field-error{display:none;color:#ad3b3b;font-size:9px}.field-error.show{display:block}.contact-form label.invalid input,.contact-form label.invalid select,.contact-form label.invalid textarea{border-color:rgba(185,58,58,.58);box-shadow:0 0 0 3px rgba(185,58,58,.08)}.form-footer{grid-column:1/-1;display:flex;align-items:center;gap:14px}.form-footer .primary-btn{min-height:54px;padding:0 22px}.form-status{font-size:11px;color:#53705e}.hp{position:absolute!important;left:-9999px!important;width:1px!important;height:1px!important;overflow:hidden!important}
+.footer{width:var(--shell);margin:0 auto 24px;padding:20px 22px;display:grid;grid-template-columns:82px 1fr auto;align-items:center;gap:22px;border-radius:30px;background:rgba(255,255,255,.64);border:1px solid rgba(255,255,255,.82);box-shadow:0 14px 40px rgba(8,22,38,.07)}.footer-logo{width:66px;height:66px;border-radius:50%;padding:6px;background:#fff}.footer-logo img{height:100%;object-fit:contain;border-radius:50%}.footer-nav{display:flex;gap:18px}.footer-nav a{font-size:11px}.footer p{margin:0;color:#7a838d;font-size:9px}
+
+/* dialog */
+.project-dialog{width:min(1040px,calc(100% - 28px));max-width:none;max-height:90dvh;padding:14px;border:0;border-radius:34px;background:#f8f2e9;color:var(--ink);box-shadow:0 40px 120px rgba(3,12,22,.38);overflow:auto}.project-dialog::backdrop{background:rgba(3,12,22,.66);backdrop-filter:blur(8px)}.project-dialog[open]{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(320px,.88fr);gap:26px}.dialog-media{grid-column:1;grid-row:1/span 8;min-height:560px;border-radius:26px;overflow:hidden;background:#ccc;box-shadow:0 22px 60px rgba(8,22,38,.15)}.dialog-media img{height:100%;object-fit:cover}.dialog-copy{padding:30px 18px 24px 0;display:flex;flex-direction:column}.dialog-close{position:absolute;z-index:4;right:17px;top:17px;width:44px;height:44px;border:0;border-radius:50%;background:#fff9ef;color:var(--navy);font-size:24px;box-shadow:0 9px 26px rgba(7,20,35,.13)}.dialog-copy h2{margin:7px 0 13px;font-family:"Playfair Display",serif;font-size:clamp(40px,4vw,60px);font-weight:500;line-height:.95}.dialog-copy>p{margin:0;color:#64707d;font-size:14px;line-height:1.6}.dialog-facts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0}.dialog-facts div{padding:13px;border-radius:16px;background:#eee6da}.dialog-facts dt{font-size:8px;color:#95703a;text-transform:uppercase;letter-spacing:.12em}.dialog-facts dd{margin:5px 0 0;font-size:11px}.dialog-copy .primary-btn{margin-top:auto;min-height:52px;padding:0 18px}
+
+/* reveal */
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .75s cubic-bezier(.16,1,.3,1),transform .75s cubic-bezier(.16,1,.3,1)}.reveal.visible{opacity:1;transform:none}.progress{position:fixed;z-index:100;left:0;top:0;width:100%;height:3px;background:rgba(255,255,255,.15);pointer-events:none}.progress i{display:block;width:100%;height:100%;transform-origin:left;transform:scaleX(0);background:linear-gradient(90deg,#a47734,#edcf92);box-shadow:0 0 10px rgba(225,186,114,.34)}
+
+@media(hover:hover) and (pointer:fine){.header-cta:hover,.primary-btn:hover{transform:translateY(-3px);filter:saturate(1.06);box-shadow:0 20px 44px rgba(112,77,29,.27),inset 0 1px 0 rgba(255,255,255,.94)}.promise-card:hover,.process-list li:hover{transform:translateY(-7px);box-shadow:0 31px 88px rgba(5,18,32,.16),0 7px 20px rgba(5,18,32,.07)}.menu-links a:hover{transform:translateY(-3px);background:#173755}.project-open:hover{background:rgba(255,255,255,.20)}}
+
+/* tablet */
+@media(max-width:1050px) and (min-width:769px){:root{--shell:min(940px,calc(100% - 36px))}.desktop-nav{gap:0}.desktop-nav a{padding-inline:10px}.hero-copy{left:4vw;width:44vw}.hero h1{font-size:clamp(54px,6.7vw,74px)}.hero-media{left:50%;width:47%}.promise{grid-template-columns:1fr;gap:34px}.promise-cards{max-width:760px}.service-grid{grid-template-columns:1fr}.service-visual{position:relative;top:auto;min-height:360px}.showcase{grid-template-columns:1fr;gap:34px}.showcase-image{height:540px}.process-list{grid-template-columns:repeat(3,1fr)}.process-list:before{display:none}.contact{grid-template-columns:1fr;gap:34px}.contact-copy{position:relative;top:auto}}
+
+/* mobile */
+@media(max-width:768px){
+:root{--shell:calc(100% - 28px)}html{scroll-padding-top:82px}body{background:linear-gradient(180deg,#fffaf4,#f3ece2 50%,#fffaf5)}.ambient{opacity:.18}.site-header{top:9px;width:calc(100% - 18px);height:66px;padding:6px 7px;grid-template-columns:52px 1fr 50px;gap:7px;border-radius:27px}.site-header.scrolled{top:7px;height:60px}.brand{width:52px;height:52px;padding:4px}.desktop-nav,.header-cta{display:none}.menu-button{display:grid;grid-column:3}.mobile-menu{top:82px;left:9px;right:9px;width:auto;max-height:calc(100dvh - 92px);overflow:auto;padding:12px;border-radius:27px}.menu-links{grid-template-columns:1fr 1fr;gap:7px}.menu-links a{min-height:78px;padding:12px;border-radius:19px}.menu-links strong{font-size:20px}.menu-start{padding:15px;border-radius:20px}.menu-start h2{font-size:24px}.menu-start button{min-height:46px}
+.hero{height:158svh;min-height:840px;background:#071522}.hero-stage{min-height:0;background:#071522}.hero-media{left:0!important;top:0!important;width:100%!important;height:100%!important;border-radius:0!important;box-shadow:none!important}.hero-media img{filter:saturate(.93) contrast(1.05) brightness(.66)!important;transform:scale(1.05)}.hero-media:after{background:linear-gradient(180deg,rgba(2,8,14,.22),rgba(2,8,14,.08) 28%,rgba(2,8,14,.32) 54%,rgba(2,8,14,.90) 100%)}.media-caption{display:none}.hero-copy{left:18px;right:18px;top:auto;bottom:58px;width:auto;color:#fff;transform:translate3d(0,calc(var(--hero-p)*-26px),0);opacity:calc(1 - var(--hero-p)*1.28)}.hero .eyebrow{margin-bottom:9px;color:#e8c681;font-size:9px;letter-spacing:.15em}.hero h1{max-width:9.8ch;font-size:clamp(43px,11.7vw,59px);line-height:.90;letter-spacing:-.052em;text-shadow:0 4px 28px rgba(0,0,0,.34)}.hero h1 em{display:inline;color:#f0d198}.hero-lede{max-width:34ch;margin-top:15px;color:rgba(255,255,255,.80);font-size:13.5px;line-height:1.48}.hero-actions{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:13px;margin-top:18px}.primary-btn{min-height:50px;padding:0 17px;font-size:12px}.secondary-link{color:#fff;font-size:11px;white-space:nowrap}.hero-signal{left:18px;bottom:16px;color:rgba(255,255,255,.56);font-size:8px}.hero-signal i{width:50px;background:rgba(255,255,255,.18)}.hero-immersive{left:18px;right:18px;bottom:64px}.hero-immersive h2{max-width:10ch;font-size:clamp(40px,11.3vw,56px);line-height:.93}.hero-immersive p{max-width:32ch;font-size:12.5px;line-height:1.5}.hero-immersive small{font-size:8px}
+.promise{width:calc(100% - 28px);padding:76px 0 82px;display:block}.promise h2{font-size:clamp(39px,10.5vw,51px);line-height:.98}.promise-copy>p:last-child{font-size:13px;line-height:1.55}.promise-cards{display:flex;gap:9px;margin-top:26px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;padding:2px 2px 12px}.promise-cards::-webkit-scrollbar{display:none}.promise-card{flex:0 0 min(75vw,300px);min-height:180px;padding:18px;border-radius:23px;scroll-snap-align:start}.promise-card h3{font-size:26px}
+.projects{height:auto;padding:82px 14px 84px}.projects-stage{position:relative;top:auto;height:auto;min-height:0;overflow:visible;padding:0;display:block}.section-head{display:block;margin-bottom:26px}.section-head h2{font-size:clamp(40px,10.8vw,51px);line-height:.96}.section-head>p:last-child{margin-top:12px;max-width:34ch;text-align:left;font-size:12px}.project-track{display:grid;width:100%;height:auto;gap:15px;padding:0;transform:none!important}.project-card{width:100%;height:62svh;min-height:390px;max-height:580px;flex:none;border-radius:25px;opacity:1;transform:none}.project-meta{left:17px;right:17px;bottom:17px}.project-meta h3{font-size:clamp(33px,8.8vw,44px)}.project-scroll-ui{display:none}
+.services{padding:80px 0 80px}.light-head{margin-bottom:25px}.light-head h2{font-size:clamp(39px,10.5vw,51px);line-height:.97}.light-head>p:last-child{font-size:13px;line-height:1.5}.service-grid{display:block}.service-visual{position:relative;top:auto;min-height:280px;padding:21px;border-radius:26px;margin-bottom:12px}.service-visual h3{font-size:31px;margin:17px 0 15px}.service-bars{margin-top:22px}.service-list{gap:8px}.service-item{border-radius:23px}.service-item summary{min-height:72px;padding:0 13px;grid-template-columns:27px 1fr 36px}.service-item summary h3{font-size:23px}.service-item summary b{width:35px;height:35px}.service-body{padding:0 13px 15px 50px;font-size:12px}
+.showcase{padding:0 0 82px;display:block}.showcase-image{height:54svh;min-height:340px;border-radius:27px;margin-bottom:25px}.showcase h2{font-size:clamp(39px,10.5vw,51px)}.showcase-copy>p:last-of-type{font-size:13px}.material-chips{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}.material-chips span{padding:8px 3px;text-align:center;font-size:8.5px}.material-facts{gap:6px}.material-facts div{padding:11px 8px}.material-facts strong{font-size:16px}.material-facts span{font-size:8px}
+.process{padding:72px 0 82px}.process-list{grid-template-columns:1fr;gap:8px}.process-list:before{display:none}.process-list li{min-height:108px;padding:15px 14px 14px 64px;border-radius:22px}.process-list li span{position:absolute;left:15px;top:16px;width:35px;height:35px}.process-list li:not(:last-child):after{content:"";position:absolute;left:32px;top:52px;bottom:-12px;width:1px;background:linear-gradient(180deg,rgba(190,139,62,.38),rgba(190,139,62,.05))}.process-list h3{margin:0 0 4px;font-size:25px}.process-list p{font-size:11.5px}.process-list small{position:static;display:inline-block;margin-top:7px}.proof{width:calc(100% - 28px);margin-bottom:82px;padding:9px;display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;border-radius:27px}.proof::-webkit-scrollbar{display:none}.proof article{flex:0 0 80%;min-height:145px;padding:18px;border-radius:20px;scroll-snap-align:start}.proof strong{font-size:25px}.proof p{font-size:11px}
+.contact{padding:76px 0 86px;display:block}.contact-copy{position:relative;top:auto;margin-bottom:25px}.contact h2{font-size:clamp(40px,10.7vw,52px)}.contact-copy>p:last-child{font-size:12.5px}.contact-form{padding:16px;grid-template-columns:1fr;gap:12px;border-radius:27px}.contact-form .full,.form-footer{grid-column:1}.contact-form input,.contact-form select,.contact-form textarea{font-size:16px}.form-footer{flex-direction:column;align-items:stretch}.form-footer .primary-btn{width:100%}.form-status{text-align:center}.footer{width:calc(100% - 20px);margin-bottom:10px;padding:15px;grid-template-columns:58px 1fr;gap:12px;border-radius:25px}.footer-logo{width:54px;height:54px}.footer-nav{display:grid;grid-template-columns:1fr 1fr;gap:5px}.footer p{grid-column:1/-1}.project-dialog{width:calc(100% - 14px);max-height:92dvh;padding:9px;border-radius:25px}.project-dialog[open]{display:block}.dialog-media{height:39dvh;min-height:255px;max-height:370px;border-radius:19px}.dialog-copy{padding:17px 8px 11px}.dialog-copy h2{font-size:clamp(37px,10vw,47px)}.dialog-facts{grid-template-columns:1fr}.dialog-copy .primary-btn{width:100%;margin-top:4px}.dialog-close{right:13px;top:13px;width:41px;height:41px}
+}
+@media(max-width:370px){.hero-copy{left:15px;right:15px}.hero h1{font-size:41px}.hero-lede{font-size:12.5px}.hero-actions{grid-template-columns:1fr}.secondary-link{justify-self:start}.menu-links{grid-template-columns:1fr}.menu-links a{min-height:62px}.promise-card{flex-basis:84vw}.proof article{flex-basis:88%}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.reveal{opacity:1;transform:none;transition:none}.hero-signal i:after{animation:none}.hero-media,.hero-media img,.project-track,.project-card{will-change:auto!important}.header-cta,.primary-btn,.promise-card,.process-list li{transition:none!important}}
+</style>
 </head>
 <body>
-  <div class="ambient ambient-a"></div>
-  <div class="ambient ambient-b"></div>
+<div class="ambient a"></div><div class="ambient b"></div><div class="progress" aria-hidden="true"><i></i></div>
+<header class="site-header" id="top">
+  <a class="brand" href="#home" aria-label="VeroSpace home"><img src="https://raw.githubusercontent.com/Rahmowin-1st/VeroSpace-/2b26d92878b2e8d0feb9f9024aa2b400a8156959/assets/verospace-logo.png" alt="VeroSpace logo"></a>
+  <nav class="desktop-nav" aria-label="Primary navigation"><a href="#home">Home</a><a href="#projects">Projects</a><a href="#services">Services</a><a href="#process">Process</a></nav>
+  <button class="header-cta" data-scroll="#contact">Start a project</button>
+  <button class="menu-button" aria-label="Open menu" aria-expanded="false"><span></span><span></span><span></span></button>
+</header>
+<button class="menu-backdrop" type="button" aria-label="Close menu"></button>
+<aside class="mobile-menu" aria-hidden="true">
+  <div class="menu-top"><span>Navigate</span><b>VeroSpace</b></div>
+  <nav class="menu-links"><a href="#home"><small>01</small><strong>Home</strong><i>↗</i></a><a href="#projects"><small>02</small><strong>Projects</strong><i>↗</i></a><a href="#services"><small>03</small><strong>Services</strong><i>↗</i></a><a href="#process"><small>04</small><strong>Process</strong><i>↗</i></a></nav>
+  <div class="menu-start"><small>Ready to begin?</small><h2>Start with the space you want to change.</h2><button data-scroll="#contact">Start a project</button></div>
+</aside>
 
-  <header class="site-header" id="top">
-    <a class="brand" href="#top" aria-label="VeroSpace home">
-      <img src="assets/verospace-logo.png" alt="VeroSpace logo" />
-    </a>
-    <nav class="desktop-nav" aria-label="Primary navigation">
-      <a href="#top">Home</a>
-      <a href="#projects">Projects</a>
-      <a href="#services">Services</a>
-      <a href="#process">Process</a>
-    </nav>
-    <button class="pill-button header-cta" data-scroll="#contact">Book consultation</button>
-    <button class="menu-button" aria-label="Open menu" aria-expanded="false">
-      <span></span><span></span><span></span>
-    </button>
-    <div class="mobile-menu" id="siteMenu" aria-hidden="true">
-      <div class="menu-refraction" aria-hidden="true"></div>
-      <div class="menu-head">
-        <span class="menu-kicker">Navigate</span>
-        <span class="menu-brand-state"><i></i> VeroSpace</span>
-      </div>
-      <div class="menu-layout">
-        <nav class="menu-links" aria-label="Expanded navigation">
-          <a href="#top"><span>01</span><strong>Home</strong><i>↗</i></a>
-          <a href="#projects"><span>02</span><strong>Projects</strong><i>↗</i></a>
-          <a href="#services"><span>03</span><strong>Services</strong><i>↗</i></a>
-          <a href="#process"><span>04</span><strong>Process</strong><i>↗</i></a>
-        </nav>
-        <div class="menu-project-card">
-          <p class="menu-card-eyebrow">Start a project</p>
-          <h2>Turn your space into something considered.</h2>
-          <p>Share the essentials without leaving VeroSpace.</p>
-          <button class="pill-button menu-consultation" data-scroll="#contact">
-            <span>Book consultation</span><i>↗</i>
-          </button>
-          <small>Private · in-site consultation</small>
-        </div>
-      </div>
+<main>
+<section class="hero" id="home">
+  <div class="hero-stage">
+    <div class="hero-copy">
+      <p class="eyebrow">Interior design · renovation · coordination</p>
+      <h1>One vision. <em>Every detail.</em></h1>
+      <p class="hero-lede">VeroSpace turns scattered home decisions into one finished result — from first layout to final handover.</p>
+      <div class="hero-actions"><button class="primary-btn" data-scroll="#contact">Start your project</button><button class="secondary-link" data-scroll="#projects">See 5 projects</button></div>
     </div>
-  </header>
-  <button class="menu-backdrop" type="button" aria-label="Close navigation" tabindex="-1"></button>
-
-  <div class="vs-page-progress" aria-hidden="true"><i></i></div>
-
-  <nav class="mobile-journey-dock" aria-label="Quick page navigation">
-    <a href="#home" data-section-link="home" aria-label="Home">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 11.5 12 5l8 6.5v7.5h-5v-5H9v5H4z"/></svg><small>Home</small>
-    </a>
-    <a href="#projects" data-section-link="projects" aria-label="Projects">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg><small>Work</small>
-    </a>
-    <a href="#services" data-section-link="services" aria-label="Services">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 14.2 8.8 20 11l-5.8 2.2L12 19l-2.2-5.8L4 11l5.8-2.2z"/></svg><small>Services</small>
-    </a>
-    <a href="#process" data-section-link="process" aria-label="Process">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h4v4H5zM15 14h4v4h-4zM9 8h4c2 0 3 1 3 3v3M8 16h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><small>Process</small>
-    </a>
-    <a href="#contact" data-section-link="contact" aria-label="Contact">
-      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><small>Start</small>
-    </a>
-  </nav>
-
-  <div class="mobile-section-status" aria-hidden="true">
-    <span class="mobile-section-status-label">Home</span><i></i>
+    <div class="hero-media"><img src="https://raw.githubusercontent.com/Rahmowin-1st/VeroSpace-/2b26d92878b2e8d0feb9f9024aa2b400a8156959/assets/verospace-featured-home.jpg" alt="Refined open-plan residential interior"><div class="media-caption"><strong>Ridge House</strong><span>Residential transformation · VeroSpace</span></div></div>
+    <div class="hero-signal"><span>Scroll to enter</span><i></i></div>
+    <div class="hero-immersive"><small>One direction · start to finish</small><h2>The best homes don’t look assembled. They feel resolved.</h2><p>Layout, materials, lighting and build decisions stay connected all the way through.</p></div>
   </div>
+</section>
 
-  <aside class="desktop-journey" aria-label="Page progress and section navigation">
-    <div class="desktop-journey-head"><span class="desktop-journey-count">01</span><strong class="desktop-journey-label">Home</strong></div>
-    <div class="desktop-journey-track" aria-hidden="true"><i></i></div>
-    <nav class="desktop-journey-links" aria-label="Sections">
-      <a href="#home" data-desktop-section="home"><i></i><span>Home</span></a>
-      <a href="#projects" data-desktop-section="projects"><i></i><span>Work</span></a>
-      <a href="#services" data-desktop-section="services"><i></i><span>Services</span></a>
-      <a href="#process" data-desktop-section="process"><i></i><span>Process</span></a>
-      <a href="#contact" data-desktop-section="contact"><i></i><span>Start</span></a>
-    </nav>
-    <button class="desktop-back-top" type="button" aria-label="Back to top"><span>↑</span></button>
-  </aside>
-  <div class="desktop-pointer-light" aria-hidden="true"></div>
+<section class="promise shell reveal" aria-label="Why VeroSpace">
+  <div class="promise-copy"><p class="eyebrow">Why VeroSpace</p><h2>One team. One direction. Fewer costly disconnects.</h2><p>Design and renovation decisions stay joined, so the finished home feels intentional — not assembled.</p></div>
+  <div class="promise-cards"><article class="promise-card"><span>01</span><h3>Design</h3><p>Flow, proportion, storage and atmosphere.</p></article><article class="promise-card"><span>02</span><h3>Renovate</h3><p>Scope, materials, lighting and build-ready decisions.</p></article><article class="promise-card"><span>03</span><h3>Coordinate</h3><p>One direction from concept through handover.</p></article></div>
+</section>
 
-  <main>
-    <section class="hero section-shell reveal" id="home" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <p class="eyebrow">Premium interior design · renovation</p>
-        <h1 id="hero-title">Homes designed to feel <em>exceptional.</em></h1>
-        <p class="hero-lede">VeroSpace turns ambitious ideas into calm, refined homes—from first layout to the final light switched on.</p>
-        <div class="hero-actions">
-          <button class="pill-button primary" data-scroll="#contact">Book a consultation</button>
-          <button class="pill-button secondary" data-scroll="#projects">View projects</button>
-        </div>
-        <div class="hero-trust">
-          <span>Full-service design</span><i></i><span>Renovation planning</span><i></i><span>Project coordination</span>
-        </div>
-      </div>
-      <div class="hero-media light-card">
-        <img src="assets/verospace-featured-home.jpg" alt="VeroSpace open-plan residential interior" />
-        <div class="hero-media-badge"><b>VeroSpace</b><span>Residential · 2026</span></div>
-      </div>
-      <nav class="hero-dock" aria-label="VeroSpace quick navigation">
-        <a href="#projects">Projects</a>
-        <a href="#services">Services</a>
-        <a href="#process">Process</a>
-        <a href="#contact">Get in touch</a>
-      </nav>
-      <div class="hero-rail" aria-label="Hero shortcuts">
-        <a class="hero-orb" href="#services" aria-label="View services">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h5v5H5zM14 5h5v5h-5zM5 14h5v5H5zM14 14h5v5h-5z"/></svg>
-        </a>
-        <a class="hero-scroll" href="#projects" aria-label="Scroll to projects"><span>Scroll</span><i></i></a>
-      </div>
-    </section>
+<section class="projects" id="projects">
+  <div class="projects-stage">
+    <div class="section-head"><div><p class="eyebrow">Five selected transformations</p><h2>See what a complete vision looks like.</h2></div><p>Five different homes. The same discipline: flow, material, light and finish working together.</p></div>
+    <div class="project-track">
+      <article class="project-card" data-title="Ridge House" data-text="A whole-home transformation built around better movement, warmer light and a calmer relationship between rooms." data-scope="Whole-home transformation" data-focus="Flow · lighting · furnishings"><img src="https://raw.githubusercontent.com/Rahmowin-1st/VeroSpace-/2b26d92878b2e8d0feb9f9024aa2b400a8156959/assets/verospace-featured-home.jpg" alt="Ridge House open-plan interior"><div class="project-meta"><small>01 · Whole-home transformation</small><h3>Ridge House</h3><p>Flow · lighting · furnishings</p><button class="project-open">View project ↗</button></div></article>
+      <article class="project-card" data-title="Walnut Kitchen" data-text="Joinery, stone, lighting and circulation treated as one architectural system — not four separate decisions." data-scope="Kitchen renovation" data-focus="Joinery · stone · lighting"><img loading="lazy" src="https://images.unsplash.com/photo-1782898622998-899bb7183a12?auto=format&fit=crop&w=1800&q=84" alt="Warm timber and stone kitchen"><div class="project-meta"><small>02 · Kitchen renovation</small><h3>Walnut Kitchen</h3><p>Joinery · stone · lighting</p><button class="project-open">View project ↗</button></div></article>
+      <article class="project-card" data-title="Quiet Suite" data-text="A primary suite shaped around calm materials, hidden storage and softer transitions between sleeping and dressing." data-scope="Primary suite" data-focus="Storage · textiles · atmosphere"><img loading="lazy" src="https://images.unsplash.com/photo-1760072513376-67a46aab0fd1?auto=format&fit=crop&w=1800&q=84" alt="Quiet neutral bedroom suite"><div class="project-meta"><small>03 · Primary suite</small><h3>Quiet Suite</h3><p>Storage · textiles · atmosphere</p><button class="project-open">View project ↗</button></div></article>
+      <article class="project-card" data-title="Stone & Light House" data-text="Stone, timber and controlled daylight create depth without visual noise." data-scope="Residential interior" data-focus="Material · proportion · daylight"><img loading="lazy" src="https://images.unsplash.com/photo-1771371428960-35a50c2d4e7c?auto=format&fit=crop&w=1800&q=84" alt="Warm modern living room"><div class="project-meta"><small>04 · Residential interior</small><h3>Stone & Light</h3><p>Material · proportion · daylight</p><button class="project-open">View project ↗</button></div></article>
+      <article class="project-card" data-title="Courtyard Residence" data-text="Architecture, bespoke joinery, furniture and final styling held to one design language." data-scope="Design coordination" data-focus="Continuity · joinery · detailing"><img loading="lazy" src="https://images.unsplash.com/photo-1780257562925-d78de6cb6612?auto=format&fit=crop&w=1800&q=84" alt="Warm bespoke library interior"><div class="project-meta"><small>05 · Design coordination</small><h3>Courtyard Residence</h3><p>Continuity · joinery · detailing</p><button class="project-open">View project ↗</button></div></article>
+    </div>
+    <div class="project-scroll-ui"><span>Scroll through projects</span><div class="bar"><i></i></div><strong>01 / 05</strong></div>
+  </div>
+</section>
 
-    <section class="projects section-shell" id="projects" aria-labelledby="projects-title">
-      <div class="section-heading reveal">
-        <p class="eyebrow">Selected work</p>
-        <h2 id="projects-title">Spaces with a clear point of view.</h2>
-        <p>Imagined portfolio content, designed to be fully achievable for a real interior studio.</p>
-      </div>
-
-      <div class="project-grid">
-        <article class="project-card reveal" data-project="ridge">
-          <div class="project-image"><img src="assets/verospace-featured-home.jpg" alt="Open-plan VeroSpace residential interior" /></div>
-          <div class="project-meta"><div><span>01</span><h3>Ridge House</h3></div><p>Whole-home refresh · open-plan living</p><button class="text-link project-open">View project ↗</button></div>
-        </article>
-        <article class="project-card reveal" data-project="walnut">
-          <div class="project-image"><img src="https://images.unsplash.com/photo-1782898622998-899bb7183a12?auto=format&fit=crop&w=1800&q=82" alt="Warm wood and marble kitchen" /></div>
-          <div class="project-meta"><div><span>02</span><h3>Walnut Kitchen</h3></div><p>Kitchen renovation · joinery · lighting</p><button class="text-link project-open">View project ↗</button></div>
-        </article>
-        <article class="project-card reveal" data-project="suite">
-          <div class="project-image"><img src="https://images.unsplash.com/photo-1760072513376-67a46aab0fd1?auto=format&fit=crop&w=1800&q=82" alt="Luxury neutral bedroom suite" /></div>
-          <div class="project-meta"><div><span>03</span><h3>Quiet Suite</h3></div><p>Primary suite · furnishings · styling</p><button class="text-link project-open">View project ↗</button></div>
-        </article>
-      </div>
-    </section>
-
-    <section class="services section-shell" id="services" aria-labelledby="services-title">
-      <div class="section-heading reveal section-heading-visual">
-        <p class="eyebrow">Services</p>
-        <h2 id="services-title">What we shape.</h2>
-        <p>Five clear parts. One joined result.</p>
-      </div>
-      <div class="services-grid">
-        <aside class="service-glance light-card reveal" aria-label="Service overview">
-          <div class="glance-kicker">At a glance</div>
-          <h3>Layout, materials, light and delivery — held together.</h3>
-          <div class="glance-pills">
-            <span>Layout</span><span>Storage</span><span>Lighting</span><span>Finishes</span><span>Furniture</span><span>Styling</span>
-          </div>
-          <div class="glance-meters">
-            <div><i></i><span>Plan</span></div>
-            <div><i></i><span>Refine</span></div>
-            <div><i></i><span>Deliver</span></div>
-          </div>
-        </aside>
-        <div class="service-list">
-          <details class="service-item reveal" open>
-            <summary><span>01</span><h3>Full interior design</h3><b>+</b></summary>
-            <div class="service-body"><p>Layout, finishes, furniture and styling.</p><div class="service-tags"><span>Layout</span><span>Palette</span><span>Styling</span></div></div>
-          </details>
-          <details class="service-item reveal">
-            <summary><span>02</span><h3>Renovation planning</h3><b>+</b></summary>
-            <div class="service-body"><p>Scope, sequence and decisions before works start.</p><div class="service-tags"><span>Scope</span><span>Timeline</span><span>Budget</span></div></div>
-          </details>
-          <details class="service-item reveal">
-            <summary><span>03</span><h3>Space planning</h3><b>+</b></summary>
-            <div class="service-body"><p>Rooms that flow better, store better and live better.</p><div class="service-tags"><span>Flow</span><span>Storage</span><span>Function</span></div></div>
-          </details>
-          <details class="service-item reveal">
-            <summary><span>04</span><h3>Materials & lighting</h3><b>+</b></summary>
-            <div class="service-body"><p>A joined palette for warmth, tone and mood.</p><div class="service-tags"><span>Materials</span><span>Lighting</span><span>Fixtures</span></div></div>
-          </details>
-          <details class="service-item reveal">
-            <summary><span>05</span><h3>Project coordination</h3><b>+</b></summary>
-            <div class="service-body"><p>Clear reviews, trade notes and final delivery.</p><div class="service-tags"><span>Specs</span><span>Reviews</span><span>Handover</span></div></div>
-          </details>
-        </div>
-      </div>
-    </section>
-
-    <section class="showcase section-shell reveal">
-      <div class="showcase-image light-card"><img src="https://images.unsplash.com/photo-1782805134528-9b4e58e20069?auto=format&fit=crop&w=1800&q=82" alt="Luxury navy and marble bathroom" /></div>
-      <div class="showcase-copy">
-        <p class="eyebrow">Material intelligence</p>
-        <h2>Materials that carry the room.</h2>
-        <p>Fewer finishes. Better light. Stronger proportion.</p>
-        <div class="material-chips"><span>Brass</span><span>Oak</span><span>Stone</span><span>Linen</span></div>
-        <div class="material-facts">
-          <div><strong>Light</strong><span>shapes mood</span></div>
-          <div><strong>Texture</strong><span>adds depth</span></div>
-          <div><strong>Scale</strong><span>keeps balance</span></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="process section-shell" id="process" aria-labelledby="process-title">
-      <div class="section-heading reveal section-heading-visual">
-        <p class="eyebrow">Process</p>
-        <h2 id="process-title">Five steps. No fog.</h2>
-        <p>You always know what comes next.</p>
-      </div>
-      <ol class="process-steps">
-        <li class="reveal"><span>01</span><h3>Consult</h3><p>Goals, space, budget.</p><small>Brief</small></li>
-        <li class="reveal"><span>02</span><h3>Concept</h3><p>Mood, plan, direction.</p><small>Vision</small></li>
-        <li class="reveal"><span>03</span><h3>Design</h3><p>Finishes, light, details.</p><small>Specification</small></li>
-        <li class="reveal"><span>04</span><h3>Build</h3><p>Trades, reviews, control.</p><small>Execution</small></li>
-        <li class="reveal"><span>05</span><h3>Reveal</h3><p>Styling, checks, handover.</p><small>Finish</small></li>
-      </ol>
-    </section>
-
-    <section class="proof-band reveal" aria-label="VeroSpace principles">
-      <div><strong>Real life first.</strong><span>Beauty that works daily.</span></div>
-      <div><strong>One language.</strong><span>Every room feels related.</span></div>
-      <div><strong>Less waste.</strong><span>Better decisions earlier.</span></div>
-    </section>
-
-    <section class="testimonials section-shell" aria-labelledby="testimonials-title">
-      <div class="section-heading reveal section-heading-visual">
-        <p class="eyebrow">Client perspective</p>
-        <h2 id="testimonials-title">How it should feel.</h2>
-        <p>Calm. Clear. Easy to live in.</p>
-      </div>
-      <div class="quote-grid quote-grid-modern">
-        <article class="quote-card reveal">
-          <div class="quote-badge">01</div>
-          <h3>Considered, not precious.</h3>
-          <p>Every room works better.</p>
-          <div class="quote-tags"><span>Ease</span><span>Function</span><span>Warmth</span></div>
-          <footer>Fictional client · Ridge House</footer>
-        </article>
-        <article class="quote-card reveal">
-          <div class="quote-badge">02</div>
-          <h3>Controlled, not overwhelming.</h3>
-          <p>Fewer, better decisions.</p>
-          <div class="quote-tags"><span>Clarity</span><span>Calm</span><span>Control</span></div>
-          <footer>Fictional client · Walnut Kitchen</footer>
-        </article>
-        <article class="quote-card reveal quote-card-emphasis">
-          <div class="quote-badge">03</div>
-          <h3>Looks refined. Feels easy.</h3>
-          <p>The home should impress quietly — and work every day.</p>
-          <div class="quote-tags"><span>Refined</span><span>Practical</span><span>Timeless</span></div>
-          <footer>VeroSpace standard</footer>
-        </article>
-      </div>
-    </section>
-
-    <section class="more-projects section-shell reveal">
-      <div class="section-heading compact"><p class="eyebrow">More spaces</p><h2>Designed as a collection, not a catalogue.</h2></div>
-      <div class="reel" tabindex="0" aria-label="More project images">
-        <figure><img src="https://images.unsplash.com/photo-1780257562925-d78de6cb6612?auto=format&fit=crop&w=1500&q=82" alt="Warm luxury library interior" /><figcaption>Library · Bespoke joinery</figcaption></figure>
-        <figure><img src="https://images.unsplash.com/photo-1771371428960-35a50c2d4e7c?auto=format&fit=crop&w=1500&q=82" alt="Modern living room with fireplace" /><figcaption>Living · Full redesign</figcaption></figure>
-        <figure><img src="https://images.unsplash.com/photo-1782898622998-899bb7183a12?auto=format&fit=crop&w=1500&q=82" alt="Warm wood kitchen" /><figcaption>Kitchen · Renovation</figcaption></figure>
-      </div>
-    </section>
-
-    <section class="contact section-shell" id="contact" aria-labelledby="contact-title">
-      <div class="contact-copy reveal">
-        <p class="eyebrow">Start a project</p>
-        <h2 id="contact-title">Tell us what you want your home to become.</h2>
-        <p>Share the essentials of your space. Your request is sent securely without leaving VeroSpace.</p>
-      </div>
-      <form class="contact-form light-card reveal" id="consultationForm" novalidate>
-        <label class="vs-hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off" /></label>
-        <label>
-          <span class="field-head">Full name <span class="required-pill">Required</span></span>
-          <input name="name" autocomplete="name" required placeholder="Your name" aria-describedby="nameError" />
-          <span class="field-error" id="nameError" data-error-for="name" role="alert"></span>
-        </label>
-        <label>
-          <span class="field-head">Email <span class="required-pill">Required</span></span>
-          <input name="email" type="email" autocomplete="email" required placeholder="you@example.com" aria-describedby="emailError" />
-          <span class="field-error" id="emailError" data-error-for="email" role="alert"></span>
-        </label>
-        <label>
-          <span class="field-head">Project type <span class="required-pill">Required</span></span>
-          <select name="project" required aria-describedby="projectError"><option value="">Choose one</option><option>Full-home interior design</option><option>Renovation</option><option>Kitchen / bathroom</option><option>Single-room design</option></select>
-          <span class="field-error" id="projectError" data-error-for="project" role="alert"></span>
-        </label>
-        <label>
-          <span class="field-head">Budget range <span class="required-pill">Required</span></span>
-          <select name="budget" required aria-describedby="budgetError"><option value="">Choose one</option><option>$25k–$50k</option><option>$50k–$100k</option><option>$100k–$250k</option><option>$250k+</option></select>
-          <span class="field-error" id="budgetError" data-error-for="budget" role="alert"></span>
-        </label>
-        <label class="full">
-          <span class="field-head">Tell us about the space <span class="required-pill">Required</span></span>
-          <textarea name="message" required minlength="3" rows="5" placeholder="Property, rooms, goals, timeline..." aria-describedby="messageError"></textarea>
-          <span class="field-error" id="messageError" data-error-for="message" role="alert"></span>
-        </label>
-        <div class="full form-footer"><button class="pill-button primary" type="submit">Request consultation</button><p id="formStatus" role="status"></p></div>
-      </form>
-    </section>
-  </main>
-
-  <footer class="footer">
-    <a class="footer-brand" href="#top"><img src="assets/verospace-logo.png" alt="VeroSpace" /></a>
-    <div><a href="#projects">Projects</a><a href="#services">Services</a><a href="#process">Process</a><a href="#contact">Contact</a></div>
-    <p>VeroSpace concept landing · portfolio-ready template</p>
-  </footer>
-
-  <dialog class="project-dialog" id="projectDialog">
-    <button class="dialog-close" aria-label="Close project">×</button>
-    <p class="eyebrow">VeroSpace project</p>
-    <h2 id="dialogTitle">Project</h2>
-    <p id="dialogText"></p>
-    <dl><div><dt>Scope</dt><dd id="dialogScope"></dd></div><div><dt>Focus</dt><dd id="dialogFocus"></dd></div></dl>
-    <button class="pill-button primary" data-scroll="#contact">Discuss a similar project</button>
-  </dialog>
-
-
-  <div class="send-overlay" id="sendOverlay" aria-hidden="true">
-    <div class="send-edge" aria-hidden="true"></div>
-    <div class="send-panel" role="status" aria-live="assertive" aria-atomic="true">
-      <div class="send-symbol is-sending" id="sendSymbol" aria-hidden="true">
-        <div class="send-ring"></div>
-        <div class="send-core">V</div>
-        <svg class="send-result-icon send-check" viewBox="0 0 64 64" focusable="false"><path d="M17 33.5 27.2 44 48 20" /></svg>
-        <svg class="send-result-icon send-cross" viewBox="0 0 64 64" focusable="false"><path d="M20 20 44 44M44 20 20 44" /></svg>
-        <svg class="send-result-icon send-offline" viewBox="0 0 64 64" focusable="false"><path d="M14 25c10-9 26-9 36 0M21 33c6-5 16-5 22 0M28 41c2.5-2 5.5-2 8 0M15 15l34 34" /></svg>
-      </div>
-      <p class="send-status" id="sendStatus">Sending…</p>
-      <p class="send-note" id="sendNote">Your request stays inside VeroSpace.</p>
+<section class="services shell" id="services">
+  <header class="light-head reveal"><p class="eyebrow">What we handle</p><h2>From layout to handover.</h2><p>Interior design, renovation planning, materials, lighting and coordination — under one direction.</p></header>
+  <div class="service-grid">
+    <aside class="service-visual reveal"><p class="eyebrow">One joined system</p><h3>The room, the build and the finish speak the same language.</h3><div class="service-pills"><span>Layout</span><span>Storage</span><span>Lighting</span><span>Finishes</span><span>Furniture</span></div><div class="service-bars"><div><i></i><span>Plan</span></div><div><i></i><span>Refine</span></div><div><i></i><span>Deliver</span></div></div></aside>
+    <div class="service-list">
+      <details class="service-item reveal" open><summary><span>01</span><h3>Full interior design</h3><b>+</b></summary><div class="service-body"><p>Layout, finishes, furniture and styling.</p><div class="service-tags"><span>Layout</span><span>Palette</span><span>Styling</span></div></div></details>
+      <details class="service-item reveal"><summary><span>02</span><h3>Renovation planning</h3><b>+</b></summary><div class="service-body"><p>Scope and decisions before work starts.</p><div class="service-tags"><span>Scope</span><span>Sequence</span><span>Budget</span></div></div></details>
+      <details class="service-item reveal"><summary><span>03</span><h3>Space planning</h3><b>+</b></summary><div class="service-body"><p>Rooms that flow, store and live better.</p><div class="service-tags"><span>Flow</span><span>Storage</span><span>Function</span></div></div></details>
+      <details class="service-item reveal"><summary><span>04</span><h3>Materials & lighting</h3><b>+</b></summary><div class="service-body"><p>A joined palette for warmth, tone and mood.</p><div class="service-tags"><span>Materials</span><span>Light</span><span>Fixtures</span></div></div></details>
+      <details class="service-item reveal"><summary><span>05</span><h3>Project coordination</h3><b>+</b></summary><div class="service-body"><p>Reviews and decisions carried through delivery.</p><div class="service-tags"><span>Specs</span><span>Reviews</span><span>Handover</span></div></div></details>
     </div>
   </div>
+</section>
 
-  <script src="script.js"></script>
+<section class="showcase shell reveal">
+  <div class="showcase-image"><img loading="lazy" src="https://images.unsplash.com/photo-1782805134528-9b4e58e20069?auto=format&fit=crop&w=1800&q=84" alt="Dark stone and marble bathroom"></div>
+  <div class="showcase-copy"><p class="eyebrow">Material intelligence</p><h2>Fewer finishes. Stronger rooms.</h2><p>Light, texture and scale do more when they are chosen as one system.</p><div class="material-chips"><span>Stone</span><span>Oak</span><span>Brass</span><span>Linen</span></div><div class="material-facts"><div><strong>Light</strong><span>sets mood</span></div><div><strong>Texture</strong><span>adds depth</span></div><div><strong>Scale</strong><span>holds balance</span></div></div></div>
+</section>
+
+<section class="process shell" id="process">
+  <header class="light-head reveal"><p class="eyebrow">A clear path</p><h2>You always know what happens next.</h2><p>Five steps from first conversation to finished home.</p></header>
+  <ol class="process-list"><li class="reveal"><span>01</span><h3>Consult</h3><p>Space, goals, budget.</p><small>Brief</small></li><li class="reveal"><span>02</span><h3>Concept</h3><p>Plan and direction.</p><small>Vision</small></li><li class="reveal"><span>03</span><h3>Design</h3><p>Materials, light, details.</p><small>Specify</small></li><li class="reveal"><span>04</span><h3>Build</h3><p>Reviews and control.</p><small>Execute</small></li><li class="reveal"><span>05</span><h3>Handover</h3><p>Checks and finish.</p><small>Resolve</small></li></ol>
+</section>
+
+<section class="proof shell reveal" aria-label="VeroSpace working principles"><article><strong>Decisions stay connected.</strong><p>Layout, materials and execution follow one direction.</p></article><article><strong>Scope stays visible.</strong><p>You know what is decided and what comes next.</p></article><article><strong>The finish stays intentional.</strong><p>More thinking before trades need an answer.</p></article></section>
+
+<section class="contact shell" id="contact">
+  <div class="contact-copy reveal"><p class="eyebrow">Start a project</p><h2>Tell us what needs to change.</h2><p>Share the space, the problem and the result you want. We’ll start from there.</p></div>
+  <form class="contact-form reveal" id="consultationForm" novalidate>
+    <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+    <label><span class="field-head">Full name <span class="required">Required</span></span><input name="name" autocomplete="name" required placeholder="Your name"><span class="field-error"></span></label>
+    <label><span class="field-head">Email <span class="required">Required</span></span><input name="email" type="email" autocomplete="email" required placeholder="you@example.com"><span class="field-error"></span></label>
+    <label><span class="field-head">Project type <span class="required">Required</span></span><select name="project" required><option value="">Choose one</option><option>Full-home interior design</option><option>Renovation</option><option>Kitchen / bathroom</option><option>Single-room design</option></select><span class="field-error"></span></label>
+    <label><span class="field-head">Budget range <span class="required">Required</span></span><select name="budget" required><option value="">Choose one</option><option>$25k–$50k</option><option>$50k–$100k</option><option>$100k–$250k</option><option>$250k+</option></select><span class="field-error"></span></label>
+    <label class="full"><span class="field-head">Tell us about the space <span class="required">Required</span></span><textarea name="message" required minlength="3" placeholder="Property, rooms, goals, timeline..."></textarea><span class="field-error"></span></label>
+    <div class="form-footer"><button class="primary-btn" type="submit">Request consultation</button><span class="form-status" role="status"></span></div>
+  </form>
+</section>
+</main>
+
+<footer class="footer"><a class="footer-logo" href="#home"><img src="https://raw.githubusercontent.com/Rahmowin-1st/VeroSpace-/2b26d92878b2e8d0feb9f9024aa2b400a8156959/assets/verospace-logo.png" alt="VeroSpace"></a><nav class="footer-nav"><a href="#projects">Projects</a><a href="#services">Services</a><a href="#process">Process</a><a href="#contact">Contact</a></nav><p>VeroSpace · Interior design · renovation planning · coordination</p></footer>
+
+<dialog class="project-dialog" id="projectDialog"><button class="dialog-close" aria-label="Close project">×</button><div class="dialog-media"><img alt="VeroSpace project"></div><div class="dialog-copy"><p class="eyebrow">VeroSpace project study</p><h2></h2><p class="dialog-text"></p><dl class="dialog-facts"><div><dt>Scope</dt><dd class="dialog-scope"></dd></div><div><dt>Focus</dt><dd class="dialog-focus"></dd></div></dl><button class="primary-btn" data-scroll="#contact">Discuss a similar project</button></div></dialog>
+
+<script>
+(()=>{'use strict';
+const $=(s,c=document)=>c.querySelector(s),$$=(s,c=document)=>[...c.querySelectorAll(s)],clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v)),mix=(a,b,t)=>a+(b-a)*t,smooth=t=>t*t*(3-2*t);const root=document.documentElement,hero=$('.hero'),stage=$('.hero-stage'),media=$('.hero-media'),mediaImg=$('.hero-media img'),copy=$('.hero-copy'),immersive=$('.hero-immersive'),projects=$('.projects'),pStage=$('.projects-stage'),track=$('.project-track'),cards=$$('.project-card'),pCount=$('.project-scroll-ui strong'),reduced=matchMedia('(prefers-reduced-motion: reduce)'),mobile=matchMedia('(max-width:768px)');
+// menu
+const menuBtn=$('.menu-button'),menu=$('.mobile-menu'),backdrop=$('.menu-backdrop');function setMenu(open){menuBtn.classList.toggle('open',open);menu.classList.toggle('open',open);backdrop.classList.toggle('open',open);menuBtn.setAttribute('aria-expanded',String(open));menuBtn.setAttribute('aria-label',open?'Close menu':'Open menu');menu.setAttribute('aria-hidden',String(!open));root.style.overflow=open?'hidden':''}menuBtn.addEventListener('click',()=>setMenu(!menu.classList.contains('open')));backdrop.addEventListener('click',()=>setMenu(false));document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});$$('.mobile-menu a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
+// smooth actions
+$$('[data-scroll]').forEach(el=>el.addEventListener('click',()=>{setMenu(false);$(el.dataset.scroll)?.scrollIntoView({behavior:reduced.matches?'auto':'smooth',block:'start'})}));
+// reveals
+if('IntersectionObserver'in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target)}}),{threshold:.1,rootMargin:'0px 0px -6%'});$$('.reveal').forEach(e=>io.observe(e))}else $$('.reveal').forEach(e=>e.classList.add('visible'));
+// service accordion single-open on phone
+$$('.service-item').forEach(item=>item.addEventListener('toggle',()=>{if(mobile.matches&&item.open)$$('.service-item').forEach(o=>{if(o!==item)o.open=false})}));
+// project dialog
+const dialog=$('#projectDialog');$$('.project-open').forEach(btn=>btn.addEventListener('click',()=>{const card=btn.closest('.project-card');$('.dialog-media img',dialog).src=$('img',card).currentSrc||$('img',card).src;$('.dialog-media img',dialog).alt=$('img',card).alt;$('.dialog-copy h2',dialog).textContent=card.dataset.title;$('.dialog-text',dialog).textContent=card.dataset.text;$('.dialog-scope',dialog).textContent=card.dataset.scope;$('.dialog-focus',dialog).textContent=card.dataset.focus;dialog.showModal()}));$('.dialog-close').addEventListener('click',()=>dialog.close());dialog.addEventListener('click',e=>{if(e.target===dialog)dialog.close()});
+// scrolling engine
+let raf=0;function frame(){raf=0;const y=scrollY,max=Math.max(1,document.documentElement.scrollHeight-innerHeight);$('.progress i').style.transform=`scaleX(${clamp(y/max)})`;$('.site-header').classList.toggle('scrolled',y>40);const hr=Math.max(1,hero.offsetHeight-innerHeight),hp=clamp((y-hero.offsetTop)/hr);root.style.setProperty('--hero-p',hp.toFixed(4));if(!mobile.matches&&!reduced.matches){const t=smooth(clamp(hp/.82));media.style.left=`${mix(49,0,t)}%`;media.style.top=`${mix(11,0,t)}%`;media.style.width=`${mix(47,100,t)}%`;media.style.height=`${mix(78,100,t)}%`;media.style.borderRadius=`${mix(44,0,t)}px`;mediaImg.style.filter=`saturate(.94) contrast(1.04) brightness(${mix(.98,.70,t)})`}else{media.style.left=media.style.top='0';media.style.width=media.style.height='100%';media.style.borderRadius='0';if(mobile.matches&&!reduced.matches)mediaImg.style.transform=`scale(1.07) translateY(${mix(0,-18,hp)}px)`}const show=smooth(clamp((hp-.46)/.30));immersive.style.opacity=show;immersive.style.transform=`translateY(${mix(28,0,show)}px)`;
+if(!mobile.matches&&projects&&track&&!reduced.matches){const range=Math.max(1,projects.offsetHeight-innerHeight),pp=clamp((y-projects.offsetTop)/range);root.style.setProperty('--projects-p',pp.toFixed(4));const maxX=Math.max(0,track.scrollWidth-(pStage.clientWidth-100));track.style.transform=`translate3d(${-maxX*pp}px,0,0)`;const idx=Math.min(cards.length-1,Math.round(pp*(cards.length-1)));cards.forEach((c,i)=>c.classList.toggle('focus',i===idx));pCount.textContent=`${String(idx+1).padStart(2,'0')} / ${String(cards.length).padStart(2,'0')}`}else{track&&(track.style.transform='none');cards.forEach(c=>c.classList.add('focus'))}
+const sh=$('.showcase'),shImg=$('.showcase-image img');if(sh&&shImg&&!reduced.matches){const r=sh.getBoundingClientRect(),p=clamp((innerHeight-r.top)/(innerHeight+r.height));shImg.style.setProperty('--showcase-y',`${mix(24,-24,p)}px`)}
+const probe=y+Math.min(innerHeight*.36,300);const sections=[['home','#home'],['projects','#projects'],['services','#services'],['process','#process'],['contact','#contact']];let active='home';sections.forEach(([n,s])=>{const el=$(s);if(el&&el.offsetTop<=probe)active=n});$$('.desktop-nav a').forEach(a=>a.classList.toggle('active',a.getAttribute('href')===`#${active}`))}
+const queue=()=>{if(!raf)raf=requestAnimationFrame(frame)};addEventListener('scroll',queue,{passive:true});addEventListener('resize',queue,{passive:true});mobile.addEventListener?.('change',queue);frame();
+// form
+const form=$('#consultationForm'),status=$('.form-status');function validate(field){let msg='';if(field.validity.valueMissing)msg='Required.';else if(field.type==='email'&&field.validity.typeMismatch)msg='Enter a valid email.';else if(field.validity.tooShort)msg='Add a little more detail.';const label=field.closest('label'),err=$('.field-error',label);label.classList.toggle('invalid',!!msg);err.textContent=msg;err.classList.toggle('show',!!msg);return !msg}$$('[required]',form).forEach(f=>{f.addEventListener('input',()=>validate(f));f.addEventListener('change',()=>validate(f))});form.addEventListener('submit',async e=>{e.preventDefault();const fields=$$('[required]',form),bad=fields.find(f=>!validate(f));if(bad){bad.focus();status.textContent='Check the highlighted field.';return}const fd=new FormData(form);if(fd.get('website'))return;const btn=$('[type=submit]',form);btn.disabled=true;status.textContent='Sending…';const payload={name:fd.get('name'),email:fd.get('email'),project:fd.get('project'),budget:fd.get('budget'),message:fd.get('message'),requestId:crypto.randomUUID?.()||String(Date.now())};try{const r=await fetch('/api/consultation',{method:'POST',headers:{'Content-Type':'application/json','X-Request-Id':payload.requestId},body:JSON.stringify(payload)}),d=await r.json().catch(()=>({}));if(!r.ok||!d.ok)throw new Error('send');form.reset();status.textContent='Request sent.'}catch{status.textContent='Could not send. Your details are still here.'}finally{btn.disabled=false}});
+})();
+</script>
 </body>
 </html>
