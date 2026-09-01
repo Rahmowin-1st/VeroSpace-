@@ -3,16 +3,20 @@
   const hero=document.querySelector('#home');
   const media=hero?.querySelector('.hero-media');
   const image=media?.querySelector('img');
+  const copy=hero?.querySelector('.hero-copy');
   const immersive=hero?.querySelector('.hero-immersive-copy');
   const chapter=hero?.querySelector('.hero-chapter');
+  const headerCta=document.querySelector('.header-cta');
   if(!hero||!media)return;
   const root=document.documentElement;
   const mobile=window.matchMedia('(max-width: 900px)');
+  const phone=window.matchMedia('(max-width: 767px)');
   const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
   const clamp=v=>Math.min(1,Math.max(0,v));
   const mix=(a,b,t)=>a+(b-a)*t;
   const smooth=t=>t*t*(3-2*t);
   const setImportant=(prop,value)=>media.style.setProperty(prop,value,'important');
+  const syncHeaderCta=()=>{if(headerCta)headerCta.textContent=phone.matches?'Start project':'Book consultation';};
   let raf=0;
   function frame(){
     raf=0;
@@ -30,6 +34,11 @@
       setImportant('height',`${mix(74,100,t)}%`);
       setImportant('border-radius',`${mix(46,0,t)}px`);
       if(image)image.style.setProperty('filter',`saturate(.92) contrast(1.04) brightness(${mix(.98,.72,t)})`,'important');
+      if(copy){
+        const fade=smooth(clamp((p-.10)/.20));
+        copy.style.setProperty('opacity',String(1-fade),'important');
+        copy.style.setProperty('pointer-events',fade>.82?'none':'auto','important');
+      }
     }else if(!mobile.matches){
       setImportant('left','48%');
       setImportant('top','13%');
@@ -45,5 +54,7 @@
   window.addEventListener('scroll',queue,{passive:true});
   window.addEventListener('resize',queue,{passive:true});
   mobile.addEventListener?.('change',queue);
+  phone.addEventListener?.('change',()=>{syncHeaderCta();queue();});
+  syncHeaderCta();
   frame();
 })();
