@@ -46,3 +46,5 @@ Browser screenshot automation is blocked by the execution environment administra
 
 ## Deployment
 Static Vercel-ready project. Keep `index.html`, `styles.css`, `script.js`, `vercel.json`, `api/consultation.js`, and `assets/` at repository root as packaged.
+
+Rollback restore trigger: production restored from the frozen 229ca1f site source.
