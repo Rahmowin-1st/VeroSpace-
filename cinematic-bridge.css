@@ -1,0 +1,102 @@
+/* VeroSpace Cinematic V3 — value bridge + conversion hierarchy. */
+.value-bridge{
+  position:relative;
+  width:min(1320px,calc(100% - 40px));
+  margin:0 auto;
+  padding:132px 0 142px;
+  display:grid;
+  grid-template-columns:minmax(0,.9fr) minmax(540px,1.1fr);
+  gap:clamp(54px,7vw,110px);
+  align-items:end;
+}
+.value-bridge:before{
+  content:"";
+  position:absolute;
+  left:0;right:0;top:0;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(19,37,58,.15),transparent);
+}
+.value-bridge-copy .eyebrow{color:#9a7339}
+.value-bridge-copy h2{
+  margin:12px 0 22px;
+  max-width:720px;
+  font-family:"Playfair Display",serif;
+  font-size:clamp(46px,5vw,74px);
+  line-height:.96;
+  letter-spacing:-.048em;
+  color:#0c1a2b;
+}
+.value-bridge-copy>p:last-child{
+  max-width:600px;
+  margin:0;
+  color:#65717d;
+  font-size:16px;
+  line-height:1.7;
+}
+.value-bridge-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+.value-bridge-grid article{
+  min-height:245px;
+  padding:22px 20px 20px;
+  border-radius:28px;
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-end;
+  position:relative;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at 80% 0,rgba(221,184,117,.22),transparent 42%),
+    linear-gradient(145deg,rgba(255,255,255,.82),rgba(245,238,227,.72));
+  border:1px solid rgba(255,255,255,.84);
+  box-shadow:0 24px 70px rgba(11,26,43,.10),inset 0 1px 0 rgba(255,255,255,.96);
+  transition:transform .4s cubic-bezier(.2,.8,.2,1),box-shadow .4s ease;
+}
+.value-bridge-grid article:before{
+  content:"";
+  position:absolute;
+  width:120px;height:120px;
+  border-radius:50%;
+  right:-42px;top:-42px;
+  border:1px solid rgba(155,116,56,.18);
+  box-shadow:0 0 0 22px rgba(155,116,56,.035),0 0 0 44px rgba(155,116,56,.02);
+}
+.value-bridge-grid article:hover{transform:translateY(-8px);box-shadow:0 34px 90px rgba(11,26,43,.14),inset 0 1px 0 rgba(255,255,255,.96)}
+.value-bridge-grid span{position:absolute;left:20px;top:20px;font-size:10px;letter-spacing:.16em;color:#a07940}
+.value-bridge-grid h3{margin:0 0 9px;font-family:"Playfair Display",serif;font-size:30px;font-weight:500;color:#112238}
+.value-bridge-grid p{margin:0;color:#6b7580;font-size:13px;line-height:1.55}
+
+/* Keep the original hero quick navigation visible, but make it feel deliberate. */
+.hero-dock{
+  z-index:8!important;
+  border-color:rgba(255,255,255,.22)!important;
+  box-shadow:0 18px 50px rgba(9,21,36,.16)!important;
+}
+.hero-rail{z-index:8!important}
+html.hero-immersed .hero-dock,
+html.hero-immersed .hero-rail{opacity:.22;pointer-events:none}
+
+/* Premium motion feedback without turning every surface into glass. */
+.pill-button{transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s ease,filter .28s ease}
+.pill-button:hover{transform:translateY(-3px)}
+.project-open{cursor:pointer}
+
+@media(max-width:1100px){
+  .value-bridge{grid-template-columns:1fr;gap:44px;padding:110px 0 120px}
+  .value-bridge-copy h2{max-width:860px}
+}
+@media(max-width:760px){
+  .value-bridge{width:calc(100% - 30px);padding:86px 0 94px;gap:34px}
+  .value-bridge-copy h2{font-size:clamp(40px,11vw,58px)}
+  .value-bridge-copy>p:last-child{font-size:15px;line-height:1.62}
+  .value-bridge-grid{grid-template-columns:1fr;gap:12px}
+  .value-bridge-grid article{min-height:180px}
+}
+@media(max-width:520px){
+  .value-bridge{width:calc(100% - 26px);padding-top:76px}
+  .value-bridge-copy h2{font-size:42px}
+  .value-bridge-grid article{min-height:164px;border-radius:24px}
+}
+@media(prefers-reduced-motion:reduce){.value-bridge-grid article,.pill-button{transition:none!important}}
