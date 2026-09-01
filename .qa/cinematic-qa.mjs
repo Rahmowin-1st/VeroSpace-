@@ -41,30 +41,27 @@ for(const [name,width,height] of cases){
   }else{
     pass(`${name}: original desktop journey preserved`,await page.locator('.desktop-journey').count()===1);
     pass(`${name}: desktop nav visible`,await page.locator('.desktop-nav').isVisible());
-    const hero=page.locator('#home');
-    const heroBox=await hero.boundingBox();
-    if(heroBox){
-      const y=Math.round(heroBox.y+(heroBox.height-height)*.72);
-      await page.evaluate(v=>scrollTo(0,v),y);
-      await page.waitForTimeout(500);
-      const media=await page.locator('.hero-media').boundingBox();
-      pass(`${name}: hero morphs toward full-bleed`,Boolean(media&&media.width>width*.84),media?`${Math.round(media.width)}px`:'no box');
-      const immersiveOpacity=await page.locator('.hero-immersive-copy').evaluate(el=>Number(getComputedStyle(el).opacity));
-      pass(`${name}: scroll reveals second hook`,immersiveOpacity>.45,String(immersiveOpacity));
-    }
+    const heroMetrics=await page.locator('#home').evaluate(el=>({top:el.offsetTop,height:el.offsetHeight}));
+    const y=Math.round(heroMetrics.top+(heroMetrics.height-height)*.65);
+    await page.evaluate(v=>scrollTo(0,v),y);
+    await page.waitForTimeout(500);
+    const media=await page.locator('.hero-media').boundingBox();
+    pass(`${name}: hero morphs toward full-bleed`,Boolean(media&&media.width>width*.92),media?`${Math.round(media.width)}px`:'no box');
+    const immersiveOpacity=await page.locator('.hero-immersive-copy').evaluate(el=>Number(getComputedStyle(el).opacity));
+    pass(`${name}: scroll reveals second hook`,immersiveOpacity>.72,String(immersiveOpacity));
   }
 
-  await page.locator('#projects').scrollIntoViewIfNeeded();
-  await page.waitForTimeout(350);
-  const first=page.locator('.project-open').first();
-  await first.click();
+  const projectTop=await page.locator('#projects').evaluate(el=>el.offsetTop);
+  await page.evaluate(v=>scrollTo(0,v+18),projectTop);
+  await page.waitForTimeout(450);
+  const first=page.locator('.project-card').first().locator('.project-open');
+  await first.click({timeout:10000});
   await page.waitForTimeout(200);
   pass(`${name}: project modal opens`,await page.locator('#projectDialog').evaluate(el=>el.open));
   pass(`${name}: modal has full visual`,await page.locator('.cinematic-dialog-media img').isVisible());
   await page.locator('.dialog-close').click();
 
   if(width>900){
-    const projectTop=await page.locator('#projects').evaluate(el=>el.offsetTop);
     const projectHeight=await page.locator('#projects').evaluate(el=>el.offsetHeight);
     await page.evaluate(v=>scrollTo(0,v),Math.round(projectTop+(projectHeight-height)*.55));
     await page.waitForTimeout(400);
@@ -77,8 +74,8 @@ for(const [name,width,height] of cases){
     await page.goto(base,{waitUntil:'networkidle'});
     await page.screenshot({path:`.qa/screenshots/${name}-home.png`,fullPage:false});
     if(width>900){
-      const heroH=await page.locator('#home').evaluate(el=>el.offsetHeight);
-      await page.evaluate(v=>scrollTo(0,v),Math.round((heroH-innerHeight)*.72));
+      const heroMetrics=await page.locator('#home').evaluate(el=>({top:el.offsetTop,height:el.offsetHeight}));
+      await page.evaluate(v=>scrollTo(0,v),Math.round(heroMetrics.top+(heroMetrics.height-innerHeight)*.65));
       await page.waitForTimeout(350);
       await page.screenshot({path:`.qa/screenshots/${name}-hero-immersed.png`,fullPage:false});
     }
