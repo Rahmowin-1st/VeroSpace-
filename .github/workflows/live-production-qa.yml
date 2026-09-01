@@ -1,0 +1,29 @@
+name: VeroSpace Live Production QA
+
+on:
+  push:
+    branches:
+      - verospace-ultra-upgrade-2026-09-01
+  workflow_dispatch:
+
+jobs:
+  live-production-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Test public production
+        env:
+          VEROSPACE_URL: https://verospace-landing.vercel.app
+        run: node .qa/live-production-qa.mjs
+      - name: Upload live screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: verospace-live-production-qa
+          path: .qa/live-screenshots
+          if-no-files-found: ignore
