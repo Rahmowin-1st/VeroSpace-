@@ -12,12 +12,14 @@ const cases=[
 let failures=0;
 const pass=(label,ok,detail='')=>{console.log(`${ok?'PASS':'FAIL'} ${label}${detail?` — ${detail}`:''}`);if(!ok)failures++;};
 const browser=await chromium.launch({headless:true});
+const disableSmooth=page=>page.evaluate(()=>{document.documentElement.style.scrollBehavior='auto';document.body.style.scrollBehavior='auto';});
 
 for(const [name,width,height] of cases){
   const page=await browser.newPage({viewport:{width,height}});
   const errors=[];
   page.on('pageerror',e=>errors.push(String(e)));
   const response=await page.goto(base,{waitUntil:'networkidle',timeout:60000});
+  await disableSmooth(page);
   pass(`${name}: HTTP 200`,response?.status()===200,String(response?.status()));
   await page.waitForTimeout(500);
 
@@ -45,7 +47,7 @@ for(const [name,width,height] of cases){
     const heroMetrics=await page.locator('#home').evaluate(el=>({top:el.offsetTop,height:el.offsetHeight}));
     const y=Math.round(heroMetrics.top+(heroMetrics.height-height)*.65);
     await page.evaluate(v=>scrollTo(0,v),y);
-    await page.waitForTimeout(500);
+    await page.waitForTimeout(180);
     const media=await page.locator('.hero-media').boundingBox();
     pass(`${name}: hero morphs toward full-bleed`,Boolean(media&&media.width>width*.92),media?`${Math.round(media.width)}px`:'no box');
     const immersiveOpacity=await page.locator('.hero-immersive-copy').evaluate(el=>Number(getComputedStyle(el).opacity));
@@ -54,10 +56,10 @@ for(const [name,width,height] of cases){
 
   const projectTop=await page.locator('#projects').evaluate(el=>el.offsetTop);
   await page.evaluate(v=>scrollTo(0,v+18),projectTop);
-  await page.waitForTimeout(450);
+  await page.waitForTimeout(180);
   const first=page.locator('.project-card').first().locator('.project-open');
   await first.click({timeout:10000});
-  await page.waitForTimeout(200);
+  await page.waitForTimeout(120);
   pass(`${name}: project modal opens`,await page.locator('#projectDialog').evaluate(el=>el.open));
   pass(`${name}: modal has full visual`,await page.locator('.cinematic-dialog-media img').isVisible());
   await page.locator('.dialog-close').click();
@@ -65,7 +67,7 @@ for(const [name,width,height] of cases){
   if(width>900){
     const projectHeight=await page.locator('#projects').evaluate(el=>el.offsetHeight);
     await page.evaluate(v=>scrollTo(0,v),Math.round(projectTop+(projectHeight-height)*.55));
-    await page.waitForTimeout(400);
+    await page.waitForTimeout(180);
     const transform=await page.locator('.project-grid').evaluate(el=>getComputedStyle(el).transform);
     pass(`${name}: projects use scroll-driven horizontal movement`,transform!=='none'&&!transform.includes('1, 0, 0, 1, 0, 0'),transform);
   }
@@ -73,11 +75,12 @@ for(const [name,width,height] of cases){
   pass(`${name}: no page errors`,errors.length===0,errors.join(' | '));
   if(['mobile-390','desktop-1440','desktop-1920'].includes(name)){
     await page.goto(base,{waitUntil:'networkidle'});
+    await disableSmooth(page);
     await page.screenshot({path:`.qa/screenshots/${name}-home.png`,fullPage:false});
     if(width>900){
       const heroMetrics=await page.locator('#home').evaluate(el=>({top:el.offsetTop,height:el.offsetHeight}));
       await page.evaluate(v=>scrollTo(0,v),Math.round(heroMetrics.top+(heroMetrics.height-height)*.65));
-      await page.waitForTimeout(350);
+      await page.waitForTimeout(180);
       await page.screenshot({path:`.qa/screenshots/${name}-hero-immersed.png`,fullPage:false});
     }
   }
