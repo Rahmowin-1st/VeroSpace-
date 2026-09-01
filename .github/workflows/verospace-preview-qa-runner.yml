@@ -1,0 +1,33 @@
+name: VeroSpace Preview QA Runner
+on:
+  push:
+    branches: [verospace-final-qa]
+    paths:
+      - '.github/workflows/verospace-preview-qa-runner.yml'
+permissions:
+  contents: read
+jobs:
+  browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TARGET_URL: 'https://verospace-landing-rnv1qsd6l-shahboz.vercel.app/?_vercel_share=hcO4PeMVP9HwYPY6eu9SlwSefazXiQv8'
+      CLEAN_URL: 'https://verospace-landing-rnv1qsd6l-shahboz.vercel.app/'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright Chromium
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Extract and run QA
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          text=Path('.github/workflows/verospace-preview-qa.yml').read_text()
+          marker="          cat > /tmp/qa.mjs <<'EOF'\n"
+          start=text.index(marker)+len(marker)
+          end=text.index("\n          EOF",start)
+          Path('/tmp/qa.mjs').write_text(text[start:end])
+          PY
+          ln -s "$PWD/node_modules" /tmp/node_modules
+          node /tmp/qa.mjs
