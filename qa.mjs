@@ -97,3 +97,4 @@ for (const [name,width,height,mobile] of cases){
 await browser.close();
 if(failures.length){console.error('\nFINAL QA FAILED\n'+failures.join('\n'));process.exit(1)}
 console.log('\nFINAL QA GREEN — all responsive acceptance gates passed.');
+// trigger marker: final acceptance
