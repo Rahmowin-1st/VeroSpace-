@@ -315,7 +315,7 @@
     /* Page-load sequence: composed like a slide deck, but never controls scroll. */
     const loadTl = gsap.timeline({defaults: {ease: 'power3.out'}});
     loadTl
-      .fromTo('.site-header', {y: -72, opacity: 0, scale: .97, filter: 'blur(10px)'}, {y: 0, opacity: 1, scale: 1, filter: 'blur(0px)', duration: .78}, 0)
+      .fromTo('.site-header', {y: -72, opacity: 0, scale: .97}, {y: 0, opacity: 1, scale: 1, duration: .78}, 0)
       .fromTo('.hero-image', {scale: 1.12, clipPath: 'inset(4% 5% 6% 5% round 42px)'}, {scale: 1, clipPath: 'inset(0% 0% 0% 0% round 0px)', duration: 1.25, ease: 'power4.out'}, .02)
       .fromTo('.hero-shade', {opacity: 0}, {opacity: 1, duration: .72}, .14)
       .fromTo('.hero-copy .eyebrow', {x: -26, opacity: 0, letterSpacing: '.28em'}, {x: 0, opacity: 1, letterSpacing: '.18em', duration: .55}, .22)
