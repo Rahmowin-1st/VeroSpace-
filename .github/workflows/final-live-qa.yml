@@ -3,6 +3,8 @@ on:
   push:
     branches: [verospace-final-live-qa]
     paths: ['.github/workflows/final-live-qa.yml']
+permissions:
+  contents: write
 jobs:
   browser-qa:
     runs-on: ubuntu-latest
@@ -14,8 +16,9 @@ jobs:
       - name: Test public production in Chromium
         run: |
           cat > ./qa-live.mjs <<'EOF'
-          import {chromium} from 'playwright';
+          import {chromium} from 'playwright'; import fs from 'fs';
           const sizes=[[320,700],[360,780],[390,844],[430,932],[768,1024],[1024,768],[1366,768],[1440,900],[1600,900],[1920,1080]];
+          const report=[]; let failure=null;
           const browser=await chromium.launch({headless:true});
           try{
             for(const [width,height] of sizes){
@@ -32,19 +35,34 @@ jobs:
               if(base.cards!==5||base.forbidden!==0) throw new Error(`${width}: cards/nav mismatch cards=${base.cards} forbidden=${base.forbidden}`);
               const asset=await page.evaluate(async()=>{const r=await fetch('/assets/verospace-home-yellow.webp');const b=await r.blob();return [r.status,r.headers.get('content-type'),b.size]});
               if(asset[0]!==200||asset[1]!=='image/webp'||asset[2]<10000) throw new Error(`${width}: hero asset bad ${asset}`);
+              let menu='desktop';
               if(width<=900){
                 await page.locator('.menu-button').click(); await page.locator('.site-menu.open').waitFor({state:'visible',timeout:5000}); await page.waitForTimeout(380);
                 const m=await page.evaluate(()=>{const e=document.querySelector('.site-menu'),r=e.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,open:e.classList.contains('open'),aria:e.getAttribute('aria-hidden'),links:[...document.querySelectorAll('.menu-links strong')].map(x=>{const q=x.getBoundingClientRect();return [x.textContent.trim(),q.width,q.height]})}});
                 if(!m.open||m.aria!=='false'||Math.abs(m.x)>2||Math.abs(m.y)>2||Math.abs(m.w-m.vw)>3||Math.abs(m.h-m.vh)>3) throw new Error(`${width}: menu geometry bad ${JSON.stringify(m)}`);
                 if(m.links.length!==5||m.links.some(x=>x[1]<100||x[2]>62)) throw new Error(`${width}: menu text broken ${JSON.stringify(m.links)}`);
-                await page.keyboard.press('Escape'); await page.waitForFunction(()=>!document.querySelector('.site-menu')?.classList.contains('open'),{timeout:3000});
+                await page.keyboard.press('Escape'); await page.waitForFunction(()=>!document.querySelector('.site-menu')?.classList.contains('open'),{timeout:3000}); menu='GREEN';
               }
               await page.mouse.wheel(0,700); await page.waitForTimeout(300); const down=await page.evaluate(()=>scrollY); if(down<100) throw new Error(`${width}: native scroll failed ${down}`);
               const api=await page.evaluate(async()=>{const r=await fetch('/api/consultation');return r.status}); if(api!==405) throw new Error(`${width}: API GET ${api}`);
               if(errors.length) throw new Error(`${width}: page errors ${errors.join(' | ')}`);
-              console.log(`GREEN ${width}x${height} scroll=${down}`); await context.close();
+              report.push({width,height,menu,scrollDown:down,hero:base.hero,asset}); await context.close();
             }
-            console.log('FINAL_LIVE_QA_GREEN');
-          } finally { await browser.close(); }
+          }catch(e){failure=String(e?.stack||e)}
+          finally{await browser.close()}
+          const result={status:failure?'RED':'GREEN',failure,report}; fs.writeFileSync('qa-live-result.json',JSON.stringify(result,null,2)); console.log(JSON.stringify(result,null,2));
           EOF
           node ./qa-live.mjs
+      - name: Persist exact result
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          CONTENT=$(base64 -w0 qa-live-result.json)
+          API="https://api.github.com/repos/${GITHUB_REPOSITORY}/contents/.qa/live-result-${GITHUB_RUN_ID}.json"
+          curl -fsS -X PUT "$API" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "Accept: application/vnd.github+json" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            -d "{\"message\":\"test: persist exact live QA result\",\"content\":\"${CONTENT}\",\"branch\":\"verospace-final-live-qa\"}"
+      - name: Require GREEN
+        run: node -e "const r=require('./qa-live-result.json'); if(r.status!=='GREEN'){console.error(r.failure); process.exit(1)}; console.log('FINAL_LIVE_QA_GREEN')"
