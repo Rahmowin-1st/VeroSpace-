@@ -1,5 +1,10 @@
 /* VeroSpace conversion tuning — code-only, no deployment. */
 
+/* Entrance transforms can visually start outside the viewport. Contain their paint
+   inside main so ScrollTrigger can stay expressive without ever widening the page. */
+main{overflow-x:clip}
+main>section,.trust-band,.reference-gallery,.cta-bridge{min-width:0}
+
 .hero-reassurance{
   margin:10px 0 0;
   display:flex;
