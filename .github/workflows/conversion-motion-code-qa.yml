@@ -93,9 +93,13 @@ jobs:
             if(base.bad.length) throw new Error(`${width}: blocked runtime reference ${base.bad}`);
 
             const refs=page.locator('.reference-tile img');
-            await refs.first().scrollIntoViewIfNeeded(); await page.waitForTimeout(1200);
+            for(let i=0;i<9;i++){
+              await refs.nth(i).scrollIntoViewIfNeeded();
+              await page.waitForTimeout(150);
+            }
+            await page.waitForFunction(()=>[...document.querySelectorAll('.reference-tile img')].every(i=>i.complete&&i.naturalWidth>0),{timeout:25000});
             const loaded=await refs.evaluateAll(imgs=>imgs.filter(i=>i.complete&&i.naturalWidth>0).length);
-            if(loaded<7) throw new Error(`${width}: reference image decode ${loaded}/9`);
+            if(loaded!==9) throw new Error(`${width}: reference image decode ${loaded}/9`);
 
             const before=await page.evaluate(()=>scrollY);
             await page.mouse.wheel(0,760); await page.waitForTimeout(320);
