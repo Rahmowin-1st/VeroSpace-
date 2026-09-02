@@ -6,6 +6,9 @@
     'a[href]',
     'summary',
     '.project-card',
+    '.process-list li',
+    '.service-feature',
+    '.principles > div',
     '[role="button"]'
   ].join(',');
 
