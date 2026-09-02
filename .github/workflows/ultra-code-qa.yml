@@ -46,21 +46,22 @@ jobs:
             page.on('pageerror',e=>errors.push(String(e)));
             await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded',timeout:30000});
             await page.locator('.hero').waitFor({state:'visible',timeout:10000});
-            const base=await page.evaluate(blocked=>({y:scrollY,sw:document.documentElement.scrollWidth,iw:innerWidth,cards:document.querySelectorAll('.project-card').length,bad:[...document.querySelectorAll('link,script')].map(x=>x.href||x.src||'').filter(x=>blocked.some(b=>x.toLowerCase().includes(b))),native:[...document.scripts].some(s=>s.src.includes('native.js')),ultra:[...document.styleSheets].some(s=>String(s.href||'').includes('ultra-ui.css'))&&[...document.scripts].some(s=>s.src.includes('ultra-ui.js'))}),blocked);
+            const base=await page.evaluate(blocked=>({y:scrollY,sw:document.documentElement.scrollWidth,iw:innerWidth,cards:document.querySelectorAll('.project-card').length,bad:[...document.querySelectorAll('link,script')].map(x=>x.href||x.src||'').filter(x=>blocked.some(b=>x.toLowerCase().includes(b))),native:[...document.scripts].some(s=>s.src.includes('native.js')),ultra:[...document.styleSheets].some(s=>String(s.href||'').includes('ultra-ui.css'))&&[...document.styleSheets].some(s=>String(s.href||'').includes('ultra-safe.css'))&&[...document.scripts].some(s=>s.src.includes('ultra-ui.js'))}),blocked);
             if(base.y!==0||base.sw>base.iw+1||base.cards!==5||base.bad.length||!base.native||!base.ultra)throw new Error(`${width}: base ${JSON.stringify(base)}`);
 
             const press=page.locator('.menu-button');
             await press.evaluate(el=>{const r=el.getBoundingClientRect();el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerId:7,pointerType:'touch',clientX:r.left+r.width/2,clientY:r.top+r.height/2}));});
-            await page.waitForTimeout(40);
-            if(!(await press.evaluate(el=>el.classList.contains('is-pressing'))))throw new Error(`${width}: tactile press missing`);
+            await page.waitForTimeout(40);if(!(await press.evaluate(el=>el.classList.contains('is-pressing'))))throw new Error(`${width}: tactile press missing`);
             await press.evaluate(el=>{const r=el.getBoundingClientRect();el.dispatchEvent(new PointerEvent('pointerup',{bubbles:true,cancelable:true,pointerId:7,pointerType:'touch',clientX:r.left+r.width/2,clientY:r.top+r.height/2}));});
-            await page.waitForTimeout(150);
-            if(await press.evaluate(el=>el.classList.contains('is-pressing')))throw new Error(`${width}: tactile press stuck`);
+            await page.waitForTimeout(150);if(await press.evaluate(el=>el.classList.contains('is-pressing')))throw new Error(`${width}: tactile press stuck`);
 
-            await press.click();
-            const menu=page.locator('.site-menu.open');await menu.waitFor({state:'visible',timeout:4000});await page.waitForTimeout(420);
-            const m=await menu.evaluate(el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return{x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,links:el.querySelectorAll('.menu-links a').length,ox:el.scrollWidth>el.clientWidth+1,bg:cs.backgroundImage}});
-            if(m.links!==5||m.ox||!m.bg.includes('gradient'))throw new Error(`${width}: menu ${JSON.stringify(m)}`);
+            await press.click();const menu=page.locator('.site-menu.open');await menu.waitFor({state:'visible',timeout:4000});await page.waitForTimeout(420);
+            const m=await menu.evaluate(el=>{
+              const r=el.getBoundingClientRect(),cs=getComputedStyle(el),nodes=[...el.querySelectorAll('.menu-links a,.menu-project-card,.menu-close')];
+              const clipped=nodes.map(n=>{const x=n.getBoundingClientRect();return {name:n.className||n.textContent.trim().slice(0,18),l:x.left,r:x.right,t:x.top,b:x.bottom}}).filter(x=>x.l<r.left-1||x.r>r.right+1||x.t<r.top-1||x.b>r.bottom+1);
+              return{x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,links:el.querySelectorAll('.menu-links a').length,bg:cs.backgroundImage,overflowX:cs.overflowX,clipped};
+            });
+            if(m.links!==5||!m.bg.includes('gradient')||!['hidden','clip'].includes(m.overflowX)||m.clipped.length)throw new Error(`${width}: menu ${JSON.stringify(m)}`);
             if(width<=900&&(Math.abs(m.x)>2||Math.abs(m.y)>2||Math.abs(m.w-m.vw)>3||Math.abs(m.h-m.vh)>3))throw new Error(`${width}: mobile menu ${JSON.stringify(m)}`);
             if(width>900&&(m.x<0||m.y<0||m.x+m.w>m.vw+2||m.y+m.h>m.vh+2))throw new Error(`${width}: desktop menu ${JSON.stringify(m)}`);
             await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('.site-menu')?.classList.contains('open'));
@@ -69,7 +70,7 @@ jobs:
             if(width===390||width===1440){
               const card=page.locator('.project-card').first();await card.scrollIntoViewIfNeeded();await card.click();
               const dialog=page.locator('#projectDialog[open]');await dialog.waitFor({state:'visible',timeout:4000});await page.waitForTimeout(420);
-              const d=await dialog.evaluate(el=>{const r=el.getBoundingClientRect(),copy=el.querySelector('.dialog-copy');return{x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,ox:el.scrollWidth>el.clientWidth+1,title:el.querySelector('#dialogTitle')?.textContent.trim(),facts:el.querySelectorAll('.dialog-facts>div').length,bg:getComputedStyle(copy).backgroundImage}});
+              const d=await dialog.evaluate(el=>{const r=el.getBoundingClientRect(),copy=el.querySelector('.dialog-copy');return{x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,ox:document.documentElement.scrollWidth>innerWidth+1,title:el.querySelector('#dialogTitle')?.textContent.trim(),facts:el.querySelectorAll('.dialog-facts>div').length,bg:getComputedStyle(copy).backgroundImage}});
               if(d.x<-2||d.y<-2||d.x+d.w>d.vw+2||d.y+d.h>d.vh+2||d.ox||!d.title||d.facts!==3||!d.bg.includes('gradient'))throw new Error(`${width}: dialog ${JSON.stringify(d)}`);
               await page.locator('.dialog-close').click();
             }
