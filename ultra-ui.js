@@ -56,7 +56,6 @@
     activePresses.forEach(el => endPress(el));
   });
 
-  /* Project cards are one coherent target. */
   document.querySelectorAll('.project-card').forEach(card => {
     if (!card.hasAttribute('tabindex')) card.tabIndex = 0;
     card.setAttribute('role', 'button');
@@ -76,7 +75,6 @@
     });
   });
 
-  /* Keep modal content deterministic each time it opens. */
   const dialog = document.querySelector('#projectDialog');
   if (dialog) {
     const observer = new MutationObserver(() => {
@@ -91,7 +89,6 @@
     });
   }
 
-  /* Menu state receives a dedicated root class for clean page ownership. */
   const menu = document.querySelector('#siteMenu');
   const menuButton = document.querySelector('.menu-button');
   if (menu && menuButton) {
@@ -104,12 +101,24 @@
   }
 })();
 
-/* Load the conversion/motion round without touching production or the base HTML. */
+/* Code-only conversion round. Load in strict order; production is untouched. */
 (() => {
   if (document.querySelector('script[data-verospace-conversion]')) return;
-  const script = document.createElement('script');
-  script.src = 'conversion-motion.js?v=20260902c1';
-  script.defer = true;
-  script.dataset.verospaceConversion = 'true';
-  document.head.appendChild(script);
+
+  const appendScript = (src, marker) => new Promise((resolve, reject) => {
+    const script = document.createElement('script');
+    script.src = src;
+    script.async = false;
+    script.dataset[marker] = 'true';
+    script.addEventListener('load', resolve, {once: true});
+    script.addEventListener('error', reject, {once: true});
+    document.head.appendChild(script);
+  });
+
+  appendScript('conversion-motion.js?v=20260902c2', 'verospaceConversion')
+    .then(() => appendScript('conversion-flow.js?v=20260902c2', 'verospaceConversionFlow'))
+    .catch(error => {
+      console.warn('VeroSpace conversion layer unavailable; base experience preserved.', error);
+      document.documentElement.dataset.conversion = 'static-fallback';
+    });
 })();
