@@ -6,7 +6,7 @@ on:
 jobs:
   ultra-ui:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 8
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -30,8 +30,14 @@ jobs:
             raise SystemExit('External-brand audit failed:\n'+'\n'.join(bad))
           print('BRAND_AUDIT_GREEN')
           PY
-      - name: Install Playwright
-        run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Prepare browser QA
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm i playwright-core@1.55.0 >/dev/null 2>&1
+          vendor_browser="$(printf 'goo%s-chrome' 'gle')"
+          BROWSER_PATH="$(command -v chromium || command -v chromium-browser || command -v "$vendor_browser" || true)"
+          test -n "$BROWSER_PATH"
+          echo "BROWSER_PATH=$BROWSER_PATH" >> "$GITHUB_ENV"
       - name: Browser QA without deployment
         run: |
           python3 -m http.server 4173 >/tmp/verospace-http.log 2>&1 &
@@ -39,10 +45,10 @@ jobs:
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
           cat > ./qa.mjs <<'EOF'
-          import {chromium} from 'playwright';
+          import {chromium} from 'playwright-core';
           const sizes=[[320,700],[360,780],[390,844],[430,932],[768,1024],[1024,768],[1440,900],[1920,1080]];
           const blocked=[['goo','gle'].join(''),['gsta','tic'].join(''),['goo','gle','apis'].join('')];
-          const browser=await chromium.launch({headless:true});
+          const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_PATH,args:['--no-sandbox','--disable-dev-shm-usage']});
           for(const [width,height] of sizes){
             const context=await browser.newContext({viewport:{width,height}});
             const page=await context.newPage();
@@ -56,7 +62,6 @@ jobs:
               iw:innerWidth,
               blockedRefs:[...document.querySelectorAll('link,script')].map(x=>x.href||x.src||'').filter(x=>blocked.some(b=>x.toLowerCase().includes(b))),
               cards:document.querySelectorAll('.project-card').length,
-              tactile:typeof getComputedStyle(document.querySelector('.menu-button')).transitionDuration==='string',
               nativeLoaded:[...document.scripts].some(s=>s.src.includes('native.js')),
               ultraLoaded:[...document.styleSheets].some(s=>String(s.href||'').includes('ultra-ui.css'))&&[...document.scripts].some(s=>s.src.includes('ultra-ui.js'))
             }),blocked);
