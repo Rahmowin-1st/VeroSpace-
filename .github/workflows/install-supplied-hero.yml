@@ -1,0 +1,35 @@
+name: Install supplied VeroSpace hero
+on:
+  push:
+    branches: [verospace-mobile-production-fix]
+    paths: ['.hero-parts/part3.txt']
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: verospace-mobile-production-fix
+      - name: Decode exact supplied hero
+        run: |
+          cat .hero-parts/part1.txt .hero-parts/part2.txt .hero-parts/part3.txt | tr -d '\n\r ' | base64 -d > assets/verospace-home-yellow.webp
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib
+          p=Path('assets/verospace-home-yellow.webp')
+          b=p.read_bytes()
+          assert b[:4] == b'RIFF' and b[8:12] == b'WEBP', 'invalid WebP'
+          assert len(b) == 31596, len(b)
+          assert hashlib.sha256(b).hexdigest() == '61d50f82d773440f628ed022b61c652164ea213d954b3009c785c65c9b4caf52'
+          print('verified', len(b), hashlib.sha256(b).hexdigest())
+          PY
+      - name: Commit hero binary
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/verospace-home-yellow.webp
+          git rm -r .hero-parts
+          git commit -m 'feat: add supplied yellow timber tiny-house hero'
+          git push origin HEAD:verospace-mobile-production-fix
