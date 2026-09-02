@@ -38,7 +38,7 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID || true' EXIT
           sleep 2
-          cat > /tmp/qa.mjs <<'EOF'
+          cat > ./qa.mjs <<'EOF'
           import {chromium} from 'playwright';
           const sizes=[[320,700],[360,780],[390,844],[430,932],[768,1024],[1024,768],[1440,900],[1920,1080]];
           const blocked=[['goo','gle'].join(''),['gsta','tic'].join(''),['goo','gle','apis'].join('')];
@@ -119,4 +119,4 @@ jobs:
           await browser.close();
           console.log('VEROSPACE_ULTRA_CODE_GREEN');
           EOF
-          node /tmp/qa.mjs
+          node ./qa.mjs
