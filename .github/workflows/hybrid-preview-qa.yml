@@ -1,0 +1,99 @@
+name: VeroSpace Hybrid Preview QA
+on:
+  push:
+    branches: [verospace-hybrid-final]
+    paths: ['.github/workflows/hybrid-preview-qa.yml']
+jobs:
+  browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Test protected preview in Chromium
+        env:
+          TARGET_URL: 'https://verospace-landing-a78yl2n78-shahboz.vercel.app/?_vercel_share=UBT3zgNxq7aIGq8B5XWNMITD2YCplfky'
+        run: |
+          cat > ./qa.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const sizes=[[320,700],[360,780],[390,844],[430,932],[768,1024],[1024,768],[1366,768],[1440,900],[1600,900],[1920,1080]];
+          const browser=await chromium.launch({headless:true});
+          for(const [width,height] of sizes){
+            const context=await browser.newContext({viewport:{width,height}}); const page=await context.newPage();
+            const pageErrors=[]; page.on('pageerror',e=>pageErrors.push(String(e)));
+            let postCount=0; page.on('request',r=>{if(r.method()==='POST'&&r.url().includes('/api/consultation'))postCount++;});
+            await page.goto(process.env.TARGET_URL,{waitUntil:'domcontentloaded',timeout:60000});
+            await page.locator('.hero').waitFor({state:'visible',timeout:20000});
+            await page.waitForFunction(()=>{const i=document.querySelector('.hero-image');return i&&i.complete&&i.naturalWidth>0},{timeout:30000});
+            const base=await page.evaluate(()=>{
+              const header=getComputedStyle(document.querySelector('.site-header'));
+              return {
+                y:scrollY,sw:document.documentElement.scrollWidth,iw:innerWidth,
+                ctas:[...document.querySelectorAll('.hero-actions .pill-button')].map(x=>x.textContent.trim()),
+                cards:document.querySelectorAll('.project-card').length,
+                forbidden:document.querySelectorAll('.mobile-journey-dock,.hero-dock,.hero-rail').length,
+                hero:[document.querySelector('.hero-image')?.naturalWidth,document.querySelector('.hero-image')?.naturalHeight,document.querySelector('.hero-image')?.getAttribute('src')],
+                headerGlass:{bg:header.backgroundImage,filter:header.backdropFilter||header.webkitBackdropFilter}
+              };
+            });
+            if(base.y!==0) throw new Error(`${width}: initial scrollY ${base.y}`);
+            if(base.sw>base.iw+1) throw new Error(`${width}: horizontal overflow ${base.sw}>${base.iw}`);
+            if(JSON.stringify(base.ctas)!==JSON.stringify(['Book a consultation','Explore projects'])) throw new Error(`${width}: CTA mismatch ${JSON.stringify(base.ctas)}`);
+            if(base.cards!==5||base.forbidden!==0) throw new Error(`${width}: cards/nav mismatch cards=${base.cards} forbidden=${base.forbidden}`);
+            if(base.hero[0]<300||!String(base.hero[2]).includes('verospace-home-yellow.webp')) throw new Error(`${width}: hero asset missing ${JSON.stringify(base.hero)}`);
+            if(!String(base.headerGlass.bg).includes('gradient')||String(base.headerGlass.filter)==='none') throw new Error(`${width}: liquid glass header missing ${JSON.stringify(base.headerGlass)}`);
+
+            const sourceAudit=await page.evaluate(async()=>{
+              const [js,css]=await Promise.all([fetch('/script.js').then(r=>r.text()),fetch('/styles.css').then(r=>r.text())]);
+              return {scrollTop:/scrollTop\s*=/.test(js),scrollTo:/scrollTo\s*\(/.test(js),scrollListener:/addEventListener\s*\(\s*['\"]scroll['\"]/.test(js),scrollSnap:/scroll-snap/.test(css)};
+            });
+            if(Object.values(sourceAudit).some(Boolean)) throw new Error(`${width}: native-scroll audit failed ${JSON.stringify(sourceAudit)}`);
+
+            await page.mouse.wheel(0,700); await page.waitForTimeout(250); const down=await page.evaluate(()=>scrollY);
+            if(down<100) throw new Error(`${width}: native wheel scroll failed ${down}`);
+            await page.mouse.wheel(0,-700); await page.waitForTimeout(250);
+
+            await page.locator('.menu-button').click(); await page.locator('.site-menu.open').waitFor({state:'visible',timeout:5000}); await page.waitForTimeout(500);
+            const menu=await page.evaluate(()=>{
+              const el=document.querySelector('.site-menu'),r=el.getBoundingClientRect(),cs=getComputedStyle(el);
+              return {x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,aria:el.getAttribute('aria-hidden'),filter:cs.backdropFilter||cs.webkitBackdropFilter,bg:cs.backgroundImage,links:[...document.querySelectorAll('.menu-links strong')].map(x=>x.textContent.trim())};
+            });
+            if(menu.aria!=='false'||menu.links.length!==5||String(menu.filter)==='none'||!String(menu.bg).includes('gradient')) throw new Error(`${width}: menu glass/accessibility failed ${JSON.stringify(menu)}`);
+            if(width<=900&&(Math.abs(menu.x)>2||Math.abs(menu.y)>2||Math.abs(menu.w-menu.vw)>3||Math.abs(menu.h-menu.vh)>3)) throw new Error(`${width}: mobile menu not viewport-fixed ${JSON.stringify(menu)}`);
+            if(width>900&&(menu.x<0||menu.y<0||menu.x+menu.w>menu.vw+2||menu.y+menu.h>menu.vh+2)) throw new Error(`${width}: desktop menu out of viewport ${JSON.stringify(menu)}`);
+            await page.keyboard.press('Escape'); await page.waitForFunction(()=>!document.querySelector('.site-menu')?.classList.contains('open'),{timeout:3000});
+
+            if(width===390||width===1440){
+              const required=await page.locator('.required-pill').count();
+              if(required!==5) throw new Error(`${width}: consultation Required pills ${required}`);
+              const note=await page.locator('#sendNote').textContent();
+              if(note.trim()!=='Your request stays inside VeroSpace.') throw new Error(`${width}: consultation overlay copy mismatch ${note}`);
+              await page.locator('#contact').scrollIntoViewIfNeeded();
+              await page.locator('#consultationForm button[type="submit"]').click();
+              await page.waitForTimeout(650);
+              const validation=await page.evaluate(()=>({invalid:[...document.querySelectorAll('#consultationForm [required]')].filter(x=>x.getAttribute('aria-invalid')==='true').length,errors:document.querySelectorAll('.field-error.show').length,bodyLocked:document.documentElement.classList.contains('send-lock')}));
+              if(validation.invalid!==5||validation.errors!==5||validation.bodyLocked) throw new Error(`${width}: consultation validation mismatch ${JSON.stringify(validation)}`);
+              if(postCount!==0) throw new Error(`${width}: invalid form made POST ${postCount}`);
+            }
+
+            if(width===390){
+              const buttons=page.locator('.project-open');
+              for(let i=0;i<5;i++){
+                await buttons.nth(i).scrollIntoViewIfNeeded(); await buttons.nth(i).click();
+                await page.locator('#projectDialog[open]').waitFor({state:'visible',timeout:3000});
+                const modal=await page.evaluate(()=>({title:document.querySelector('#dialogTitle')?.textContent.trim(),img:document.querySelector('#dialogImage')?.getAttribute('src'),scope:document.querySelector('#dialogScope')?.textContent.trim(),focus:document.querySelector('#dialogFocus')?.textContent.trim(),result:document.querySelector('#dialogResult')?.textContent.trim(),cta:document.querySelector('#projectDialog [data-scroll="#contact"]')?.textContent.trim()}));
+                if(!modal.title||!modal.img||!modal.scope||!modal.focus||!modal.result||modal.cta!=='Discuss a similar project') throw new Error(`project ${i}: modal incomplete ${JSON.stringify(modal)}`);
+                await page.locator('.dialog-close').click();
+              }
+            }
+
+            const api=await page.evaluate(async()=>{const r=await fetch('/api/consultation');return r.status});
+            if(api!==405) throw new Error(`${width}: consultation GET expected 405 got ${api}`);
+            if(pageErrors.length) throw new Error(`${width}: page errors ${pageErrors.join(' | ')}`);
+            console.log(`GREEN ${width}x${height} scroll=${down}`);
+            await context.close();
+          }
+          await browser.close(); console.log('VEROSPACE_HYBRID_PREVIEW_GREEN');
+          EOF
+          node ./qa.mjs
