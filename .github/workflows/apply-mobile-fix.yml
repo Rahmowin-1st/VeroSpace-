@@ -1,0 +1,38 @@
+name: Apply VeroSpace mobile source wiring
+on:
+  push:
+    branches: [verospace-mobile-production-fix]
+    paths: ['.github/workflows/apply-mobile-fix.yml']
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: verospace-mobile-production-fix
+      - name: Wire supplied hero and cache-safe responsive CSS
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          s=s.replace('<link rel="preload" as="image" href="assets/verospace-featured-home.jpg" fetchpriority="high">','<link rel="preload" as="image" href="assets/verospace-home-yellow.webp" type="image/webp" fetchpriority="high">')
+          s=s.replace('<link rel="stylesheet" href="styles.css">','<link rel="stylesheet" href="styles.css?v=20260902d">\n  <link rel="stylesheet" href="mobile-fix.css?v=20260902d">')
+          s=s.replace('<img class="hero-image" src="assets/verospace-featured-home.jpg" alt="Bright compact home interior with warm timber, kitchen and natural light" width="800" height="1000" fetchpriority="high" decoding="async">','<img class="hero-image" src="assets/verospace-home-yellow.webp" alt="Bright tiny-house interior with warm honey timber, loft, compact kitchen and natural light" width="720" height="900" fetchpriority="high" decoding="async">')
+          s=s.replace('<script src="script.js" defer></script>','<script src="script.js?v=20260902d" defer></script>')
+          assert s.count('class="hero-actions"') == 1
+          assert s.count('Book a consultation</button>') >= 1
+          assert 'assets/verospace-home-yellow.webp' in s
+          assert 'mobile-fix.css?v=20260902d' in s
+          p.write_text(s)
+          PY
+      - name: Remove temporary install workflows and commit clean source
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git rm -f .github/workflows/install-supplied-hero.yml .github/workflows/apply-mobile-fix.yml
+          git add index.html mobile-fix.css assets/verospace-home-yellow.webp
+          git commit -m 'fix: harden mobile navigation and use supplied tiny-house hero'
+          git push origin HEAD:verospace-mobile-production-fix
