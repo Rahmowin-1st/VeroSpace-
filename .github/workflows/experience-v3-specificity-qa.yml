@@ -1,0 +1,40 @@
+name: Experience v3 Specificity QA
+on:
+  push:
+    branches: [verospace-no-blur-liquid-glass]
+    paths: ['.github/workflows/experience-v3-specificity-qa.yml']
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: verospace-no-blur-liquid-glass}
+      - run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Verify tactile, panel, rail, preload and no-blur
+        run: |
+          python3 -m http.server 4173 >/tmp/http.log 2>&1 &
+          cat > qa.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const sizes=[[320,700],[360,780],[390,844],[430,932],[768,1024],[1024,768],[1440,900]];
+          const browser=await chromium.launch({headless:true});
+          try{
+            for(const [width,height] of sizes){
+              const c=await browser.newContext({viewport:{width,height}}), p=await c.newPage(), errors=[]; p.on('pageerror',e=>errors.push(String(e)));
+              await p.goto('http://127.0.0.1:4173',{waitUntil:'domcontentloaded',timeout:60000});
+              await p.waitForFunction(()=>document.querySelector('.reference-grid')?.dataset.experienceV3==='true',{timeout:15000});
+              const base=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth,refs:document.querySelectorAll('.reference-tile').length,preload:window.__verospaceImageCacheV3 instanceof Map,blur:[...document.querySelectorAll('*')].some(el=>{const s=getComputedStyle(el);return /blur\(/i.test(s.filter)||/blur\(/i.test(s.backdropFilter||'')||/blur\(/i.test(s.webkitBackdropFilter||'')})}));
+              if(base.sw>base.iw+1||base.refs<21||!base.preload||base.blur) throw new Error(`${width}: base ${JSON.stringify(base)}`);
+              const a=p.locator('.process-list>li').first(), b=p.locator('.process-list>li').nth(1); await a.scrollIntoViewIfNeeded(); await a.click(); await p.waitForTimeout(120);
+              const state=await a.evaluate(el=>({selected:el.classList.contains('is-selected'),transform:getComputedStyle(el).transform,border:getComputedStyle(el).borderColor,shadow:getComputedStyle(el).boxShadow}));
+              if(!state.selected||state.transform==='none'||!state.border.includes('205')||state.shadow==='none') throw new Error(`${width}: tactile ${JSON.stringify(state)}`);
+              await b.click(); if(await a.evaluate(el=>el.classList.contains('is-selected'))||!await b.evaluate(el=>el.classList.contains('is-selected'))) throw new Error(`${width}: persistent selection`);
+              if(width<=900){await p.locator('.menu-button').click();await p.waitForTimeout(450);const m=await p.evaluate(()=>{const e=document.querySelector('.site-menu'),r=e.getBoundingClientRect(),d=getComputedStyle(document.querySelector('.menu-backdrop'));return{x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,open:e.classList.contains('open'),opacity:+d.opacity}});if(!m.open||m.x<=0||m.y<=0||m.w>=m.vw-2||m.h>=m.vh-2||m.opacity<.5)throw new Error(`${width}: menu ${JSON.stringify(m)}`);await p.keyboard.press('Escape')}
+              const rail=p.locator('.reference-grid');await rail.scrollIntoViewIfNeeded();const x0=await rail.evaluate(e=>e.scrollLeft);await p.locator('[data-reference-next]').click();await p.waitForTimeout(450);const x1=await rail.evaluate(e=>e.scrollLeft);if(x1<=x0+20)throw new Error(`${width}: rail ${x0}->${x1}`);
+              await p.evaluate(()=>scrollTo(0,0));await p.mouse.wheel(0,700);await p.waitForTimeout(250);const y=await p.evaluate(()=>scrollY);if(y<100)throw new Error(`${width}: scroll ${y}`);if(errors.length)throw new Error(`${width}: ${errors.join(' | ')}`);
+              console.log(`GREEN ${width} refs=${base.refs} rail=${Math.round(x1)} scroll=${y}`);await c.close();
+            }
+            console.log('EXPERIENCE_V3_GREEN');
+          }finally{await browser.close()}
+          EOF
+          node qa.mjs
