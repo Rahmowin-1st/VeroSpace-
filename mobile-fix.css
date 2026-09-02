@@ -24,6 +24,16 @@ html,body{max-width:100%;overflow-x:clip}
 /* Tablets and phones: one deterministic full-screen menu. */
 @media (max-width:900px){
   body.menu-open{overflow:hidden!important;touch-action:none}
+  /* A transformed/filtered ancestor becomes the containing block for fixed descendants.
+     Remove those effects here so .site-menu is truly viewport-fixed. */
+  .site-header{
+    left:18px!important;
+    right:18px!important;
+    width:auto!important;
+    transform:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
+  }
   .menu-backdrop{display:none!important}
   .site-menu{
     inset:0!important;
@@ -70,14 +80,16 @@ html,body{max-width:100%;overflow-x:clip}
   :root{--page:calc(100% - 28px)}
   .site-header{
     top:max(8px,env(safe-area-inset-top))!important;
-    left:50%!important;
-    right:auto!important;
-    width:calc(100% - 16px)!important;
+    left:8px!important;
+    right:8px!important;
+    width:auto!important;
     max-width:none!important;
     height:62px!important;
     padding:6px 7px!important;
     border-radius:999px!important;
-    transform:translateX(-50%)!important;
+    transform:none!important;
+    backdrop-filter:none!important;
+    -webkit-backdrop-filter:none!important;
   }
   .brand{min-width:0!important}
   .brand-mark{width:48px!important;height:48px!important;flex:0 0 48px!important}
@@ -128,7 +140,7 @@ html,body{max-width:100%;overflow-x:clip}
 }
 
 @media (max-width:320px){
-  .site-header{width:calc(100% - 12px)!important}
+  .site-header{left:6px!important;right:6px!important;width:auto!important}
   .hero-copy{left:14px!important;right:14px!important;bottom:18px!important}
   .hero h1{font-size:37px!important}
   .hero-lede{margin-top:12px!important}
