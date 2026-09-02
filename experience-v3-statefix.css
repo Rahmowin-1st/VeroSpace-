@@ -8,6 +8,13 @@
   border-color:rgba(205,153,57,.76)!important;
   box-shadow:0 26px 58px rgba(21,31,47,.14),0 9px 26px rgba(200,154,71,.20),inset 0 1px 0 rgba(255,255,255,.98)!important;
 }
+/* conversion.css resets .reveal transforms with !important once GSAP owns reveal state.
+   Selected tactile state must deliberately outrank that reset. */
+html.conversion-motion-ready .reveal.is-selected,
+html.conversion-motion-ready .process-list>li.reveal.is-selected,
+html.conversion-motion-ready .service-feature.reveal.is-selected{
+  transform:translateY(-6px) scale(1.018)!important;
+}
 .process-list>li.is-selected::before,
 .service-feature.is-selected::before,
 .principles>div.is-selected::before,
@@ -22,7 +29,8 @@
   .service-feature.is-selected,
   .principles>div.is-selected,
   .trust-item.is-selected,
-  .reference-tile.is-selected{
+  .reference-tile.is-selected,
+  html.conversion-motion-ready .reveal.is-selected{
     transition:none!important;
     transform:translateY(-6px) scale(1.018)!important;
   }
