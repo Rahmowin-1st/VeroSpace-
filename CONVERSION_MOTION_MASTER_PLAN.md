@@ -5,7 +5,7 @@ Branch: `verospace-conversion-motion-v1`
 
 ## Non-negotiables
 - Preserve VeroSpace identity: navy / ivory / honey timber / liquid glass.
-- No Google fonts, Google UI, Google runtime references or Google-owned visual language.
+- No external-brand font/runtime/UI references or borrowed visual language.
 - No fake reviews, awards, client logos, client counts, performance numbers or claimed customer results.
 - Portfolio remains explicitly concept work where applicable.
 - Native scrolling only. No scroll hijack, no ScrollSmoother, no snap, no forced scroll position.
@@ -31,7 +31,9 @@ Fresh supporting image references selected from Unsplash pages marked free under
 4. `photo-1771371428960-35a50c2d4e7c` — bright modern residential interior.
 5. `photo-1784550283676-dba14673cfe7` — sunlight / warm wood reference.
 6. `photo-1785706313842-541f09684d5f` — bright room / timber floor reference.
-7. `photo-1752119491943-69bbabe34436` — bright calm residential reference.
+7. `photo-1623286728232-9107cb8f6b11` — real tiny-home loft interior.
+8. `photo-1623286728208-672dcecba73a` — tiny-home loft + built-in storage detail.
+9. `photo-1768413292067-fd4c2bdd64c5` — modern timber mezzanine / cabin interior.
 
 ## Conversion sequence
 1. **Outcome — Hero**
@@ -90,11 +92,11 @@ Fresh supporting image references selected from Unsplash pages marked free under
 
 ## Gates
 - G1 Reference bank + strategy — GREEN.
-- G2 Information architecture + copy — pending.
-- G3 Image gallery + portfolio result framing — pending.
-- G4 GSAP load choreography — pending.
-- G5 ScrollTrigger motion system — pending.
-- G6 CTA + consultation conversion pass — pending.
+- G2 Information architecture + copy — GREEN.
+- G3 Image gallery + portfolio result framing — GREEN.
+- G4 GSAP load choreography — coded, pending QA.
+- G5 ScrollTrigger motion system — coded, pending QA.
+- G6 CTA + consultation conversion pass — coded, pending QA.
 - G7 320–1920 local Chromium QA + reduced motion + no overflow + no scroll hijack — pending.
 
 ## Final acceptance before any deployment
