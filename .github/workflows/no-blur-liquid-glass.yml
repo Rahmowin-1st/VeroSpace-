@@ -8,14 +8,68 @@ on:
 permissions:
   contents: write
 jobs:
-  build:
+  build-and-qa:
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
         with:
           ref: verospace-no-blur-liquid-glass
       - name: Patch runtime blur
         run: python scripts/no_blur_patch.py
+      - name: Install Chromium QA
+        run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Run local no-blur browser QA
+        run: |
+          python3 -m http.server 4173 >/tmp/verospace-http.log 2>&1 &
+          cat > qa-no-blur.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const sizes=[[320,700],[390,844],[768,1024],[1440,900]];
+          const browser=await chromium.launch({headless:true});
+          for(const [width,height] of sizes){
+            const context=await browser.newContext({viewport:{width,height}});
+            const page=await context.newPage();
+            const errors=[]; page.on('pageerror',e=>errors.push(String(e)));
+            await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded',timeout:30000});
+            await page.locator('.hero').waitFor({state:'visible',timeout:15000});
+            await page.waitForTimeout(700);
+            const audit=await page.evaluate(()=>{
+              const bad=[];
+              for(const el of document.querySelectorAll('*')){
+                const cs=getComputedStyle(el);
+                const f=cs.filter||'';
+                const b=cs.backdropFilter||cs.webkitBackdropFilter||'';
+                if(/blur\(/i.test(f)) bad.push({el:el.className||el.tagName,kind:'filter',value:f});
+                if(b && b!=='none') bad.push({el:el.className||el.tagName,kind:'backdrop',value:b});
+              }
+              const header=getComputedStyle(document.querySelector('.site-header'));
+              const ambient=getComputedStyle(document.querySelector('.ambient-a'));
+              return {bad,sw:document.documentElement.scrollWidth,iw:innerWidth,headerBg:header.backgroundImage,ambientFilter:ambient.filter};
+            });
+            if(audit.bad.length) throw new Error(`${width}: runtime blur/backdrop remains ${JSON.stringify(audit.bad.slice(0,8))}`);
+            if(audit.sw>audit.iw+1) throw new Error(`${width}: overflow ${audit.sw}>${audit.iw}`);
+            if(!audit.headerBg.includes('gradient')) throw new Error(`${width}: optical glass gradient missing`);
+            if(audit.ambientFilter!=='none') throw new Error(`${width}: ambient filter ${audit.ambientFilter}`);
+            if(width<=900){
+              await page.locator('.menu-button').click();
+              await page.locator('.site-menu.open').waitFor({state:'visible',timeout:4000});
+              await page.waitForTimeout(400);
+              const menu=await page.evaluate(()=>{const e=document.querySelector('.site-menu'),r=e.getBoundingClientRect(),cs=getComputedStyle(e);return {x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,b:cs.backdropFilter||cs.webkitBackdropFilter||'none',bg:cs.backgroundImage}});
+              if(menu.b!=='none') throw new Error(`${width}: menu backdrop ${menu.b}`);
+              if(!menu.bg.includes('gradient')) throw new Error(`${width}: menu optical glass missing`);
+              if(width<=768 && (Math.abs(menu.x)>2||Math.abs(menu.y)>2||Math.abs(menu.w-menu.vw)>3||Math.abs(menu.h-menu.vh)>3)) throw new Error(`${width}: menu geometry ${JSON.stringify(menu)}`);
+              await page.keyboard.press('Escape');
+            }
+            await page.mouse.wheel(0,700); await page.waitForTimeout(250);
+            const y=await page.evaluate(()=>scrollY); if(y<100) throw new Error(`${width}: native scroll failed ${y}`);
+            if(errors.length) throw new Error(`${width}: page errors ${errors.join(' | ')}`);
+            console.log(`GREEN ${width}x${height}`);
+            await context.close();
+          }
+          await browser.close();
+          console.log('NO_BLUR_CHROMIUM_GREEN');
+          EOF
+          node qa-no-blur.mjs
       - name: Commit optical glass source
         run: |
           git config user.name 'github-actions[bot]'
