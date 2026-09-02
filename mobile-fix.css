@@ -1,0 +1,139 @@
+/* VeroSpace production responsive hardening — 2026-09-02 */
+
+/* Repair the invalid <=1100px page-width expression from the legacy sheet. */
+@media (max-width:1100px){
+  :root{--page:min(1120px,calc(100% - 36px))}
+}
+
+html,body{max-width:100%;overflow-x:clip}
+.site-header,.site-menu,.hero,.section,.footer{min-width:0}
+
+/* Keep the navigation materially opaque even if older cached rules exist. */
+.site-menu{
+  background-color:#102640!important;
+  background-image:linear-gradient(158deg,#102640 0%,#173756 62%,#1b3b5b 100%)!important;
+  color:#fff!important;
+  opacity:1!important;
+  isolation:isolate;
+}
+.site-menu *{max-width:100%}
+.menu-top,.menu-links,.menu-cta{position:relative;z-index:1}
+.menu-links a{min-width:0}
+.menu-links strong{min-width:0;overflow-wrap:normal;word-break:normal}
+
+/* Tablets and phones: one deterministic full-screen menu. */
+@media (max-width:900px){
+  body.menu-open{overflow:hidden!important;touch-action:none}
+  .menu-backdrop{display:none!important}
+  .site-menu{
+    inset:0!important;
+    top:0!important;
+    right:0!important;
+    bottom:0!important;
+    left:0!important;
+    width:100vw!important;
+    max-width:none!important;
+    height:100dvh!important;
+    min-height:100dvh!important;
+    margin:0!important;
+    border-radius:0!important;
+    padding:max(20px,env(safe-area-inset-top)) 20px max(20px,env(safe-area-inset-bottom))!important;
+    transform:translate3d(100%,0,0)!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important;
+    box-shadow:none!important;
+  }
+  .site-menu.open{transform:translate3d(0,0,0)!important}
+  .menu-top{align-items:center!important;gap:16px!important}
+  .menu-top strong{font-size:clamp(28px,7vw,36px)!important;line-height:1!important}
+  .menu-close{width:48px!important;height:48px!important;flex:0 0 48px!important}
+  .menu-links{display:grid!important;grid-template-columns:1fr!important;margin-top:28px!important;width:100%!important}
+  .menu-links a{
+    display:grid!important;
+    grid-template-columns:34px minmax(0,1fr)!important;
+    align-items:center!important;
+    width:100%!important;
+    min-height:58px!important;
+    padding:0!important;
+    border-bottom:1px solid rgba(255,255,255,.15)!important;
+    white-space:normal!important;
+  }
+  .menu-links span{font-size:10px!important;color:#c7d1dc!important}
+  .menu-links strong{font-size:clamp(25px,7vw,34px)!important;line-height:1.05!important;color:#fff!important}
+  .menu-cta{margin-top:24px!important;padding:18px!important;border-radius:22px!important;background:#224362!important}
+  .menu-cta p{font-size:14px!important;line-height:1.5!important;margin:9px 0 14px!important;color:#dce6ef!important}
+  .menu-consult{min-height:48px!important;width:100%!important}
+}
+
+@media (max-width:768px){
+  :root{--page:calc(100% - 28px)}
+  .site-header{
+    top:max(8px,env(safe-area-inset-top))!important;
+    left:50%!important;
+    right:auto!important;
+    width:calc(100% - 16px)!important;
+    max-width:none!important;
+    height:62px!important;
+    padding:6px 7px!important;
+    border-radius:999px!important;
+    transform:translateX(-50%)!important;
+  }
+  .brand{min-width:0!important}
+  .brand-mark{width:48px!important;height:48px!important;flex:0 0 48px!important}
+  .brand-name,.header-consult{display:none!important}
+  .header-actions{margin-left:auto!important;flex:0 0 auto!important}
+  .menu-button{width:48px!important;height:48px!important;flex:0 0 48px!important}
+
+  .hero{height:100svh!important;min-height:620px!important;max-width:100%!important}
+  .hero-image{object-position:center 46%!important}
+  .hero-shade{
+    background:linear-gradient(0deg,rgba(5,15,28,.88) 0%,rgba(5,15,28,.66) 42%,rgba(5,15,28,.2) 78%,rgba(5,15,28,.1) 100%)!important;
+  }
+  .hero-copy{
+    left:18px!important;
+    right:18px!important;
+    bottom:max(24px,env(safe-area-inset-bottom))!important;
+    width:auto!important;
+    max-width:560px!important;
+  }
+  .hero h1{font-size:clamp(42px,12vw,60px)!important;line-height:.92!important;letter-spacing:-.045em!important}
+  .hero-lede{max-width:520px!important;font-size:14px!important;line-height:1.5!important;margin-top:15px!important}
+  .hero-actions{display:grid!important;grid-template-columns:1fr!important;gap:9px!important;margin-top:18px!important;max-width:330px!important}
+  .hero-actions .button{width:100%!important;min-height:48px!important;white-space:normal!important}
+
+  .section,.footer{max-width:100%!important}
+  .project-grid,.services-grid,.process-list,.principles,.contact,.contact-form{min-width:0!important}
+  .project-card,.service-feature,.process-list li,.principles>div{min-width:0!important}
+  .section-head h2,.story-copy h2,.contact h2{overflow-wrap:anywhere}
+}
+
+@media (max-width:430px){
+  :root{--page:calc(100% - 24px)}
+  .hero-copy{left:16px!important;right:16px!important}
+  .hero h1{font-size:clamp(40px,12.3vw,53px)!important}
+  .hero-actions{max-width:none!important}
+  .menu-top strong{font-size:30px!important}
+  .menu-links strong{font-size:29px!important}
+}
+
+@media (max-width:360px){
+  :root{--page:calc(100% - 20px)}
+  .site-menu{padding-left:16px!important;padding-right:16px!important}
+  .hero{min-height:590px!important}
+  .hero h1{font-size:40px!important}
+  .hero-lede{font-size:13.5px!important}
+  .menu-links a{min-height:54px!important}
+  .menu-links strong{font-size:27px!important}
+}
+
+@media (max-width:320px){
+  .site-header{width:calc(100% - 12px)!important}
+  .hero-copy{left:14px!important;right:14px!important;bottom:18px!important}
+  .hero h1{font-size:37px!important}
+  .hero-lede{margin-top:12px!important}
+}
+
+@media (prefers-reduced-motion:reduce){
+  .site-menu{transition:none!important}
+}
