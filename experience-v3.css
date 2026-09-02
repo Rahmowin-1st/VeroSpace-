@@ -1,0 +1,163 @@
+/* VeroSpace Experience v3 — tactile selection, floating panel, horizontal visual library. No blur. */
+
+/* Persistent tactile selection: the chosen surface stays visibly lifted and gold-edged. */
+:where(.process-list>li,.service-feature,.principles>div,.trust-item,.reference-tile){
+  position:relative;
+  isolation:isolate;
+  transform-origin:center;
+  outline:none;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .28s cubic-bezier(.16,1,.3,1),box-shadow .28s ease,border-color .24s ease,background .24s ease;
+}
+:where(.process-list>li,.service-feature,.principles>div,.trust-item,.reference-tile)::before{
+  content:"";
+  position:absolute;
+  z-index:5;
+  inset:-1px;
+  border-radius:inherit;
+  pointer-events:none;
+  opacity:0;
+  border:1.5px solid rgba(218,165,65,.0);
+  box-shadow:inset 0 0 0 1px rgba(255,245,214,0),0 0 0 0 rgba(200,154,71,0);
+  transition:opacity .22s ease,border-color .22s ease,box-shadow .3s ease;
+}
+:where(.process-list>li,.service-feature,.principles>div,.trust-item,.reference-tile).is-pressing{
+  transform:translateY(-1px) scale(.994)!important;
+}
+:where(.process-list>li,.service-feature,.principles>div,.trust-item,.reference-tile).is-selected{
+  transform:translateY(-6px) scale(1.018)!important;
+  border-color:rgba(205,153,57,.72)!important;
+  box-shadow:0 24px 54px rgba(21,31,47,.13),0 8px 24px rgba(200,154,71,.18),inset 0 1px 0 rgba(255,255,255,.98)!important;
+}
+:where(.process-list>li,.service-feature,.principles>div,.trust-item,.reference-tile).is-selected::before{
+  opacity:1;
+  border-color:rgba(219,169,71,.88);
+  box-shadow:inset 0 0 0 1px rgba(255,244,211,.78),0 0 0 3px rgba(200,154,71,.12),0 12px 34px rgba(200,154,71,.12);
+}
+:where(.process-list>li,.service-feature,.principles>div,.trust-item).is-selected::after{
+  content:"";
+  position:absolute;
+  z-index:6;
+  right:16px;
+  top:15px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#d4a34d;
+  box-shadow:0 0 0 5px rgba(212,163,77,.13),inset 0 1px 0 rgba(255,255,255,.7);
+  pointer-events:none;
+}
+.process-list>li.is-selected>span{background:linear-gradient(145deg,#e0b966,#bd8730)!important;color:#fff!important;box-shadow:0 12px 28px rgba(190,135,48,.28),inset 0 1px 0 rgba(255,255,255,.55)!important}
+
+/* Navigation is a floating command panel over a dim curtain — never a full-screen replacement page. */
+.menu-backdrop{
+  background:rgba(5,13,23,.58)!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+@media(max-width:900px){
+  .site-menu{
+    top:max(84px,calc(env(safe-area-inset-top) + 72px))!important;
+    right:12px!important;
+    bottom:12px!important;
+    left:12px!important;
+    width:auto!important;
+    height:auto!important;
+    min-height:0!important;
+    max-height:calc(100dvh - max(96px,calc(env(safe-area-inset-top) + 84px)))!important;
+    margin:0!important;
+    border-radius:32px!important;
+    padding:0!important;
+    overflow:hidden!important;
+    border:1px solid rgba(255,255,255,.22)!important;
+    box-shadow:0 34px 92px rgba(1,8,16,.44),0 10px 30px rgba(1,8,16,.20),inset 0 1px 0 rgba(255,255,255,.18)!important;
+    transform:translate3d(0,-16px,0) scale(.975)!important;
+    transform-origin:top center!important;
+  }
+  .site-menu.open{transform:none!important}
+  .menu-shell{height:100%!important;max-height:100%!important;padding:18px!important;overflow:hidden!important}
+  .menu-layout{height:auto!important;max-height:calc(100dvh - 190px)!important;overflow-y:auto!important;overscroll-behavior:contain!important;padding-bottom:2px!important}
+  .menu-top{min-height:58px!important;padding-bottom:12px!important}
+  .menu-title-block strong{font-size:clamp(25px,7vw,32px)!important}
+  .menu-close{width:46px!important;height:46px!important;flex-basis:46px!important}
+  .menu-links{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:8px!important;margin-top:12px!important}
+  .menu-links a{min-height:96px!important;padding:12px!important;border-radius:21px!important}
+  .menu-links a>strong{font-size:clamp(22px,6vw,28px)!important}
+  .menu-contact-link{grid-column:1/-1!important;min-height:74px!important}
+  .menu-project-card{margin-top:10px!important;min-height:0!important;padding:16px!important;border-radius:22px!important}
+  .menu-project-card h2{margin-top:12px!important;font-size:clamp(24px,7vw,31px)!important}
+  .menu-project-card p{font-size:12px!important}
+  .menu-project-card .menu-consult{min-height:50px!important}
+}
+@media(max-width:360px){
+  .site-menu{top:max(74px,calc(env(safe-area-inset-top) + 66px))!important;right:8px!important;bottom:8px!important;left:8px!important;border-radius:27px!important}
+  .menu-shell{padding:14px!important}
+  .menu-layout{max-height:calc(100dvh - 162px)!important}
+  .menu-links a{min-height:86px!important;padding:10px!important}
+  .menu-links a>strong{font-size:22px!important}
+  .menu-project-card{padding:14px!important}
+}
+
+/* 20+ image reference rail: native horizontal movement, no scroll hijack or snap. */
+.reference-gallery{overflow:visible!important}
+.reference-head{position:relative}
+.reference-controls{display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-top:16px;grid-column:1/-1}
+.reference-control{
+  width:48px;height:48px;border-radius:50%;border:1px solid rgba(16,32,56,.10);background:linear-gradient(145deg,rgba(255,255,255,.90),rgba(244,235,219,.62));
+  color:#102038;font-size:22px;display:grid;place-items:center;box-shadow:0 10px 28px rgba(16,32,56,.08),inset 0 1px 0 rgba(255,255,255,.95);
+  transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .2s ease,border-color .2s ease
+}
+.reference-control:active{transform:translateY(2px) scale(.94);border-color:rgba(200,154,71,.48);box-shadow:0 5px 15px rgba(16,32,56,.08),0 0 0 3px rgba(200,154,71,.10)}
+.reference-grid{
+  display:grid!important;
+  grid-auto-flow:column!important;
+  grid-auto-columns:minmax(280px,33vw)!important;
+  grid-template-columns:none!important;
+  grid-template-rows:repeat(2,minmax(220px,27vw))!important;
+  gap:12px!important;
+  overflow-x:auto!important;
+  overflow-y:hidden!important;
+  padding:4px 2px 20px!important;
+  scroll-behavior:smooth;
+  scroll-snap-type:none!important;
+  overscroll-behavior-inline:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  scrollbar-color:rgba(200,154,71,.38) transparent;
+  touch-action:pan-x pan-y;
+}
+.reference-grid::-webkit-scrollbar{height:7px}.reference-grid::-webkit-scrollbar-track{background:transparent}.reference-grid::-webkit-scrollbar-thumb{background:rgba(200,154,71,.34);border-radius:999px}
+.reference-tile,.reference-tile:first-child,.reference-tile:nth-child(4){
+  grid-column:auto!important;
+  grid-row:auto!important;
+  height:auto!important;
+  min-width:0!important;
+  border-radius:26px!important;
+  contain:paint;
+}
+.reference-tile:nth-child(6n+1){grid-row:span 2!important}
+.reference-tile:nth-child(7n+3){grid-row:span 2!important}
+.reference-tile img{height:100%!important;min-height:100%!important;object-fit:cover!important}
+.reference-caption{pointer-events:none}
+.reference-count{margin-right:auto;color:#66717f;font-size:11px;letter-spacing:.10em;text-transform:uppercase}
+.reference-progress{height:2px;flex:1;max-width:160px;background:rgba(16,32,56,.08);border-radius:999px;overflow:hidden;margin-right:8px}.reference-progress>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#d6ae61,#b88331);border-radius:inherit;transition:width .16s linear}
+
+@media(max-width:768px){
+  .reference-head{display:block!important}
+  .reference-controls{justify-content:space-between;margin-top:14px}
+  .reference-count{font-size:9px}
+  .reference-progress{max-width:90px}
+  .reference-grid{grid-auto-columns:82vw!important;grid-template-rows:220px 220px!important;gap:9px!important;margin-right:calc((100vw - 100%) / -2)!important;padding-right:18px!important}
+  .reference-tile:nth-child(6n+1),.reference-tile:nth-child(7n+3){grid-row:span 2!important}
+}
+@media(max-width:430px){
+  .reference-grid{grid-auto-columns:84vw!important;grid-template-rows:205px 205px!important}
+  .reference-control{width:44px;height:44px}
+}
+
+/* Keep the selected treatment calm when reduced motion is requested. */
+@media(prefers-reduced-motion:reduce){
+  :where(.process-list>li,.service-feature,.principles>div,.trust-item,.reference-tile){transition:none!important}
+  :where(.process-list>li,.service-feature,.principles>div,.trust-item,.reference-tile).is-selected{transform:none!important}
+  .reference-grid{scroll-behavior:auto!important}
+}
