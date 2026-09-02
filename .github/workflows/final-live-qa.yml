@@ -3,23 +3,19 @@ on:
   push:
     branches: [verospace-final-live-qa]
     paths: ['.github/workflows/final-live-qa.yml']
-permissions:
-  contents: write
 jobs:
   browser-qa:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: {node-version: 22}
       - run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
       - name: Test public production in Chromium
         run: |
           cat > ./qa-live.mjs <<'EOF'
-          import {chromium} from 'playwright'; import fs from 'fs';
+          import {chromium} from 'playwright';
           const sizes=[[320,700],[360,780],[390,844],[430,932],[768,1024],[1024,768],[1366,768],[1440,900],[1600,900],[1920,1080]];
-          const report=[]; let failure=null;
           const browser=await chromium.launch({headless:true});
           try{
             for(const [width,height] of sizes){
@@ -36,33 +32,19 @@ jobs:
               if(base.cards!==5||base.forbidden!==0) throw new Error(`${width}: cards/nav mismatch cards=${base.cards} forbidden=${base.forbidden}`);
               const asset=await page.evaluate(async()=>{const r=await fetch('/assets/verospace-home-yellow.webp');const b=await r.blob();return [r.status,r.headers.get('content-type'),b.size]});
               if(asset[0]!==200||asset[1]!=='image/webp'||asset[2]<10000) throw new Error(`${width}: hero asset bad ${asset}`);
-              let menu='desktop';
               if(width<=900){
                 await page.locator('.menu-button').click(); await page.locator('.site-menu.open').waitFor({state:'visible',timeout:5000}); await page.waitForTimeout(380);
                 const m=await page.evaluate(()=>{const e=document.querySelector('.site-menu'),r=e.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,open:e.classList.contains('open'),aria:e.getAttribute('aria-hidden'),links:[...document.querySelectorAll('.menu-links strong')].map(x=>{const q=x.getBoundingClientRect();return [x.textContent.trim(),q.width,q.height]})}});
                 if(!m.open||m.aria!=='false'||Math.abs(m.x)>2||Math.abs(m.y)>2||Math.abs(m.w-m.vw)>3||Math.abs(m.h-m.vh)>3) throw new Error(`${width}: menu geometry bad ${JSON.stringify(m)}`);
                 if(m.links.length!==5||m.links.some(x=>x[1]<100||x[2]>62)) throw new Error(`${width}: menu text broken ${JSON.stringify(m.links)}`);
-                await page.keyboard.press('Escape'); await page.waitForFunction(()=>!document.querySelector('.site-menu')?.classList.contains('open'),{timeout:3000}); menu='GREEN';
+                await page.keyboard.press('Escape'); await page.waitForFunction(()=>!document.querySelector('.site-menu')?.classList.contains('open'),{timeout:3000});
               }
               await page.mouse.wheel(0,700); await page.waitForTimeout(300); const down=await page.evaluate(()=>scrollY); if(down<100) throw new Error(`${width}: native scroll failed ${down}`);
               const api=await page.evaluate(async()=>{const r=await fetch('/api/consultation');return r.status}); if(api!==405) throw new Error(`${width}: API GET ${api}`);
               if(errors.length) throw new Error(`${width}: page errors ${errors.join(' | ')}`);
-              report.push({width,height,menu,scrollDown:down,hero:base.hero,asset}); await context.close();
+              console.log(`GREEN ${width}x${height} scroll=${down}`); await context.close();
             }
-          }catch(e){failure=String(e?.stack||e)}
-          finally{await browser.close()}
-          const result={status:failure?'RED':'GREEN',failure,report}; fs.writeFileSync('qa-live-result.json',JSON.stringify(result,null,2)); console.log(JSON.stringify(result,null,2));
+            console.log('FINAL_LIVE_QA_GREEN');
+          } finally { await browser.close(); }
           EOF
           node ./qa-live.mjs
-      - name: Persist QA result
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git pull --rebase origin verospace-final-live-qa
-          mkdir -p .qa
-          cp qa-live-result.json .qa/final-live-result.json
-          git add .qa/final-live-result.json
-          git commit -m 'test: persist final live QA result'
-          git push origin HEAD:verospace-final-live-qa
-      - name: Require GREEN
-        run: node -e "const r=require('./qa-live-result.json'); if(r.status!=='GREEN'){console.error(r.failure); process.exit(1)}; console.log('FINAL_LIVE_QA_GREEN')"
