@@ -4,14 +4,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="description" content="VeroSpace designs, renovates and coordinates complete home transformations.">
-  <meta name="theme-color" content="#f7f3ec">
+  <meta name="theme-color" content="#0c1b2f">
+  <meta name="color-scheme" content="light">
   <title>VeroSpace — Interior Design & Renovation</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
   <link rel="preload" as="image" href="assets/verospace-home-yellow.webp" type="image/webp" fetchpriority="high">
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=20260902e">
+  <link rel="stylesheet" href="ultra-ui.css?v=20260902u1">
 </head>
 <body>
   <div class="ambient ambient-a" aria-hidden="true"></div>
@@ -37,24 +36,29 @@
   <button class="menu-backdrop" type="button" aria-label="Close navigation" data-menu-close tabindex="-1"></button>
   <aside class="site-menu" id="siteMenu" aria-hidden="true" aria-label="Site menu" inert>
     <div class="menu-refraction" aria-hidden="true"></div>
-    <div class="menu-top">
-      <div><span class="menu-kicker">VeroSpace</span><strong>Navigate</strong></div>
-      <button class="menu-close" type="button" aria-label="Close menu" data-menu-close>×</button>
-    </div>
-    <div class="menu-layout">
-      <nav class="menu-links" aria-label="Expanded navigation">
-        <a href="#home"><span>01</span><strong>Home</strong><i aria-hidden="true">↗</i></a>
-        <a href="#projects"><span>02</span><strong>Projects</strong><i aria-hidden="true">↗</i></a>
-        <a href="#services"><span>03</span><strong>Services</strong><i aria-hidden="true">↗</i></a>
-        <a href="#process"><span>04</span><strong>Process</strong><i aria-hidden="true">↗</i></a>
-        <a href="#contact"><span>05</span><strong>Contact</strong><i aria-hidden="true">↗</i></a>
-      </nav>
-      <div class="menu-project-card">
-        <p class="menu-card-eyebrow">Start a project</p>
-        <h2>Turn your space into something considered.</h2>
-        <p>Share the essentials without leaving VeroSpace.</p>
-        <button class="pill-button menu-consult" type="button" data-scroll="#contact"><span>Book consultation</span><i aria-hidden="true">↗</i></button>
-        <small>Private · in-site consultation</small>
+    <div class="menu-shell">
+      <div class="menu-top">
+        <div class="menu-title-block">
+          <span class="menu-kicker">VeroSpace · navigation</span>
+          <strong>Move through the studio.</strong>
+        </div>
+        <button class="menu-close" type="button" aria-label="Close menu" data-menu-close>×</button>
+      </div>
+      <div class="menu-layout">
+        <nav class="menu-links" aria-label="Expanded navigation">
+          <a href="#home"><span>01</span><strong>Home</strong><i aria-hidden="true">↗</i></a>
+          <a href="#projects"><span>02</span><strong>Projects</strong><i aria-hidden="true">↗</i></a>
+          <a href="#services"><span>03</span><strong>Services</strong><i aria-hidden="true">↗</i></a>
+          <a href="#process"><span>04</span><strong>Process</strong><i aria-hidden="true">↗</i></a>
+          <a class="menu-contact-link" href="#contact"><span>05</span><strong>Contact</strong><i aria-hidden="true">↗</i></a>
+        </nav>
+        <div class="menu-project-card">
+          <div class="menu-project-head"><span>Start a project</span><b>Direct consultation</b></div>
+          <h2>Start with the space, not a sales pitch.</h2>
+          <p>Share the essentials and move straight into a focused VeroSpace consultation.</p>
+          <button class="pill-button menu-consult" type="button" data-scroll="#contact"><span>Book consultation</span><i aria-hidden="true">↗</i></button>
+          <small>Private · in-site request</small>
+        </div>
       </div>
     </div>
   </aside>
@@ -179,10 +183,30 @@
     <p>VeroSpace · interior design & renovation</p>
   </footer>
 
-  <dialog class="project-dialog" id="projectDialog" aria-labelledby="dialogTitle">
-    <button class="dialog-close" type="button" aria-label="Close project">×</button>
-    <div class="dialog-media"><img id="dialogImage" src="" alt=""></div>
-    <div class="dialog-copy"><p class="eyebrow" id="dialogType">VeroSpace concept project</p><h2 id="dialogTitle">Project</h2><p id="dialogText"></p><dl><div><dt>Scope</dt><dd id="dialogScope"></dd></div><div><dt>Focus</dt><dd id="dialogFocus"></dd></div><div class="dialog-result"><dt>Problem solved</dt><dd id="dialogResult"></dd></div></dl><button class="pill-button primary" type="button" data-scroll="#contact">Discuss a similar project</button></div>
+  <dialog class="project-dialog" id="projectDialog" aria-labelledby="dialogTitle" aria-describedby="dialogText">
+    <div class="dialog-stage">
+      <div class="dialog-media">
+        <img id="dialogImage" src="" alt="">
+        <div class="dialog-media-shade" aria-hidden="true"></div>
+        <div class="dialog-topbar">
+          <span>VeroSpace project study</span>
+          <button class="dialog-close" type="button" aria-label="Close project">×</button>
+        </div>
+      </div>
+      <div class="dialog-copy">
+        <div class="dialog-heading">
+          <p class="eyebrow" id="dialogType">VeroSpace concept project</p>
+          <h2 id="dialogTitle">Project</h2>
+          <p id="dialogText"></p>
+        </div>
+        <dl class="dialog-facts">
+          <div><dt>Scope</dt><dd id="dialogScope"></dd></div>
+          <div><dt>Focus</dt><dd id="dialogFocus"></dd></div>
+          <div class="dialog-result"><dt>Problem solved</dt><dd id="dialogResult"></dd></div>
+        </dl>
+        <button class="pill-button primary dialog-cta" type="button" data-scroll="#contact">Discuss a similar project <span aria-hidden="true">↗</span></button>
+      </div>
+    </div>
   </dialog>
 
   <div class="send-overlay" id="sendOverlay" aria-hidden="true">
@@ -201,5 +225,7 @@
   </div>
 
   <script src="script.js?v=20260902e" defer></script>
+  <script src="native.js?v=20260902u1" defer></script>
+  <script src="ultra-ui.js?v=20260902u1" defer></script>
 </body>
 </html>
