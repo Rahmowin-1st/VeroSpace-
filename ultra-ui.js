@@ -56,10 +56,7 @@
     activePresses.forEach(el => endPress(el));
   });
 
-  /*
-   * Project cards are one coherent target. The original View Project button
-   * remains the canonical control; card activation simply delegates to it.
-   */
+  /* Project cards are one coherent target. */
   document.querySelectorAll('.project-card').forEach(card => {
     if (!card.hasAttribute('tabindex')) card.tabIndex = 0;
     card.setAttribute('role', 'button');
@@ -105,4 +102,14 @@
     menuObserver.observe(menu, {attributes: true, attributeFilter: ['class']});
     syncMenuRoot();
   }
+})();
+
+/* Load the conversion/motion round without touching production or the base HTML. */
+(() => {
+  if (document.querySelector('script[data-verospace-conversion]')) return;
+  const script = document.createElement('script');
+  script.src = 'conversion-motion.js?v=20260902c1';
+  script.defer = true;
+  script.dataset.verospaceConversion = 'true';
+  document.head.appendChild(script);
 })();
