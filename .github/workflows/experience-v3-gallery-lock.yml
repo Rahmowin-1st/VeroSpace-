@@ -1,0 +1,67 @@
+name: Experience v3 Gallery Lock
+on:
+  push:
+    branches: [verospace-no-blur-liquid-glass]
+    paths: ['.github/workflows/experience-v3-gallery-lock.yml']
+permissions:
+  contents: write
+jobs:
+  lock-and-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: verospace-no-blur-liquid-glass}
+      - name: Lock gallery ownership to Experience v3
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('experience-v3.js')
+          s=p.read_text()
+          old="grid.dataset.experienceV3 = 'true';"
+          new="grid.dataset.experienceV3 = 'true';\n    grid.dataset.expanded = 'true'; // prevent the legacy conversion layer from appending extra tiles after v3 owns the rail"
+          if new not in s:
+            if old not in s: raise SystemExit('gallery ownership marker not found')
+            s=s.replace(old,new,1)
+          # expose target count for deterministic QA without forcing eager image decoding during scroll
+          old2="const imgs = $$('.reference-tile img', grid);"
+          new2="const imgs = $$('.reference-tile img', grid);\n    document.documentElement.dataset.referencePreloadTarget = String(imgs.length);"
+          if new2 not in s:
+            if old2 not in s: raise SystemExit('preload image collection marker not found')
+            s=s.replace(old2,new2,1)
+          # publish cache progress after every completed preload task
+          old3="loadOne(img).finally(() => {running--; schedule();});"
+          new3="loadOne(img).finally(() => {running--; document.documentElement.dataset.referencePreloadCached = String(cache.size); schedule();});"
+          if new3 not in s:
+            if old3 not in s: raise SystemExit('preload completion marker not found')
+            s=s.replace(old3,new3,1)
+          p.write_text(s)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experience-v3.js
+          if ! git diff --cached --quiet; then git commit -m 'perf: keep curated rail stable and preload every reference'; git push origin HEAD:verospace-no-blur-liquid-glass; fi
+      - name: Install browser QA
+        run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Verify stable gallery and full preload queue
+        run: |
+          python3 -m http.server 4173 >/tmp/http.log 2>&1 &
+          cat > qa-gallery.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({headless:true});
+          try{
+            const ctx=await browser.newContext({viewport:{width:390,height:844}});const p=await ctx.newPage();const errors=[];p.on('pageerror',e=>errors.push(String(e)));
+            await p.goto('http://127.0.0.1:4173',{waitUntil:'load',timeout:60000});
+            await p.waitForFunction(()=>document.querySelector('.reference-grid')?.dataset.experienceV3==='true',{timeout:15000});
+            await p.waitForTimeout(1200); // allow legacy conversion-flow to run; it must not append anything
+            const stable=await p.evaluate(()=>({refs:document.querySelectorAll('.reference-tile').length,expanded:document.querySelector('.reference-grid')?.dataset.expanded,target:+(document.documentElement.dataset.referencePreloadTarget||0),cache:window.__verospaceImageCacheV3 instanceof Map}));
+            if(stable.refs!==22||stable.expanded!=='true'||stable.target!==22||!stable.cache) throw new Error(`stable gallery bad ${JSON.stringify(stable)}`);
+            await p.waitForFunction(()=>document.documentElement.dataset.referencePreload==='complete',{timeout:90000});
+            const done=await p.evaluate(()=>({refs:document.querySelectorAll('.reference-tile').length,target:+document.documentElement.dataset.referencePreloadTarget,cached:+(document.documentElement.dataset.referencePreloadCached||0),map:window.__verospaceImageCacheV3?.size||0,sw:document.documentElement.scrollWidth,iw:innerWidth}));
+            if(done.refs!==22||done.target!==22||done.cached<22||done.map<22||done.sw>done.iw+1) throw new Error(`preload coverage bad ${JSON.stringify(done)}`);
+            await p.evaluate(()=>scrollTo(0,0));await p.mouse.wheel(0,700);await p.waitForTimeout(250);const y=await p.evaluate(()=>scrollY);if(y<100)throw new Error(`native scroll failed ${y}`);
+            if(errors.length)throw new Error(errors.join(' | '));
+            console.log(`GALLERY_PRELOAD_GREEN refs=${done.refs} cached=${done.map} scroll=${y}`);await ctx.close();
+          }finally{await browser.close()}
+          EOF
+          node qa-gallery.mjs
