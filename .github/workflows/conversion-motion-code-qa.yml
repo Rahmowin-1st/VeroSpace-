@@ -26,7 +26,15 @@ jobs:
           if bad: raise SystemExit('Blocked external-brand reference: '+', '.join(bad))
 
           motion=Path('conversion-motion.js').read_text()
-          forbidden=['ScrollSmoother','normalizeScroll','addEventListener(\\'scroll\\'','addEventListener("scroll"','scrollTo(','scrollTop =','scrollTop=']
+          forbidden=(
+            'ScrollSmoother',
+            'normalizeScroll',
+            "addEventListener('scroll'",
+            'addEventListener("scroll"',
+            'scrollTo(',
+            'scrollTop =',
+            'scrollTop='
+          )
           hits=[x for x in forbidden if x in motion]
           if hits: raise SystemExit('Forbidden scroll ownership in conversion layer: '+', '.join(hits))
           if 'ScrollTrigger.min.js' not in motion or 'gsap.min.js' not in motion:
