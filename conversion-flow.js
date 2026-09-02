@@ -73,24 +73,25 @@
     if (el) el.textContent = value;
   }
 
+  /* Verified direct Unsplash assets from free-to-use tiny-home reference pages. */
   const extraReferences = [
     {
-      src: 'https://images.unsplash.com/photo-1623286728232-9107cb8f6b11?auto=format&fit=crop&w=1600&q=84',
+      src: 'https://images.unsplash.com/photo-1623286728232-9107cb8f6b11?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1600',
       alt: 'Tiny-home loft interior with white walls, warm timber and built-in storage',
       title: 'Vertical space',
       tag: 'Loft + storage'
     },
     {
-      src: 'https://images.unsplash.com/photo-1623286728208-672dcecba73a?auto=format&fit=crop&w=1600&q=84',
-      alt: 'Compact tiny-home interior with loft, crafted timber and a white shell',
+      src: 'https://images.unsplash.com/photo-1588621356760-480a27a2d105?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1600',
+      alt: 'Compact tiny-home kitchen with white shell, dark cabinetry and loft ladder',
       title: 'Compact living',
-      tag: 'Built-in utility'
+      tag: 'Kitchen + loft'
     },
     {
-      src: 'https://images.unsplash.com/photo-1768413292067-fd4c2bdd64c5?auto=format&fit=crop&w=1600&q=84',
-      alt: 'Modern timber mezzanine interior with warm natural material and daylight',
-      title: 'Warm volume',
-      tag: 'Mezzanine'
+      src: 'https://images.unsplash.com/photo-1673246469598-6a73637fd6a8?auto=format&fit=crop&fm=jpg&ixlib=rb-4.1.0&q=82&w=1600',
+      alt: 'Tiny-home loft bedroom with warm timber ceiling, daylight and white walls',
+      title: 'Warm loft',
+      tag: 'Timber + light'
     }
   ];
 
