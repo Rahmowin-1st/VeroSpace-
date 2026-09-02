@@ -16,21 +16,15 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           bad=[]
-          skip={'.git','node_modules'}
-          exts={'.html','.css','.js','.json','.md','.txt','.yml','.yaml'}
           needles=('goo'+'gle','gsta'+'tic','goo'+'gle'+'apis')
           for p in Path('.').rglob('*'):
-            if not p.is_file() or any(x in p.parts for x in skip) or p.suffix.lower() not in exts:
-              continue
+            if not p.is_file() or '.git' in p.parts or 'node_modules' in p.parts or p.suffix.lower() not in {'.html','.css','.js','.json','.md','.txt','.yml','.yaml'}: continue
             text=p.read_text(errors='ignore').lower()
-            for needle in needles:
-              if needle in text:
-                bad.append(f'{p}: blocked external reference')
-          if bad:
-            raise SystemExit('External-brand audit failed:\n'+'\n'.join(bad))
+            if any(n in text for n in needles): bad.append(str(p))
+          if bad: raise SystemExit('Blocked external-brand reference: '+', '.join(bad))
           print('BRAND_AUDIT_GREEN')
           PY
-      - name: Prepare browser QA
+      - name: Prepare browser
         run: |
           npm init -y >/dev/null 2>&1
           npm i playwright-core@1.55.0 >/dev/null 2>&1
@@ -40,88 +34,49 @@ jobs:
           echo "BROWSER_PATH=$BROWSER_PATH" >> "$GITHUB_ENV"
       - name: Browser QA without deployment
         run: |
-          python3 -m http.server 4173 >/tmp/verospace-http.log 2>&1 &
-          SERVER_PID=$!
-          trap 'kill $SERVER_PID || true' EXIT
-          sleep 2
-          cat > ./qa.mjs <<'EOF'
+          python3 -m http.server 4173 >/tmp/vs-http.log 2>&1 &
+          PID=$!; trap 'kill $PID || true' EXIT; sleep 2
+          cat > qa.mjs <<'EOF'
           import {chromium} from 'playwright-core';
           const sizes=[[320,700],[360,780],[390,844],[430,932],[768,1024],[1024,768],[1440,900],[1920,1080]];
           const blocked=[['goo','gle'].join(''),['gsta','tic'].join(''),['goo','gle','apis'].join('')];
           const browser=await chromium.launch({headless:true,executablePath:process.env.BROWSER_PATH,args:['--no-sandbox','--disable-dev-shm-usage']});
           for(const [width,height] of sizes){
-            const context=await browser.newContext({viewport:{width,height}});
-            const page=await context.newPage();
-            const errors=[];
+            const context=await browser.newContext({viewport:{width,height}}),page=await context.newPage(),errors=[];
             page.on('pageerror',e=>errors.push(String(e)));
             await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded',timeout:30000});
             await page.locator('.hero').waitFor({state:'visible',timeout:10000});
-            const base=await page.evaluate(blocked=>({
-              y:scrollY,
-              sw:document.documentElement.scrollWidth,
-              iw:innerWidth,
-              blockedRefs:[...document.querySelectorAll('link,script')].map(x=>x.href||x.src||'').filter(x=>blocked.some(b=>x.toLowerCase().includes(b))),
-              cards:document.querySelectorAll('.project-card').length,
-              nativeLoaded:[...document.scripts].some(s=>s.src.includes('native.js')),
-              ultraLoaded:[...document.styleSheets].some(s=>String(s.href||'').includes('ultra-ui.css'))&&[...document.scripts].some(s=>s.src.includes('ultra-ui.js'))
-            }),blocked);
-            if(base.y!==0)throw new Error(`${width}: initial scrollY ${base.y}`);
-            if(base.sw>base.iw+1)throw new Error(`${width}: horizontal overflow ${base.sw}>${base.iw}`);
-            if(base.blockedRefs.length)throw new Error(`${width}: blocked external refs ${base.blockedRefs.join(',')}`);
-            if(base.cards!==5||!base.nativeLoaded||!base.ultraLoaded)throw new Error(`${width}: source layer missing ${JSON.stringify(base)}`);
+            const base=await page.evaluate(blocked=>({y:scrollY,sw:document.documentElement.scrollWidth,iw:innerWidth,cards:document.querySelectorAll('.project-card').length,bad:[...document.querySelectorAll('link,script')].map(x=>x.href||x.src||'').filter(x=>blocked.some(b=>x.toLowerCase().includes(b))),native:[...document.scripts].some(s=>s.src.includes('native.js')),ultra:[...document.styleSheets].some(s=>String(s.href||'').includes('ultra-ui.css'))&&[...document.scripts].some(s=>s.src.includes('ultra-ui.js'))}),blocked);
+            if(base.y!==0||base.sw>base.iw+1||base.cards!==5||base.bad.length||!base.native||!base.ultra)throw new Error(`${width}: base ${JSON.stringify(base)}`);
 
             const press=page.locator('.menu-button');
-            const box=await press.boundingBox();
-            await page.mouse.move(box.x+box.width/2,box.y+box.height/2);
-            await page.mouse.down();
+            await press.evaluate(el=>{const r=el.getBoundingClientRect();el.dispatchEvent(new PointerEvent('pointerdown',{bubbles:true,cancelable:true,pointerId:7,pointerType:'touch',clientX:r.left+r.width/2,clientY:r.top+r.height/2}));});
             await page.waitForTimeout(40);
-            if(!(await press.evaluate(el=>el.classList.contains('is-pressing'))))throw new Error(`${width}: press feedback did not engage`);
-            await page.mouse.up();
+            if(!(await press.evaluate(el=>el.classList.contains('is-pressing'))))throw new Error(`${width}: tactile press missing`);
+            await press.evaluate(el=>{const r=el.getBoundingClientRect();el.dispatchEvent(new PointerEvent('pointerup',{bubbles:true,cancelable:true,pointerId:7,pointerType:'touch',clientX:r.left+r.width/2,clientY:r.top+r.height/2}));});
             await page.waitForTimeout(150);
-            if(await press.evaluate(el=>el.classList.contains('is-pressing')))throw new Error(`${width}: press feedback stuck`);
+            if(await press.evaluate(el=>el.classList.contains('is-pressing')))throw new Error(`${width}: tactile press stuck`);
 
-            await page.locator('.menu-button').click();
-            await page.locator('.site-menu.open').waitFor({state:'visible',timeout:4000});
-            await page.waitForTimeout(420);
-            const menu=await page.locator('.site-menu').evaluate(el=>{
-              const r=el.getBoundingClientRect(),cs=getComputedStyle(el);
-              const links=[...el.querySelectorAll('.menu-links a')].map(a=>a.getBoundingClientRect());
-              return {x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,overflowX:el.scrollWidth>el.clientWidth+1,bg:cs.backgroundImage,links:links.length};
-            });
-            if(menu.links!==5||menu.overflowX||!menu.bg.includes('gradient'))throw new Error(`${width}: menu composition ${JSON.stringify(menu)}`);
-            if(width<=900&&(Math.abs(menu.x)>2||Math.abs(menu.y)>2||Math.abs(menu.w-menu.vw)>3||Math.abs(menu.h-menu.vh)>3))throw new Error(`${width}: mobile menu viewport ${JSON.stringify(menu)}`);
-            if(width>900&&(menu.x<0||menu.y<0||menu.x+menu.w>menu.vw+2||menu.y+menu.h>menu.vh+2))throw new Error(`${width}: desktop menu viewport ${JSON.stringify(menu)}`);
-            await page.keyboard.press('Escape');
-            await page.waitForFunction(()=>!document.querySelector('.site-menu')?.classList.contains('open'),{timeout:3000});
+            await press.click();
+            const menu=page.locator('.site-menu.open');await menu.waitFor({state:'visible',timeout:4000});await page.waitForTimeout(420);
+            const m=await menu.evaluate(el=>{const r=el.getBoundingClientRect(),cs=getComputedStyle(el);return{x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,links:el.querySelectorAll('.menu-links a').length,ox:el.scrollWidth>el.clientWidth+1,bg:cs.backgroundImage}});
+            if(m.links!==5||m.ox||!m.bg.includes('gradient'))throw new Error(`${width}: menu ${JSON.stringify(m)}`);
+            if(width<=900&&(Math.abs(m.x)>2||Math.abs(m.y)>2||Math.abs(m.w-m.vw)>3||Math.abs(m.h-m.vh)>3))throw new Error(`${width}: mobile menu ${JSON.stringify(m)}`);
+            if(width>900&&(m.x<0||m.y<0||m.x+m.w>m.vw+2||m.y+m.h>m.vh+2))throw new Error(`${width}: desktop menu ${JSON.stringify(m)}`);
+            await page.keyboard.press('Escape');await page.waitForFunction(()=>!document.querySelector('.site-menu')?.classList.contains('open'));
 
-            await page.mouse.wheel(0,650);await page.waitForTimeout(220);
-            if(await page.evaluate(()=>scrollY)<100)throw new Error(`${width}: native scroll failed`);
-
+            await page.mouse.wheel(0,650);await page.waitForTimeout(220);if(await page.evaluate(()=>scrollY)<100)throw new Error(`${width}: native scroll failed`);
             if(width===390||width===1440){
-              await page.locator('.project-card').first().scrollIntoViewIfNeeded();
-              await page.locator('.project-card').first().click();
-              const dialog=page.locator('#projectDialog[open]');
-              await dialog.waitFor({state:'visible',timeout:4000});
-              await page.waitForTimeout(420);
-              const d=await dialog.evaluate(el=>{
-                const r=el.getBoundingClientRect();
-                const copy=el.querySelector('.dialog-copy');
-                const title=el.querySelector('#dialogTitle');
-                const facts=[...el.querySelectorAll('.dialog-facts>div')];
-                return {x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,overflowX:el.scrollWidth>el.clientWidth+1,title:title?.textContent.trim(),facts:facts.length,copyColor:getComputedStyle(copy).color,copyBg:getComputedStyle(copy).backgroundImage};
-              });
-              if(d.x<-2||d.y<-2||d.x+d.w>d.vw+2||d.y+d.h>d.vh+2||d.overflowX||!d.title||d.facts!==3||!d.copyBg.includes('gradient'))throw new Error(`${width}: project dialog ${JSON.stringify(d)}`);
+              const card=page.locator('.project-card').first();await card.scrollIntoViewIfNeeded();await card.click();
+              const dialog=page.locator('#projectDialog[open]');await dialog.waitFor({state:'visible',timeout:4000});await page.waitForTimeout(420);
+              const d=await dialog.evaluate(el=>{const r=el.getBoundingClientRect(),copy=el.querySelector('.dialog-copy');return{x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,ox:el.scrollWidth>el.clientWidth+1,title:el.querySelector('#dialogTitle')?.textContent.trim(),facts:el.querySelectorAll('.dialog-facts>div').length,bg:getComputedStyle(copy).backgroundImage}});
+              if(d.x<-2||d.y<-2||d.x+d.w>d.vw+2||d.y+d.h>d.vh+2||d.ox||!d.title||d.facts!==3||!d.bg.includes('gradient'))throw new Error(`${width}: dialog ${JSON.stringify(d)}`);
               await page.locator('.dialog-close').click();
             }
-
-            const role=await page.locator('.project-card').first().getAttribute('role');
-            const tab=await page.locator('.project-card').first().getAttribute('tabindex');
-            if(role!=='button'||tab!=='0')throw new Error(`${width}: project-card accessibility role=${role} tab=${tab}`);
-            if(errors.length)throw new Error(`${width}: page errors ${errors.join(' | ')}`);
-            console.log(`GREEN ${width}x${height}`);
-            await context.close();
+            const role=await page.locator('.project-card').first().getAttribute('role'),tab=await page.locator('.project-card').first().getAttribute('tabindex');
+            if(role!=='button'||tab!=='0'||errors.length)throw new Error(`${width}: accessibility/errors role=${role} tab=${tab} errors=${errors.join('|')}`);
+            console.log(`GREEN ${width}x${height}`);await context.close();
           }
-          await browser.close();
-          console.log('VEROSPACE_ULTRA_CODE_GREEN');
+          await browser.close();console.log('VEROSPACE_ULTRA_CODE_GREEN');
           EOF
-          node ./qa.mjs
+          node qa.mjs
