@@ -1,0 +1,48 @@
+name: Final VeroSpace Live QA
+on:
+  push:
+    branches: [verospace-final-live-qa]
+    paths: ['.github/workflows/final-live-qa.yml']
+jobs:
+  browser-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Test public production in Chromium
+        run: |
+          cat > /tmp/qa.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const sizes=[[320,700],[360,780],[390,844],[430,932],[768,1024],[1024,768],[1366,768],[1440,900],[1600,900],[1920,1080]];
+          const browser=await chromium.launch({headless:true});
+          for(const [width,height] of sizes){
+            const context=await browser.newContext({viewport:{width,height}}); const page=await context.newPage();
+            const errors=[]; page.on('pageerror',e=>errors.push(String(e)));
+            await page.goto('https://verospace-landing.vercel.app/',{waitUntil:'domcontentloaded',timeout:60000});
+            await page.locator('.hero').waitFor({state:'visible',timeout:20000}); await page.waitForTimeout(500);
+            const base=await page.evaluate(()=>({y:scrollY,sw:document.documentElement.scrollWidth,iw:innerWidth,hero:[document.querySelector('.hero-image')?.naturalWidth,document.querySelector('.hero-image')?.naturalHeight,document.querySelector('.hero-image')?.getAttribute('src')],ctas:[...document.querySelectorAll('.hero-actions .button')].map(x=>x.textContent.trim()),cards:document.querySelectorAll('.project-card').length,forbidden:document.querySelectorAll('.mobile-journey-dock,.hero-dock,.hero-rail').length}));
+            if(base.y!==0) throw new Error(`${width}: initial scroll ${base.y}`);
+            if(base.sw>base.iw+1) throw new Error(`${width}: horizontal overflow ${base.sw}>${base.iw}`);
+            if(base.hero[0]<300||!String(base.hero[2]).includes('verospace-home-yellow.webp')) throw new Error(`${width}: supplied hero missing ${JSON.stringify(base.hero)}`);
+            if(JSON.stringify(base.ctas)!==JSON.stringify(['Book a consultation','Explore projects'])) throw new Error(`${width}: hero CTA mismatch ${JSON.stringify(base.ctas)}`);
+            if(base.cards!==5||base.forbidden!==0) throw new Error(`${width}: cards/nav mismatch`);
+            const asset=await page.evaluate(async()=>{const r=await fetch('/assets/verospace-home-yellow.webp');const b=await r.blob();return [r.status,r.headers.get('content-type'),b.size]});
+            if(asset[0]!==200||asset[1]!=='image/webp'||asset[2]<10000) throw new Error(`${width}: hero asset bad ${asset}`);
+            if(width<=900){
+              await page.locator('.menu-button').click(); await page.waitForTimeout(350);
+              const m=await page.evaluate(()=>{const e=document.querySelector('.site-menu'),r=e.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,open:e.classList.contains('open'),aria:e.getAttribute('aria-hidden'),links:[...document.querySelectorAll('.menu-links strong')].map(x=>{const q=x.getBoundingClientRect();return [x.textContent.trim(),q.width,q.height]})}});
+              if(!m.open||m.aria!=='false'||Math.abs(m.x)>1||Math.abs(m.y)>1||Math.abs(m.w-m.vw)>2||Math.abs(m.h-m.vh)>2) throw new Error(`${width}: menu geometry bad ${JSON.stringify(m)}`);
+              if(m.links.length!==5||m.links.some(x=>x[1]<120||x[2]>58)) throw new Error(`${width}: menu text broken ${JSON.stringify(m.links)}`);
+              await page.keyboard.press('Escape'); await page.waitForTimeout(80);
+              if(await page.locator('.site-menu').evaluate(e=>e.classList.contains('open'))) throw new Error(`${width}: Escape close failed`);
+            }
+            await page.mouse.wheel(0,650); await page.waitForTimeout(220); const down=await page.evaluate(()=>scrollY); if(down<100) throw new Error(`${width}: native scroll failed ${down}`);
+            const api=await page.evaluate(async()=>{const r=await fetch('/api/consultation');return r.status}); if(api!==405) throw new Error(`${width}: API GET ${api}`);
+            if(errors.length) throw new Error(`${width}: page errors ${errors.join(' | ')}`);
+            console.log(`GREEN ${width}x${height} scroll=${down}`); await context.close();
+          }
+          await browser.close(); console.log('FINAL_LIVE_QA_GREEN');
+          EOF
+          node /tmp/qa.mjs
