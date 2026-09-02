@@ -105,6 +105,12 @@
 (() => {
   if (document.querySelector('script[data-verospace-conversion]')) return;
 
+  const style = document.createElement('link');
+  style.rel = 'stylesheet';
+  style.href = 'conversion-tune.css?v=20260902c3';
+  style.dataset.verospaceConversionStyle = 'true';
+  document.head.appendChild(style);
+
   const appendScript = (src, marker) => new Promise((resolve, reject) => {
     const script = document.createElement('script');
     script.src = src;
@@ -115,8 +121,8 @@
     document.head.appendChild(script);
   });
 
-  appendScript('conversion-motion.js?v=20260902c2', 'verospaceConversion')
-    .then(() => appendScript('conversion-flow.js?v=20260902c2', 'verospaceConversionFlow'))
+  appendScript('conversion-motion.js?v=20260902c3', 'verospaceConversion')
+    .then(() => appendScript('conversion-flow.js?v=20260902c3', 'verospaceConversionFlow'))
     .catch(error => {
       console.warn('VeroSpace conversion layer unavailable; base experience preserved.', error);
       document.documentElement.dataset.conversion = 'static-fallback';
