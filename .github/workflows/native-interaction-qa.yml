@@ -25,11 +25,11 @@ jobs:
             await p.waitForFunction(()=>document.querySelector('.hero-image')?.naturalWidth>0,{timeout:30000});
             const base=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth,cards:document.querySelectorAll('.project-card').length,nativeLoaded:[...document.scripts].some(s=>s.src.includes('native.js'))}));
             if(base.sw>base.iw+1||base.cards!==5||!base.nativeLoaded)throw new Error(`${w}: base ${JSON.stringify(base)}`);
-            const bodyPrevented=await p.evaluate(()=>{let prevented=false;const el=document.querySelector('.hero-copy');el.addEventListener('contextmenu',e=>{prevented=e.defaultPrevented},{once:true});const ev=new MouseEvent('contextmenu',{bubbles:true,cancelable:true});el.dispatchEvent(ev);return ev.defaultPrevented||prevented;});
+            const bodyPrevented=await p.evaluate(()=>{const el=document.querySelector('.hero-copy');const ev=new MouseEvent('contextmenu',{bubbles:true,cancelable:true});el.dispatchEvent(ev);return ev.defaultPrevented;});
             const inputPrevented=await p.evaluate(()=>{const el=document.querySelector('input[name="name"]');const ev=new MouseEvent('contextmenu',{bubbles:true,cancelable:true});el.dispatchEvent(ev);return ev.defaultPrevented;});
             if(!bodyPrevented||inputPrevented)throw new Error(`${w}: ownership body=${bodyPrevented} input=${inputPrevented}`);
             await p.mouse.wheel(0,700);await p.waitForTimeout(250);if(await p.evaluate(()=>scrollY)<100)throw new Error(`${w}: scroll failed`);
-            await p.locator('.menu-button').click();await p.locator('.site-menu.open').waitFor({state:'visible',timeout:5000});
+            await p.locator('.menu-button').click();await p.locator('.site-menu.open').waitFor({state:'visible',timeout:5000});await p.waitForTimeout(550);
             if(w<=900){const g=await p.locator('.site-menu').evaluate(e=>{const r=e.getBoundingClientRect();return [r.x,r.y,r.width,r.height,innerWidth,innerHeight]});if(Math.abs(g[0])>2||Math.abs(g[1])>2||Math.abs(g[2]-g[4])>3||Math.abs(g[3]-g[5])>3)throw new Error(`${w}: menu ${g}`);}
             await c.close(); console.log(`GREEN ${w}x${h}`);
           }
