@@ -3,233 +3,256 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="description" content="VeroSpace designs, renovates and coordinates complete home transformations.">
-  <meta name="theme-color" content="#0c1b2f">
+  <meta name="description" content="VeroSpace designs, renovates and coordinates complete home transformations with clear approvals, documented decisions and thoughtful follow-through.">
+  <meta name="theme-color" content="#0b1d31">
   <meta name="color-scheme" content="light">
   <title>VeroSpace — Interior Design & Renovation</title>
-  <link rel="preconnect" href="https://images.unsplash.com" crossorigin>
   <link rel="preload" as="image" href="assets/verospace-home-yellow.webp" type="image/webp" fetchpriority="high">
-  <link rel="stylesheet" href="styles.css?v=20260902e">
-  <link rel="stylesheet" href="ultra-ui.css?v=20260902u1">
-  <link rel="stylesheet" href="ultra-safe.css?v=20260902u2">
-  <link rel="stylesheet" href="experience-v3.css?v=20260902x3">
-  <link rel="stylesheet" href="experience-v3-statefix.css?v=20260902x4">
+  <link rel="stylesheet" href="v4.css?v=20260902p4">
 </head>
 <body>
-  <div class="ambient ambient-a" aria-hidden="true"></div>
-  <div class="ambient ambient-b" aria-hidden="true"></div>
-
   <header class="site-header" id="top">
     <a class="brand" href="#home" aria-label="VeroSpace home">
       <span class="brand-mark"><img src="assets/verospace-logo.png" alt="VeroSpace logo" width="160" height="160"></span>
-      <span class="brand-name">VeroSpace</span>
+      <span class="brand-word">VeroSpace</span>
     </a>
     <nav class="desktop-nav" aria-label="Primary navigation">
-      <a href="#home">Home</a>
       <a href="#projects">Projects</a>
-      <a href="#services">Services</a>
+      <a href="#services">Service</a>
       <a href="#process">Process</a>
     </nav>
     <div class="header-actions">
-      <button class="pill-button header-consult" type="button" data-scroll="#contact">Book consultation</button>
+      <button class="header-cta" type="button" data-scroll="#contact">Book consultation</button>
       <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteMenu"><span></span><span></span><span></span></button>
     </div>
   </header>
 
-  <button class="menu-backdrop" type="button" aria-label="Close navigation" data-menu-close tabindex="-1"></button>
-  <aside class="site-menu" id="siteMenu" aria-hidden="true" aria-label="Site menu" inert>
-    <div class="menu-refraction" aria-hidden="true"></div>
-    <div class="menu-shell">
-      <div class="menu-top">
-        <div class="menu-title-block">
-          <span class="menu-kicker">VeroSpace · navigation</span>
-          <strong>Move through the studio.</strong>
-        </div>
-        <button class="menu-close" type="button" aria-label="Close menu" data-menu-close>×</button>
-      </div>
-      <div class="menu-layout">
-        <nav class="menu-links" aria-label="Expanded navigation">
-          <a href="#home"><span>01</span><strong>Home</strong><i aria-hidden="true">↗</i></a>
-          <a href="#projects"><span>02</span><strong>Projects</strong><i aria-hidden="true">↗</i></a>
-          <a href="#services"><span>03</span><strong>Services</strong><i aria-hidden="true">↗</i></a>
-          <a href="#process"><span>04</span><strong>Process</strong><i aria-hidden="true">↗</i></a>
-          <a class="menu-contact-link" href="#contact"><span>05</span><strong>Contact</strong><i aria-hidden="true">↗</i></a>
-        </nav>
-        <div class="menu-project-card">
-          <div class="menu-project-head"><span>Start a project</span><b>Direct consultation</b></div>
-          <h2>Start with the space, not a sales pitch.</h2>
-          <p>Share the essentials and move straight into a focused VeroSpace consultation.</p>
-          <button class="pill-button menu-consult" type="button" data-scroll="#contact"><span>Book consultation</span><i aria-hidden="true">↗</i></button>
-          <small>Private · in-site request</small>
-        </div>
-      </div>
+  <button class="menu-curtain" type="button" data-menu-close aria-label="Close navigation" tabindex="-1"></button>
+  <aside class="site-menu" id="siteMenu" aria-hidden="true" inert aria-label="VeroSpace navigation">
+    <div class="menu-head">
+      <div><span>VeroSpace · studio</span><strong>Move with a clear next step.</strong></div>
+      <button class="menu-close" type="button" data-menu-close aria-label="Close menu">×</button>
+    </div>
+    <nav class="menu-grid" aria-label="Expanded navigation">
+      <a href="#home"><small>01</small><strong>Home</strong><i>↗</i></a>
+      <a href="#projects"><small>02</small><strong>Projects</strong><i>↗</i></a>
+      <a href="#services"><small>03</small><strong>Service</strong><i>↗</i></a>
+      <a href="#process"><small>04</small><strong>Process</strong><i>↗</i></a>
+      <a class="menu-wide" href="#contact"><small>05</small><strong>Contact</strong><i>↗</i></a>
+    </nav>
+    <div class="menu-cta-card">
+      <span>Start a project</span>
+      <h2>Bring the space. We’ll define the next decision.</h2>
+      <button class="primary-button" type="button" data-scroll="#contact">Book consultation <i>↗</i></button>
+      <small>Private · in-site request</small>
     </div>
   </aside>
 
   <main>
-    <section class="hero" id="home" aria-labelledby="hero-title">
-      <img class="hero-image" src="assets/verospace-home-yellow.webp" alt="Bright tiny-house interior with warm honey timber, loft, compact kitchen and natural light" width="720" height="900" fetchpriority="high" decoding="async">
-      <div class="hero-shade" aria-hidden="true"></div>
+    <section class="hero" id="home" aria-labelledby="heroTitle">
+      <img class="hero-image" src="assets/verospace-home-yellow.webp" alt="Bright compact interior with warm timber, loft, kitchen and natural light" width="720" height="900" fetchpriority="high" decoding="async">
+      <div class="hero-overlay" aria-hidden="true"></div>
       <div class="hero-copy">
-        <p class="eyebrow light">Interior design · renovation · coordination</p>
-        <h1 id="hero-title">One vision.<br><em>Whole-home transformation.</em></h1>
-        <p class="hero-lede">VeroSpace designs, renovates and coordinates residential transformations—from layout and materials to final handover.</p>
+        <p class="eyebrow light">Residential interiors · renovation · coordination</p>
+        <h1 id="heroTitle"><span>A calmer home.</span><em>Built around how you live.</em></h1>
+        <p>Layout, materials and renovation resolved as one design direction.</p>
         <div class="hero-actions">
-          <button class="pill-button hero-primary" type="button" data-scroll="#contact">Book a consultation</button>
-          <button class="pill-button hero-secondary" type="button" data-scroll="#projects">Explore projects</button>
+          <button class="primary-button" type="button" data-scroll="#contact">Book a consultation</button>
+          <button class="secondary-button" type="button" data-scroll="#projects">Explore projects</button>
         </div>
+        <div class="hero-reassurance"><b>✓</b><span>No polished brief needed.</span></div>
       </div>
     </section>
 
-    <section class="section projects" id="projects" aria-labelledby="projects-title">
+    <section class="trust-section" aria-labelledby="trustTitle">
+      <div class="trust-intro reveal">
+        <p class="eyebrow">What you can expect</p>
+        <h2 id="trustTitle">Clarity before commitment.</h2>
+        <p>Trust comes from visible decisions—not invented claims.</p>
+      </div>
+      <div class="trust-grid">
+        <article class="trust-card reveal"><span>01</span><h3>Scope first</h3><p>What changes, what stays and what matters most are agreed before styling.</p></article>
+        <article class="trust-card reveal"><span>02</span><h3>Approval gates</h3><p>Key layout, material and budget decisions pause for your approval before moving forward.</p></article>
+        <article class="trust-card reveal"><span>03</span><h3>Change control</h3><p>New ideas are checked against scope, cost and timing instead of quietly drifting into the build.</p></article>
+        <article class="trust-card reveal"><span>04</span><h3>Support after handover</h3><p>Final notes, open questions and agreed follow-up items stay documented after the main work closes.</p></article>
+      </div>
+    </section>
+
+    <section class="projects-section" id="projects" aria-labelledby="projectsTitle">
       <div class="section-head reveal">
-        <div><p class="eyebrow">Selected work</p><h2 id="projects-title">Five spaces. Five clear problems solved.</h2></div>
-        <p>Concept portfolio studies—not claimed client work—showing how VeroSpace approaches daylight, flow, storage and material warmth.</p>
+        <div><p class="eyebrow">Project studies</p><h2 id="projectsTitle">One project. More than one angle.</h2></div>
+        <p>Each study uses one coherent three-image photographic series. Swipe the card before opening it.</p>
       </div>
-      <div class="project-grid">
-        <article class="project-card reveal" data-project="daylight">
-          <div class="project-image"><img src="https://images.unsplash.com/photo-1749704647804-81338ade5546?auto=format&fit=crop&w=1600&q=82" alt="Bright open kitchen and living area with natural light" width="1600" height="1100" loading="lazy" decoding="async"></div>
-          <div class="project-meta"><span>01 · Whole-home transformation</span><h3>Daylight House</h3><p>Open the plan without losing useful zones or storage.</p><button class="project-open" type="button" aria-label="View Daylight House project">View project ↗</button></div>
+
+      <div class="project-list">
+        <article class="project-card reveal" data-project="compact-oak">
+          <div class="project-media" data-carousel>
+            <div class="project-track">
+              <figure><img src="https://unsplash.com/photos/OcxgtPN0FmM/download?force=true" alt="Colorado tiny home living and dining interior" loading="eager" decoding="async"></figure>
+              <figure><img src="https://unsplash.com/photos/uaO2jAFKR0c/download?force=true" alt="Colorado tiny home living area and built-in furniture" loading="lazy" decoding="async"></figure>
+              <figure><img src="https://unsplash.com/photos/U74CPDcq5OY/download?force=true" alt="Colorado tiny home compact kitchen and storage" loading="lazy" decoding="async"></figure>
+            </div>
+            <div class="media-toolbar"><span class="media-count">01 / 03</span><div class="media-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div><button type="button" data-prev aria-label="Previous image">←</button><button type="button" data-next aria-label="Next image">→</button></div>
+          </div>
+          <div class="project-copy">
+            <div class="project-kicker"><span>01 · Compact home</span><b>Concept study</b></div>
+            <h3>Compact Oak Home</h3>
+            <p class="project-summary">Use vertical space without making daily life feel compressed.</p>
+            <dl><div><dt>Goal</dt><dd>More storage and clearer movement in a tiny footprint.</dd></div><div><dt>Decisions</dt><dd>Built-ins, compact circulation and warm timber as one visual system.</dd></div><div><dt>Design result</dt><dd>Every edge works harder while the room still reads as one calm space.</dd></div></dl>
+            <button class="project-open" type="button">Open project <span>↗</span></button>
+          </div>
         </article>
-        <article class="project-card reveal" data-project="oakline">
-          <div class="project-image"><img src="https://images.unsplash.com/photo-1771371854543-bb274762389e?auto=format&fit=crop&w=1600&q=82" alt="Bright white kitchen with warm wood accents and large window" width="1600" height="1100" loading="lazy" decoding="async"></div>
-          <div class="project-meta"><span>02 · Kitchen renovation</span><h3>Oakline Kitchen</h3><p>More working space, clearer storage and warmer light.</p><button class="project-open" type="button" aria-label="View Oakline Kitchen project">View project ↗</button></div>
+
+        <article class="project-card reveal" data-project="brass-bath">
+          <div class="project-media" data-carousel>
+            <div class="project-track">
+              <figure><img src="https://unsplash.com/photos/881IAs1vdE4/download?force=true" alt="Endicott farmhouse bathroom sink and mirror" loading="lazy" decoding="async"></figure>
+              <figure><img src="https://unsplash.com/photos/n4U6GwZJmBM/download?force=true" alt="Endicott farmhouse bathroom with clawfoot tub" loading="lazy" decoding="async"></figure>
+              <figure><img src="https://unsplash.com/photos/lq8FnmruSjo/download?force=true" alt="Endicott farmhouse brass bath hardware detail" loading="lazy" decoding="async"></figure>
+            </div>
+            <div class="media-toolbar"><span class="media-count">01 / 03</span><div class="media-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div><button type="button" data-prev aria-label="Previous image">←</button><button type="button" data-next aria-label="Next image">→</button></div>
+          </div>
+          <div class="project-copy">
+            <div class="project-kicker"><span>02 · Bathroom</span><b>Concept study</b></div>
+            <h3>Brass Bath House</h3>
+            <p class="project-summary">Make a small bathroom feel intentional rather than over-decorated.</p>
+            <dl><div><dt>Goal</dt><dd>Calm function with character that will age well.</dd></div><div><dt>Decisions</dt><dd>White shell, warm timber and one controlled brass language.</dd></div><div><dt>Design result</dt><dd>Texture and hardware carry the room without visual noise.</dd></div></dl>
+            <button class="project-open" type="button">Open project <span>↗</span></button>
+          </div>
         </article>
-        <article class="project-card reveal" data-project="windowroom">
-          <div class="project-image"><img src="https://images.unsplash.com/photo-1771371097061-3befd4b71b59?auto=format&fit=crop&w=1600&q=82" alt="Bright modern living room with white seating, wood floor and large windows" width="1600" height="1100" loading="lazy" decoding="async"></div>
-          <div class="project-meta"><span>03 · Living-space renewal</span><h3>Window Room</h3><p>Let daylight lead while keeping the room calm and usable.</p><button class="project-open" type="button" aria-label="View Window Room project">View project ↗</button></div>
+
+        <article class="project-card reveal" data-project="liberty-hearth">
+          <div class="project-media" data-carousel>
+            <div class="project-track">
+              <figure><img src="https://unsplash.com/photos/G8kRVwlZK3Q/download?force=true" alt="Liberty farmhouse living room with stone fireplace" loading="lazy" decoding="async"></figure>
+              <figure><img src="https://unsplash.com/photos/3bgpVpEZV6s/download?force=true" alt="Liberty farmhouse living room, timber ceiling and stair" loading="lazy" decoding="async"></figure>
+              <figure><img src="https://unsplash.com/photos/GRxzOdEUKVg/download?force=true" alt="Liberty farmhouse living room with patterned rug and fireplace" loading="lazy" decoding="async"></figure>
+            </div>
+            <div class="media-toolbar"><span class="media-count">01 / 03</span><div class="media-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div><button type="button" data-prev aria-label="Previous image">←</button><button type="button" data-next aria-label="Next image">→</button></div>
+          </div>
+          <div class="project-copy">
+            <div class="project-kicker"><span>03 · Living room</span><b>Concept study</b></div>
+            <h3>Liberty Hearth</h3>
+            <p class="project-summary">Let architecture lead instead of competing with it.</p>
+            <dl><div><dt>Goal</dt><dd>A strong gathering room with warmth and breathing space.</dd></div><div><dt>Decisions</dt><dd>Fireplace as anchor, low furniture rhythm and restrained contrast.</dd></div><div><dt>Design result</dt><dd>The room feels grounded from every viewpoint, not only one hero angle.</dd></div></dl>
+            <button class="project-open" type="button">Open project <span>↗</span></button>
+          </div>
         </article>
-        <article class="project-card reveal" data-project="garden">
-          <div class="project-image"><img src="https://images.unsplash.com/photo-1771372578232-7c20a006f7b4?auto=format&fit=crop&w=1600&q=82" alt="Bright dining room with large windows, white walls and warm timber beams" width="1600" height="1100" loading="lazy" decoding="async"></div>
-          <div class="project-meta"><span>04 · Ground-floor replan</span><h3>Garden Dining</h3><p>Connect dining, circulation and the garden view as one room.</p><button class="project-open" type="button" aria-label="View Garden Dining project">View project ↗</button></div>
+
+        <article class="project-card reveal" data-project="accord-living">
+          <div class="project-media" data-carousel>
+            <div class="project-track">
+              <figure><img src="https://unsplash.com/photos/hjNTscPXJTg/download?force=true" alt="Accord modern living room with exposed beams" loading="lazy" decoding="async"></figure>
+              <figure><img src="https://unsplash.com/photos/rFpEHzGB37w/download?force=true" alt="Accord modern living room with wood stove and sectional" loading="lazy" decoding="async"></figure>
+              <figure><img src="https://unsplash.com/photos/54xFukuLp1E/download?force=true" alt="Accord modern living room with fireplace and exposed beams" loading="lazy" decoding="async"></figure>
+            </div>
+            <div class="media-toolbar"><span class="media-count">01 / 03</span><div class="media-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div><button type="button" data-prev aria-label="Previous image">←</button><button type="button" data-next aria-label="Next image">→</button></div>
+          </div>
+          <div class="project-copy">
+            <div class="project-kicker"><span>04 · Living room</span><b>Concept study</b></div>
+            <h3>Accord Living</h3>
+            <p class="project-summary">Balance generous windows, heavy timber and everyday comfort.</p>
+            <dl><div><dt>Goal</dt><dd>Keep the room warm without making it visually heavy.</dd></div><div><dt>Decisions</dt><dd>Neutral upholstery, breathing room around beams and simple lighting layers.</dd></div><div><dt>Design result</dt><dd>Architecture stays visible while seating still feels comfortable and usable.</dd></div></dl>
+            <button class="project-open" type="button">Open project <span>↗</span></button>
+          </div>
         </article>
-        <article class="project-card reveal" data-project="quietoak">
-          <div class="project-image"><img src="https://images.unsplash.com/photo-1765547090903-348b711f0eee?auto=format&fit=crop&w=1600&q=82" alt="Bright modern bedroom with warm wood accents and natural light" width="1600" height="1100" loading="lazy" decoding="async"></div>
-          <div class="project-meta"><span>05 · Primary-suite redesign</span><h3>Quiet Oak Suite</h3><p>Build storage and comfort into a quieter visual rhythm.</p><button class="project-open" type="button" aria-label="View Quiet Oak Suite project">View project ↗</button></div>
+
+        <article class="project-card reveal" data-project="cabin-table">
+          <div class="project-media" data-carousel>
+            <div class="project-track">
+              <figure><img src="https://unsplash.com/photos/NMXNCYy-2ks/download?force=true" alt="Cuddebackville cabin dining area with timber walls" loading="lazy" decoding="async"></figure>
+              <figure><img src="https://unsplash.com/photos/B6ZXOlMO3EY/download?force=true" alt="Cuddebackville cabin dining area with stair and leather chair" loading="lazy" decoding="async"></figure>
+              <figure><img src="https://unsplash.com/photos/mQmDscIIQfs/download?force=true" alt="Cuddebackville cabin dining table at large window" loading="lazy" decoding="async"></figure>
+            </div>
+            <div class="media-toolbar"><span class="media-count">01 / 03</span><div class="media-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div><button type="button" data-prev aria-label="Previous image">←</button><button type="button" data-next aria-label="Next image">→</button></div>
+          </div>
+          <div class="project-copy">
+            <div class="project-kicker"><span>05 · Dining</span><b>Concept study</b></div>
+            <h3>Cabin Table</h3>
+            <p class="project-summary">Give dining a real place in a compact timber interior.</p>
+            <dl><div><dt>Goal</dt><dd>Make the dining zone useful without blocking circulation or views.</dd></div><div><dt>Decisions</dt><dd>Light table footprint, visual connection to the stair and daylight-led placement.</dd></div><div><dt>Design result</dt><dd>A distinct gathering zone that still belongs to the larger room.</dd></div></dl>
+            <button class="project-open" type="button">Open project <span>↗</span></button>
+          </div>
         </article>
+      </div>
+
+      <p class="source-note reveal">Photography above is used as licensed visual reference for VeroSpace concept studies; it is not presented as completed VeroSpace client work.</p>
+    </section>
+
+    <section class="service-section" id="services" aria-labelledby="serviceTitle">
+      <div class="section-head reveal"><div><p class="eyebrow">Service</p><h2 id="serviceTitle">Fewer surprises. Better decisions.</h2></div><p>The job is not just making a room look good. It is keeping decisions connected from first plan to handover.</p></div>
+      <div class="service-grid">
+        <article class="service-card reveal"><span>01</span><h3>Interior direction</h3><p>Layout, materials, lighting, furniture and storage as one system.</p></article>
+        <article class="service-card reveal"><span>02</span><h3>Renovation planning</h3><p>Scope and priorities resolved before work starts changing the space.</p></article>
+        <article class="service-card reveal"><span>03</span><h3>Approval control</h3><p>Decision points are visible, reviewable and approved before the next stage.</p></article>
+        <article class="service-card reveal"><span>04</span><h3>Customer support</h3><p>Questions, changes and agreed follow-up items have a clear place instead of disappearing into chat history.</p></article>
       </div>
     </section>
 
-    <section class="section services" id="services" aria-labelledby="services-title">
-      <div class="section-head reveal"><div><p class="eyebrow">Services</p><h2 id="services-title">One direction from plan to handover.</h2></div><p>Design decisions stay connected, so layout, finishes and renovation do not drift into separate projects.</p></div>
-      <div class="services-grid">
-        <article class="service-feature reveal"><span>01</span><h3>Interior design</h3><p>Layout, materials, furniture, lighting and styling developed as one system.</p></article>
-        <article class="service-feature reveal"><span>02</span><h3>Renovation planning</h3><p>Scope, priorities and design decisions resolved before works begin.</p></article>
-        <article class="service-feature reveal"><span>03</span><h3>Space planning</h3><p>Clear circulation, useful storage and rooms that work harder without feeling crowded.</p></article>
-        <article class="service-feature reveal"><span>04</span><h3>Project coordination</h3><p>Specifications, reviews and design control carried through to handover.</p></article>
+    <section class="control-section reveal" aria-labelledby="controlTitle">
+      <div><p class="eyebrow">Client control</p><h2 id="controlTitle">You should know what is approved—and what is still open.</h2></div>
+      <div class="control-steps">
+        <article><b>01</b><div><h3>Review</h3><p>See the decision in context.</p></div></article>
+        <article><b>02</b><div><h3>Approve</h3><p>Confirm before the next stage.</p></div></article>
+        <article><b>03</b><div><h3>Document</h3><p>Keep the agreed direction visible.</p></div></article>
       </div>
     </section>
 
-    <section class="visual-story section reveal" aria-label="VeroSpace design principle">
-      <div class="story-image"><img src="assets/verospace-featured-home.jpg" alt="Bright warm VeroSpace interior reference" width="800" height="1000" loading="lazy" decoding="async"></div>
-      <div class="story-copy"><p class="eyebrow">Design principle</p><h2>Make the home work better before making it louder.</h2><p>We use daylight, proportion, storage and a restrained material palette to make rooms feel calm, open and complete.</p><div class="story-facts"><span>Daylight</span><span>Warm timber</span><span>Quiet storage</span></div></div>
-    </section>
-
-    <section class="section process" id="process" aria-labelledby="process-title">
-      <div class="section-head reveal"><div><p class="eyebrow">Process</p><h2 id="process-title">Five steps. No fog.</h2></div><p>A clear path from first conversation to final handover.</p></div>
+    <section class="process-section" id="process" aria-labelledby="processTitle">
+      <div class="section-head reveal"><div><p class="eyebrow">Process</p><h2 id="processTitle">Know what happens next.</h2></div><p>Five stages. Each one closes a specific uncertainty.</p></div>
       <ol class="process-list">
         <li class="reveal"><span>01</span><div><h3>Consult</h3><p>Space, goals, budget and constraints.</p></div></li>
-        <li class="reveal"><span>02</span><div><h3>Plan</h3><p>Circulation, zoning, storage and priorities.</p></div></li>
+        <li class="reveal"><span>02</span><div><h3>Plan</h3><p>Flow, zoning, storage and priorities.</p></div></li>
         <li class="reveal"><span>03</span><div><h3>Design</h3><p>Materials, light, furniture and details.</p></div></li>
-        <li class="reveal"><span>04</span><div><h3>Coordinate</h3><p>Specifications, reviews and build decisions.</p></div></li>
-        <li class="reveal"><span>05</span><div><h3>Finish</h3><p>Styling, checks and final handover.</p></div></li>
+        <li class="reveal"><span>04</span><div><h3>Approve + coordinate</h3><p>Critical choices are confirmed before build decisions move.</p></div></li>
+        <li class="reveal"><span>05</span><div><h3>Handover + support</h3><p>Final checks, documentation and agreed follow-up.</p></div></li>
       </ol>
     </section>
 
-    <section class="principles section reveal" aria-label="VeroSpace principles">
-      <div><span>01</span><h3>Space before decoration.</h3><p>Good circulation and storage create the foundation.</p></div>
-      <div><span>02</span><h3>Light before drama.</h3><p>Brightness and proportion carry the design.</p></div>
-      <div><span>03</span><h3>Built for daily life.</h3><p>Comfort, maintenance and usability stay part of the visual result.</p></div>
+    <section class="final-cta reveal" aria-label="Start a VeroSpace project">
+      <p class="eyebrow light">Ready when the problem is clear</p>
+      <h2>You do not need a finished brief.<br>Start with what is not working.</h2>
+      <button class="primary-button light-button" type="button" data-scroll="#contact">Book a consultation <span>↗</span></button>
     </section>
 
-    <section class="contact section" id="contact" aria-labelledby="contact-title">
-      <div class="contact-copy reveal">
-        <p class="eyebrow">Start a project</p>
-        <h2 id="contact-title">Tell us what you want your home to become.</h2>
-        <p>Share the essentials of your space. Your request is sent securely without leaving VeroSpace.</p>
-      </div>
-      <form class="contact-form light-card reveal" id="consultationForm" novalidate>
-        <label class="vs-hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
-        <label>
-          <span class="field-head">Full name <span class="required-pill">Required</span></span>
-          <input name="name" autocomplete="name" required placeholder="Your name" aria-describedby="nameError">
-          <span class="field-error" id="nameError" data-error-for="name" role="alert"></span>
-        </label>
-        <label>
-          <span class="field-head">Email <span class="required-pill">Required</span></span>
-          <input name="email" type="email" autocomplete="email" required placeholder="you@example.com" aria-describedby="emailError">
-          <span class="field-error" id="emailError" data-error-for="email" role="alert"></span>
-        </label>
-        <label>
-          <span class="field-head">Project type <span class="required-pill">Required</span></span>
-          <select name="project" required aria-describedby="projectError"><option value="">Choose one</option><option>Full-home interior design</option><option>Renovation</option><option>Kitchen / bathroom</option><option>Single-room design</option></select>
-          <span class="field-error" id="projectError" data-error-for="project" role="alert"></span>
-        </label>
-        <label>
-          <span class="field-head">Budget range <span class="required-pill">Required</span></span>
-          <select name="budget" required aria-describedby="budgetError"><option value="">Choose one</option><option>$25k–$50k</option><option>$50k–$100k</option><option>$100k–$250k</option><option>$250k+</option></select>
-          <span class="field-error" id="budgetError" data-error-for="budget" role="alert"></span>
-        </label>
-        <label class="full">
-          <span class="field-head">Tell us about the space <span class="required-pill">Required</span></span>
-          <textarea name="message" required minlength="3" rows="5" placeholder="Property, rooms, goals, timeline..." aria-describedby="messageError"></textarea>
-          <span class="field-error" id="messageError" data-error-for="message" role="alert"></span>
-        </label>
-        <div class="full form-footer"><button class="pill-button primary" type="submit">Request consultation</button><p id="formStatus" role="status" aria-live="polite"></p></div>
+    <section class="contact-section" id="contact" aria-labelledby="contactTitle">
+      <div class="contact-copy reveal"><p class="eyebrow">Consultation</p><h2 id="contactTitle">Bring four things.</h2><p>The space, what needs to change, budget range and timing. That is enough to begin.</p><ul><li>No sales call hidden behind the form.</li><li>Your request stays inside VeroSpace.</li><li>We start from the problem, not a package.</li></ul></div>
+      <form class="contact-form reveal" id="consultationForm" novalidate>
+        <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
+        <label><span>Full name <b>Required</b></span><input name="name" autocomplete="name" required placeholder="Your name"><small data-error="name"></small></label>
+        <label><span>Email <b>Required</b></span><input name="email" type="email" autocomplete="email" required placeholder="you@example.com"><small data-error="email"></small></label>
+        <label><span>Project type <b>Required</b></span><select name="project" required><option value="">Choose one</option><option>Full-home interior design</option><option>Renovation</option><option>Kitchen / bathroom</option><option>Single-room design</option></select><small data-error="project"></small></label>
+        <label><span>Budget range <b>Required</b></span><select name="budget" required><option value="">Choose one</option><option>$25k–$50k</option><option>$50k–$100k</option><option>$100k–$250k</option><option>$250k+</option></select><small data-error="budget"></small></label>
+        <label class="full"><span>Tell us about the space <b>Required</b></span><textarea name="message" required minlength="3" rows="5" placeholder="Property, rooms, goals, timeline..."></textarea><small data-error="message"></small></label>
+        <div class="form-footer full"><button class="primary-button" type="submit">Request consultation</button><p id="formStatus" role="status" aria-live="polite"></p></div>
       </form>
     </section>
   </main>
 
   <footer class="footer">
-    <a class="footer-brand" href="#home" aria-label="VeroSpace home"><img src="assets/verospace-logo.png" alt="VeroSpace" width="180" height="180"></a>
-    <nav aria-label="Footer navigation"><a href="#projects">Projects</a><a href="#services">Services</a><a href="#process">Process</a><a href="#contact">Contact</a></nav>
-    <p>VeroSpace · interior design & renovation</p>
+    <a href="#home" class="footer-brand" aria-label="VeroSpace home"><img src="assets/verospace-logo.png" alt="VeroSpace" width="160" height="160"><strong>VeroSpace</strong></a>
+    <nav aria-label="Footer navigation"><a href="#projects">Projects</a><a href="#services">Service</a><a href="#process">Process</a><a href="#contact">Contact</a></nav>
+    <p>Interior design · renovation · coordination</p>
   </footer>
 
-  <dialog class="project-dialog" id="projectDialog" aria-labelledby="dialogTitle" aria-describedby="dialogText">
-    <div class="dialog-stage">
-      <div class="dialog-media">
-        <img id="dialogImage" src="" alt="">
-        <div class="dialog-media-shade" aria-hidden="true"></div>
-        <div class="dialog-topbar">
-          <span>VeroSpace project study</span>
-          <button class="dialog-close" type="button" aria-label="Close project">×</button>
-        </div>
+  <dialog class="project-dialog" id="projectDialog" aria-labelledby="modalTitle">
+    <div class="modal-shell">
+      <button class="modal-close" type="button" aria-label="Close project">×</button>
+      <div class="modal-media" data-modal-carousel>
+        <div class="modal-track"></div>
+        <div class="modal-toolbar"><span class="modal-count">01 / 03</span><div class="modal-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div><button type="button" data-modal-prev aria-label="Previous image">←</button><button type="button" data-modal-next aria-label="Next image">→</button></div>
       </div>
-      <div class="dialog-copy">
-        <div class="dialog-heading">
-          <p class="eyebrow" id="dialogType">VeroSpace concept project</p>
-          <h2 id="dialogTitle">Project</h2>
-          <p id="dialogText"></p>
-        </div>
-        <dl class="dialog-facts">
-          <div><dt>Scope</dt><dd id="dialogScope"></dd></div>
-          <div><dt>Focus</dt><dd id="dialogFocus"></dd></div>
-          <div class="dialog-result"><dt>Problem solved</dt><dd id="dialogResult"></dd></div>
-        </dl>
-        <button class="pill-button primary dialog-cta" type="button" data-scroll="#contact">Discuss a similar project <span aria-hidden="true">↗</span></button>
+      <div class="modal-copy">
+        <p class="eyebrow" id="modalKicker">Concept study</p>
+        <h2 id="modalTitle">Project</h2>
+        <p id="modalSummary"></p>
+        <div class="modal-facts"><article><span>Goal</span><p id="modalGoal"></p></article><article><span>Decisions</span><p id="modalDecisions"></p></article><article><span>Design result</span><p id="modalResult"></p></article><article><span>Approval points</span><p id="modalApproval">Layout direction → material language → scope before coordination.</p></article></div>
+        <button class="primary-button modal-cta" type="button" data-scroll="#contact">Discuss a similar project <span>↗</span></button>
       </div>
     </div>
   </dialog>
 
-  <div class="send-overlay" id="sendOverlay" aria-hidden="true">
-    <div class="send-edge" aria-hidden="true"></div>
-    <div class="send-panel" role="status" aria-live="assertive" aria-atomic="true">
-      <div class="send-symbol is-sending" id="sendSymbol" aria-hidden="true">
-        <div class="send-ring"></div>
-        <div class="send-core">V</div>
-        <svg class="send-result-icon send-check" viewBox="0 0 64 64" focusable="false"><path d="M17 33.5 27.2 44 48 20"></path></svg>
-        <svg class="send-result-icon send-cross" viewBox="0 0 64 64" focusable="false"><path d="M20 20 44 44M44 20 20 44"></path></svg>
-        <svg class="send-result-icon send-offline" viewBox="0 0 64 64" focusable="false"><path d="M14 25c10-9 26-9 36 0M21 33c6-5 16-5 22 0M28 41c2.5-2 5.5-2 8 0M15 15l34 34"></path></svg>
-      </div>
-      <p class="send-status" id="sendStatus">Sending…</p>
-      <p class="send-note" id="sendNote">Your request stays inside VeroSpace.</p>
-    </div>
-  </div>
-
-  <script src="script.js?v=20260902e" defer></script>
   <script src="native.js?v=20260902u1" defer></script>
-  <script src="ultra-ui.js?v=20260902u1" defer></script>
-  <script src="experience-v3.js?v=20260902x3" defer></script>
+  <script src="v4.js?v=20260902p4" defer></script>
 </body>
 </html>
