@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      TARGET_URL: 'https://verospace-landing-rnv1qsd6l-shahboz.vercel.app/?_vercel_share=hcO4PeMVP9HwYPY6eu9SlwSefazXiQv8'
+      TARGET_URL: 'https://verospace-landing-rnv1qsd6l-shahboz.vercel.app/?_vercel_share=8jX6FU9qKtYkQBAspyquu26aXs7Deq7T'
       CLEAN_URL: 'https://verospace-landing-rnv1qsd6l-shahboz.vercel.app/'
     steps:
       - uses: actions/checkout@v4
@@ -30,6 +30,7 @@ jobs:
           qa=Path('/tmp/qa.mjs')
           s=text[start:end]
           s=s.replace("await page.goto(target,{waitUntil:'networkidle',timeout:60000}); await page.goto(clean,{waitUntil:'networkidle',timeout:60000});", "await page.goto(target,{waitUntil:'networkidle',timeout:60000});")
+          s=s.replace("await page.goto(target,{waitUntil:'networkidle',timeout:60000});", "await page.goto(target,{waitUntil:'networkidle',timeout:60000}); console.log('QA_PAGE', page.url(), await page.title());")
           qa.write_text(s)
           PY
           ln -s "$PWD/node_modules" /tmp/node_modules
