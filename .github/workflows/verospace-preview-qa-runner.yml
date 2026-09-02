@@ -27,7 +27,10 @@ jobs:
           marker="          cat > /tmp/qa.mjs <<'EOF'\n"
           start=text.index(marker)+len(marker)
           end=text.index("\n          EOF",start)
-          Path('/tmp/qa.mjs').write_text(text[start:end])
+          qa=Path('/tmp/qa.mjs')
+          s=text[start:end]
+          s=s.replace("await page.goto(target,{waitUntil:'networkidle',timeout:60000}); await page.goto(clean,{waitUntil:'networkidle',timeout:60000});", "await page.goto(target,{waitUntil:'networkidle',timeout:60000});")
+          qa.write_text(s)
           PY
           ln -s "$PWD/node_modules" /tmp/node_modules
           node /tmp/qa.mjs
