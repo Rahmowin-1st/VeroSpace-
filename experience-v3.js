@@ -52,6 +52,7 @@
       </figure>
     `).join('');
     grid.dataset.experienceV3 = 'true';
+    grid.dataset.expanded = 'true'; // prevent the legacy conversion layer from appending extra tiles after v3 owns the rail
 
     let controls = $('.reference-controls', gallery);
     if (!controls) {
@@ -149,6 +150,7 @@
     if (window.__verospaceImageCacheV3) return;
     const cache = window.__verospaceImageCacheV3 = new Map();
     const imgs = $$('.reference-tile img', grid);
+    document.documentElement.dataset.referencePreloadTarget = String(imgs.length);
     let index = 0, scrolling = false, resumeTimer = 0, running = 0;
     const maxConcurrent = innerWidth <= 768 ? 1 : 2;
 
@@ -181,7 +183,7 @@
       if (scrolling) return schedule();
       while (index < imgs.length && running < maxConcurrent && (deadline.didTimeout || deadline.timeRemaining() > 4)) {
         const img = imgs[index++]; running++;
-        loadOne(img).finally(() => {running--; schedule();});
+        loadOne(img).finally(() => {running--; document.documentElement.dataset.referencePreloadCached = String(cache.size); schedule();});
       }
       if (index < imgs.length) schedule();
     };
