@@ -1,0 +1,120 @@
+name: VeroSpace Ultra Code QA
+on:
+  push:
+    branches: [verospace-ultra-ui-code]
+  workflow_dispatch:
+jobs:
+  ultra-ui:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - name: Audit external brand references
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          bad=[]
+          skip={'.git','node_modules'}
+          exts={'.html','.css','.js','.json','.md','.txt','.yml','.yaml'}
+          for p in Path('.').rglob('*'):
+            if not p.is_file() or any(x in p.parts for x in skip) or p.suffix.lower() not in exts:
+              continue
+            text=p.read_text(errors='ignore').lower()
+            for needle in ('google','gstatic','googleapis'):
+              if needle in text:
+                bad.append(f'{p}: {needle}')
+          if bad:
+            raise SystemExit('External-brand audit failed:\n'+'\n'.join(bad))
+          print('BRAND_AUDIT_GREEN')
+          PY
+      - name: Install Playwright
+        run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Browser QA without deployment
+        run: |
+          python3 -m http.server 4173 >/tmp/verospace-http.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          cat > /tmp/qa.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const sizes=[[320,700],[360,780],[390,844],[430,932],[768,1024],[1024,768],[1440,900],[1920,1080]];
+          const browser=await chromium.launch({headless:true});
+          for(const [width,height] of sizes){
+            const context=await browser.newContext({viewport:{width,height}});
+            const page=await context.newPage();
+            const errors=[];
+            page.on('pageerror',e=>errors.push(String(e)));
+            await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded',timeout:30000});
+            await page.locator('.hero').waitFor({state:'visible',timeout:10000});
+            const base=await page.evaluate(()=>({
+              y:scrollY,
+              sw:document.documentElement.scrollWidth,
+              iw:innerWidth,
+              google:[...document.querySelectorAll('link,script')].map(x=>x.href||x.src||'').filter(x=>/google|gstatic|googleapis/i.test(x)),
+              cards:document.querySelectorAll('.project-card').length,
+              tactile:typeof getComputedStyle(document.querySelector('.menu-button')).transitionDuration==='string',
+              nativeLoaded:[...document.scripts].some(s=>s.src.includes('native.js')),
+              ultraLoaded:[...document.styleSheets].some(s=>String(s.href||'').includes('ultra-ui.css'))&&[...document.scripts].some(s=>s.src.includes('ultra-ui.js'))
+            }));
+            if(base.y!==0)throw new Error(`${width}: initial scrollY ${base.y}`);
+            if(base.sw>base.iw+1)throw new Error(`${width}: horizontal overflow ${base.sw}>${base.iw}`);
+            if(base.google.length)throw new Error(`${width}: external-brand refs ${base.google.join(',')}`);
+            if(base.cards!==5||!base.nativeLoaded||!base.ultraLoaded)throw new Error(`${width}: source layer missing ${JSON.stringify(base)}`);
+
+            const press=page.locator('.menu-button');
+            const box=await press.boundingBox();
+            await page.mouse.move(box.x+box.width/2,box.y+box.height/2);
+            await page.mouse.down();
+            await page.waitForTimeout(40);
+            if(!(await press.evaluate(el=>el.classList.contains('is-pressing'))))throw new Error(`${width}: press feedback did not engage`);
+            await page.mouse.up();
+            await page.waitForTimeout(150);
+            if(await press.evaluate(el=>el.classList.contains('is-pressing')))throw new Error(`${width}: press feedback stuck`);
+
+            await page.locator('.menu-button').click();
+            await page.locator('.site-menu.open').waitFor({state:'visible',timeout:4000});
+            await page.waitForTimeout(420);
+            const menu=await page.locator('.site-menu').evaluate(el=>{
+              const r=el.getBoundingClientRect(),cs=getComputedStyle(el);
+              const links=[...el.querySelectorAll('.menu-links a')].map(a=>a.getBoundingClientRect());
+              return {x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,overflowX:el.scrollWidth>el.clientWidth+1,bg:cs.backgroundImage,links:links.length};
+            });
+            if(menu.links!==5||menu.overflowX||!menu.bg.includes('gradient'))throw new Error(`${width}: menu composition ${JSON.stringify(menu)}`);
+            if(width<=900&&(Math.abs(menu.x)>2||Math.abs(menu.y)>2||Math.abs(menu.w-menu.vw)>3||Math.abs(menu.h-menu.vh)>3))throw new Error(`${width}: mobile menu viewport ${JSON.stringify(menu)}`);
+            if(width>900&&(menu.x<0||menu.y<0||menu.x+menu.w>menu.vw+2||menu.y+menu.h>menu.vh+2))throw new Error(`${width}: desktop menu viewport ${JSON.stringify(menu)}`);
+            await page.keyboard.press('Escape');
+            await page.waitForFunction(()=>!document.querySelector('.site-menu')?.classList.contains('open'),{timeout:3000});
+
+            await page.mouse.wheel(0,650);await page.waitForTimeout(220);
+            if(await page.evaluate(()=>scrollY)<100)throw new Error(`${width}: native scroll failed`);
+
+            if(width===390||width===1440){
+              await page.locator('.project-card').first().scrollIntoViewIfNeeded();
+              await page.locator('.project-card').first().click();
+              const dialog=page.locator('#projectDialog[open]');
+              await dialog.waitFor({state:'visible',timeout:4000});
+              await page.waitForTimeout(420);
+              const d=await dialog.evaluate(el=>{
+                const r=el.getBoundingClientRect();
+                const copy=el.querySelector('.dialog-copy');
+                const title=el.querySelector('#dialogTitle');
+                const facts=[...el.querySelectorAll('.dialog-facts>div')];
+                return {x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,overflowX:el.scrollWidth>el.clientWidth+1,title:title?.textContent.trim(),facts:facts.length,copyColor:getComputedStyle(copy).color,copyBg:getComputedStyle(copy).backgroundImage};
+              });
+              if(d.x<-2||d.y<-2||d.x+d.w>d.vw+2||d.y+d.h>d.vh+2||d.overflowX||!d.title||d.facts!==3||!d.copyBg.includes('gradient'))throw new Error(`${width}: project dialog ${JSON.stringify(d)}`);
+              await page.locator('.dialog-close').click();
+            }
+
+            const role=await page.locator('.project-card').first().getAttribute('role');
+            const tab=await page.locator('.project-card').first().getAttribute('tabindex');
+            if(role!=='button'||tab!=='0')throw new Error(`${width}: project-card accessibility role=${role} tab=${tab}`);
+            if(errors.length)throw new Error(`${width}: page errors ${errors.join(' | ')}`);
+            console.log(`GREEN ${width}x${height}`);
+            await context.close();
+          }
+          await browser.close();
+          console.log('VEROSPACE_ULTRA_CODE_GREEN');
+          EOF
+          node /tmp/qa.mjs
