@@ -1,19 +1,21 @@
 const qs=(s,c=document)=>c.querySelector(s);
 const qsa=(s,c=document)=>[...c.querySelectorAll(s)];
-const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)');
 
+// Accessible liquid-glass navigation. The panel lives outside the transformed header,
+// so fixed positioning is always anchored to the viewport.
 const menuBtn=qs('.menu-button');
-const menu=qs('.site-menu');
+const menu=qs('#siteMenu');
 const backdrop=qs('.menu-backdrop');
-let lastFocus=null;
+let menuReturnFocus=null;
 
 function menuFocusable(){
-  return menu?qsa('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])',menu):[];
+  return menu?qsa('a[href],button:not([disabled]),[tabindex]:not([tabindex="-1"])',menu):[];
 }
-function setMenu(open){
+function setMenu(open,{restoreFocus=true}={}){
   if(!menu)return;
   if(open){
-    lastFocus=document.activeElement;
+    menuReturnFocus=document.activeElement;
     menu.inert=false;
   }
   menu.classList.toggle('open',open);
@@ -27,43 +29,50 @@ function setMenu(open){
     qs('.menu-close',menu)?.focus({preventScroll:true});
   }else{
     menu.inert=true;
-    if(lastFocus instanceof HTMLElement)lastFocus.focus({preventScroll:true});
+    if(restoreFocus&&menuReturnFocus instanceof HTMLElement)menuReturnFocus.focus({preventScroll:true});
   }
 }
-menuBtn?.addEventListener('click',()=>setMenu(!menu.classList.contains('open')));
+menuBtn?.addEventListener('click',()=>setMenu(!menu?.classList.contains('open')));
 qsa('[data-menu-close]').forEach(el=>el.addEventListener('click',()=>setMenu(false)));
-qsa('a',menu).forEach(a=>a.addEventListener('click',()=>setMenu(false)));
+qsa('a',menu).forEach(a=>a.addEventListener('click',()=>setMenu(false,{restoreFocus:false})));
 
-document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){
+document.addEventListener('keydown',event=>{
+  if(event.key==='Escape'){
     if(menu?.classList.contains('open'))setMenu(false);
-    if(qs('#projectDialog')?.open)qs('#projectDialog').close();
+    else if(qs('#projectDialog')?.open)qs('#projectDialog').close();
     return;
   }
-  if(e.key==='Tab'&&menu?.classList.contains('open')){
+  if(event.key==='Tab'&&menu?.classList.contains('open')){
     const focusable=menuFocusable();
     if(!focusable.length)return;
     const first=focusable[0],last=focusable[focusable.length-1];
-    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
-    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+    else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
   }
 });
 
-qsa('[data-scroll]').forEach(btn=>btn.addEventListener('click',()=>{
-  const target=qs(btn.dataset.scroll);
-  setMenu(false);
+// Native document scrolling is preserved. Smooth motion is only requested after an explicit CTA.
+qsa('[data-scroll]').forEach(button=>button.addEventListener('click',()=>{
+  const target=qs(button.dataset.scroll);
+  if(menu?.classList.contains('open'))setMenu(false,{restoreFocus:false});
   const dialog=qs('#projectDialog');
   if(dialog?.open)dialog.close();
-  target?.scrollIntoView({behavior:reduceMotion?'auto':'smooth',block:'start'});
+  target?.scrollIntoView({behavior:reducedMotion.matches?'auto':'smooth',block:'start'});
 }));
 
-if(reduceMotion){
+// One-shot reveals: no scroll hijack, no parallax, no scroll position writes.
+if(reducedMotion.matches){
   qsa('.reveal').forEach(el=>el.classList.add('visible'));
 }else if('IntersectionObserver' in window){
-  const io=new IntersectionObserver(entries=>entries.forEach(entry=>{
-    if(entry.isIntersecting){entry.target.classList.add('visible');io.unobserve(entry.target);}
-  }),{threshold:.1,rootMargin:'0px 0px -6%'});
-  qsa('.reveal').forEach(el=>io.observe(el));
+  const revealObserver=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  },{threshold:.1,rootMargin:'0px 0px -7% 0px'});
+  qsa('.reveal').forEach(el=>revealObserver.observe(el));
 }else{
   qsa('.reveal').forEach(el=>el.classList.add('visible'));
 }
@@ -78,13 +87,14 @@ const projectData={
 
 const dialog=qs('#projectDialog');
 let dialogOpener=null;
-qsa('.project-open').forEach(btn=>btn.addEventListener('click',()=>{
-  const card=btn.closest('[data-project]');
+qsa('.project-open').forEach(button=>button.addEventListener('click',()=>{
+  const card=button.closest('[data-project]');
   const data=projectData[card?.dataset.project];
   if(!dialog||!data)return;
-  dialogOpener=btn;
+  dialogOpener=button;
   const image=qs('#dialogImage');
-  image.src=data.image;image.alt=data.alt;
+  image.src=data.image;
+  image.alt=data.alt;
   qs('#dialogType').textContent=`VeroSpace concept · ${data.type}`;
   qs('#dialogTitle').textContent=data.title;
   qs('#dialogText').textContent=data.text;
@@ -95,58 +105,172 @@ qsa('.project-open').forEach(btn=>btn.addEventListener('click',()=>{
   qs('.dialog-close',dialog)?.focus({preventScroll:true});
 }));
 qs('.dialog-close')?.addEventListener('click',()=>dialog.close());
-dialog?.addEventListener('click',e=>{
-  const r=dialog.getBoundingClientRect();
-  if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)dialog.close();
+dialog?.addEventListener('click',event=>{
+  const rect=dialog.getBoundingClientRect();
+  if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)dialog.close();
 });
-dialog?.addEventListener('close',()=>{if(dialogOpener instanceof HTMLElement)dialogOpener.focus({preventScroll:true});});
+dialog?.addEventListener('close',()=>{
+  if(dialogOpener instanceof HTMLElement)dialogOpener.focus({preventScroll:true});
+});
 
+// Consultation flow restored from the selected VeroSpace project.
 const form=qs('#consultationForm');
-const status=qs('#formStatus');
-const overlay=qs('#sendOverlay');
-const mark=qs('#sendMark');
-const sendTitle=qs('#sendTitle');
-const sendText=qs('#sendText');
-function fieldError(field,message=''){
-  const el=qs(`[data-error-for="${field.name}"]`,form);
-  if(el)el.textContent=message;
-  field.setAttribute('aria-invalid',String(Boolean(message)));
-  return !message;
+const formStatus=qs('#formStatus');
+const sendOverlay=qs('#sendOverlay');
+const sendSymbol=qs('#sendSymbol');
+const sendStatus=qs('#sendStatus');
+const sendNote=qs('#sendNote');
+const SEND_MIN_MS=3000;
+const NETWORK_MAX_MS=15000;
+const RESULT_HOLD_MS=3000;
+let consultationSending=false;
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+const requiredFields=form?qsa('[required]',form):[];
+
+function fieldErrorElement(field){
+  return form?.querySelector(`[data-error-for="${field.name}"]`);
 }
-function valid(field){
+function validateConsultationField(field){
   let message='';
-  if(field.validity.valueMissing)message='Required.';
-  else if(field.type==='email'&&field.validity.typeMismatch)message='Enter a valid email.';
-  else if(field.validity.tooShort)message='Enter at least 3 characters.';
-  return fieldError(field,message);
+  if(field.validity.valueMissing)message='Please fill this required field.';
+  else if(field.type==='email'&&field.validity.typeMismatch)message='Please enter a valid email address.';
+  else if(field.validity.tooShort)message='Please enter at least 3 characters.';
+  const errorEl=fieldErrorElement(field);
+  const label=field.closest('label');
+  const invalid=Boolean(message);
+  field.setAttribute('aria-invalid',String(invalid));
+  label?.classList.toggle('has-error',invalid);
+  if(errorEl){
+    errorEl.textContent=message;
+    errorEl.classList.toggle('show',invalid);
+  }
+  return !invalid;
 }
-qsa('[required]',form).forEach(field=>['input','change','blur'].forEach(event=>field.addEventListener(event,()=>valid(field))));
-function sendState(state){
-  if(!overlay)return;
-  overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');
-  mark.textContent=state==='sending'?'V':state==='success'?'✓':'!';
-  sendTitle.textContent=state==='sending'?'Sending…':state==='success'?'Succeeded':'Could not send';
-  sendText.textContent=state==='sending'?'Your request is being sent securely.':state==='success'?'Your consultation request was sent successfully.':'Your form has been kept. Try again.';
+function validateConsultationForm(){
+  let firstInvalid=null;
+  requiredFields.forEach(field=>{
+    if(!validateConsultationField(field)&&!firstInvalid)firstInvalid=field;
+  });
+  return firstInvalid;
 }
-function closeSend(){overlay?.classList.remove('open');overlay?.setAttribute('aria-hidden','true');}
-form?.addEventListener('submit',async e=>{
-  e.preventDefault();
-  const required=qsa('[required]',form);
-  const bad=required.find(field=>!valid(field));
-  if(bad){bad.focus();status.textContent='Please complete the required fields.';return;}
+requiredFields.forEach(field=>{
+  const refresh=()=>{
+    if(field.closest('label')?.classList.contains('has-error'))validateConsultationField(field);
+  };
+  field.addEventListener('input',refresh);
+  field.addEventListener('change',refresh);
+});
+
+function setSendState(state){
+  if(!sendOverlay||!sendSymbol||!sendStatus)return;
+  sendOverlay.dataset.state=state;
+  sendSymbol.className=`send-symbol is-${state}`;
+  const copy={
+    sending:['Sending…','Your request stays inside VeroSpace.'],
+    success:['Succeeded','Your consultation request was sent successfully.'],
+    failed:['Failed','We could not send the request. Your form has been kept.'],
+    offline:['Offline','No connection was found. Your form has been kept.']
+  }[state];
+  sendStatus.textContent=copy[0];
+  if(sendNote)sendNote.textContent=copy[1];
+}
+function openSendOverlay(){
+  if(!sendOverlay)return;
+  document.documentElement.classList.add('send-lock');
+  sendOverlay.classList.add('open');
+  sendOverlay.setAttribute('aria-hidden','false');
+}
+function closeSendOverlay(){
+  if(!sendOverlay)return;
+  sendOverlay.classList.remove('open');
+  sendOverlay.setAttribute('aria-hidden','true');
+  document.documentElement.classList.remove('send-lock');
+}
+async function holdUntil(startedAt,minMs){
+  const remaining=minMs-(performance.now()-startedAt);
+  if(remaining>0)await wait(remaining);
+}
+async function sendAttempt(payload,requestId,timeoutMs){
+  const controller=new AbortController();
+  const timeout=setTimeout(()=>controller.abort(),timeoutMs);
+  try{
+    const response=await fetch('/api/consultation',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','X-Request-Id':requestId},
+      body:JSON.stringify({...payload,requestId}),
+      signal:controller.signal,
+      cache:'no-store'
+    });
+    const data=await response.json().catch(()=>({}));
+    if(response.ok&&data.ok)return {ok:true};
+    return {ok:false,network:false,status:response.status};
+  }catch(error){
+    return {ok:false,network:true,error};
+  }finally{
+    clearTimeout(timeout);
+  }
+}
+async function sendWithNetworkWindow(payload,requestId,startedAt){
+  while(performance.now()-startedAt<NETWORK_MAX_MS){
+    if(!navigator.onLine){
+      await Promise.race([
+        new Promise(resolve=>window.addEventListener('online',resolve,{once:true})),
+        wait(900)
+      ]);
+      continue;
+    }
+    const remaining=Math.max(1000,NETWORK_MAX_MS-(performance.now()-startedAt));
+    const attempt=await sendAttempt(payload,requestId,Math.min(5000,remaining));
+    if(attempt.ok)return 'success';
+    if(!attempt.network)return 'failed';
+    await wait(700);
+  }
+  return 'offline';
+}
+
+form?.addEventListener('submit',async event=>{
+  event.preventDefault();
+  if(consultationSending)return;
+  const firstInvalid=validateConsultationForm();
+  if(firstInvalid){
+    if(formStatus)formStatus.textContent='Please fill the highlighted required fields.';
+    qs('#contact')?.scrollIntoView({behavior:reducedMotion.matches?'auto':'smooth',block:'center'});
+    window.setTimeout(()=>firstInvalid.focus({preventScroll:true}),reducedMotion.matches?0:520);
+    return;
+  }
+
   const fd=new FormData(form);
   if(fd.get('website'))return;
-  const submit=qs('[type="submit"]',form);
-  submit.disabled=true;status.textContent='';sendState('sending');
+  consultationSending=true;
+  const submitButton=form.querySelector('[type="submit"]');
+  if(submitButton)submitButton.disabled=true;
+  if(formStatus)formStatus.textContent='';
+
   const payload={
-    name:String(fd.get('name')||'').trim(),email:String(fd.get('email')||'').trim(),project:String(fd.get('project')||'').trim(),budget:String(fd.get('budget')||'').trim(),message:String(fd.get('message')||'').trim(),requestId:crypto.randomUUID?.()||String(Date.now())
+    name:String(fd.get('name')||'').trim(),
+    email:String(fd.get('email')||'').trim(),
+    project:String(fd.get('project')||'').trim(),
+    budget:String(fd.get('budget')||'').trim(),
+    message:String(fd.get('message')||'').trim()
   };
-  try{
-    const res=await fetch('/api/consultation',{method:'POST',headers:{'Content-Type':'application/json','X-Request-Id':payload.requestId},body:JSON.stringify(payload)});
-    const data=await res.json().catch(()=>({}));
-    if(!res.ok||!data.ok)throw new Error('send');
-    sendState('success');form.reset();status.textContent='Request sent.';setTimeout(closeSend,1800);
-  }catch{
-    sendState('error');status.textContent='Send failed — your details are still here.';setTimeout(closeSend,2600);
-  }finally{submit.disabled=false;}
+  const requestId=(crypto.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`).slice(0,72);
+  const startedAt=performance.now();
+  setSendState('sending');
+  openSendOverlay();
+
+  const result=await sendWithNetworkWindow(payload,requestId,startedAt);
+  await holdUntil(startedAt,SEND_MIN_MS);
+  setSendState(result);
+  await wait(RESULT_HOLD_MS);
+  closeSendOverlay();
+
+  if(result==='success'){
+    form.reset();
+    requiredFields.forEach(field=>validateConsultationField(field));
+    if(formStatus)formStatus.textContent='Request sent.';
+  }else if(formStatus){
+    formStatus.textContent=result==='offline'?'Offline — your details are still here.':'Send failed — your details are still here.';
+  }
+  consultationSending=false;
+  if(submitButton)submitButton.disabled=false;
 });
