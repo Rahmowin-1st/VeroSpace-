@@ -12,6 +12,50 @@
   48%{opacity:.82}
   to{background-position:125% 0,center;opacity:.36}
 }
+
+/* Informational surfaces still feel physically responsive without pretending to navigate. */
+.process-list li,.service-feature,.principles>div{
+  position:relative!important;
+  isolation:isolate!important;
+  overflow:hidden!important;
+  transform-origin:center!important;
+  -webkit-tap-highlight-color:transparent!important;
+  touch-action:manipulation!important;
+  transition:transform .16s cubic-bezier(.2,.8,.2,1),box-shadow .24s ease,border-color .24s ease,background .24s ease,filter .24s ease!important;
+}
+.process-list li::after,.service-feature::after,.principles>div::after{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  left:var(--press-x,50%);
+  top:var(--press-y,50%);
+  width:170%;
+  aspect-ratio:1;
+  translate:-50% -50%;
+  border-radius:50%;
+  pointer-events:none;
+  background:radial-gradient(circle,rgba(255,255,255,.46) 0%,rgba(255,255,255,.19) 22%,rgba(200,154,71,.08) 40%,transparent 64%);
+  opacity:0;
+  transform:scale(.10);
+  transition:opacity .20s ease,transform .40s cubic-bezier(.16,1,.3,1);
+}
+.process-list li.is-pressing,.service-feature.is-pressing,.principles>div.is-pressing{
+  transform:translateY(3px) scale(.982)!important;
+  filter:saturate(.97) brightness(.995)!important;
+  border-color:rgba(200,154,71,.30)!important;
+  box-shadow:0 10px 26px rgba(10,28,48,.08),inset 0 1px 0 rgba(255,255,255,.86)!important;
+}
+.process-list li.is-pressing::after,.service-feature.is-pressing::after,.principles>div.is-pressing::after{
+  opacity:1;
+  transform:scale(1);
+}
+@media(hover:hover) and (pointer:fine){
+  .process-list li:hover,.service-feature:hover,.principles>div:hover{
+    transform:translateY(-3px);
+    box-shadow:0 20px 48px rgba(10,28,48,.10),inset 0 1px 0 rgba(255,255,255,.88)!important;
+  }
+}
+
 @media(max-width:900px){
   .site-menu{overflow:hidden!important}
   .menu-shell{width:100%!important;overflow:hidden!important}
@@ -21,4 +65,14 @@
   .menu-links a>strong{min-width:0!important;max-width:100%!important}
   .menu-contact-link{min-width:0!important;width:100%!important}
   .menu-project-card{width:100%!important;overflow:hidden!important}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .process-list li,.service-feature,.principles>div,
+  .process-list li::after,.service-feature::after,.principles>div::after{
+    transition:none!important;
+  }
+  .process-list li.is-pressing,.service-feature.is-pressing,.principles>div.is-pressing{
+    transform:none!important;
+  }
 }
