@@ -1,0 +1,89 @@
+name: VeroSpace Experience v3 QA
+on:
+  push:
+    branches: [verospace-no-blur-liquid-glass]
+    paths: ['.github/workflows/experience-v3-qa.yml']
+permissions:
+  contents: write
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: verospace-no-blur-liquid-glass
+      - name: Wire Experience v3 into source
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('index.html')
+          s=p.read_text()
+          if 'experience-v3.css' not in s:
+            s=s.replace('<link rel="stylesheet" href="ultra-safe.css?v=20260902u2">','<link rel="stylesheet" href="ultra-safe.css?v=20260902u2">\n  <link rel="stylesheet" href="experience-v3.css?v=20260902x3">')
+          if 'experience-v3.js' not in s:
+            s=s.replace('<script src="ultra-ui.js?v=20260902u1" defer></script>','<script src="ultra-ui.js?v=20260902u1" defer></script>\n  <script src="experience-v3.js?v=20260902x3" defer></script>')
+          p.write_text(s)
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'feat: wire experience v3 assets'
+            git push origin HEAD:verospace-no-blur-liquid-glass
+          fi
+      - name: Install browser QA
+        run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Run local Chromium matrix
+        run: |
+          python3 -m http.server 4173 >/tmp/verospace-http.log 2>&1 &
+          cat > qa-experience.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const sizes=[[320,700],[390,844],[768,1024],[1440,900]];
+          const browser=await chromium.launch({headless:true});
+          try{
+            for(const [width,height] of sizes){
+              const ctx=await browser.newContext({viewport:{width,height}}); const p=await ctx.newPage();
+              const errors=[]; p.on('pageerror',e=>errors.push(String(e)));
+              await p.goto('http://127.0.0.1:4173',{waitUntil:'domcontentloaded',timeout:60000});
+              await p.waitForFunction(()=>document.querySelector('.reference-grid')?.dataset.experienceV3==='true',{timeout:15000});
+              const base=await p.evaluate(()=>({sw:document.documentElement.scrollWidth,iw:innerWidth,count:document.querySelectorAll('.reference-tile').length,css:[...document.styleSheets].map(s=>s.href||'').filter(Boolean),scripts:[...document.scripts].map(s=>s.src||'').filter(Boolean)}));
+              if(base.sw>base.iw+1) throw new Error(`${width}: horizontal page overflow ${base.sw}>${base.iw}`);
+              if(base.count<21) throw new Error(`${width}: reference count ${base.count}`);
+              if(!base.css.some(x=>x.includes('experience-v3.css'))||!base.scripts.some(x=>x.includes('experience-v3.js'))) throw new Error(`${width}: experience assets missing`);
+
+              const blur=await p.evaluate(()=>[...document.querySelectorAll('*')].filter(el=>{const c=getComputedStyle(el);return /blur\(/i.test(c.filter)||/blur\(/i.test(c.backdropFilter||'')||/blur\(/i.test(c.webkitBackdropFilter||'')}).slice(0,6).map(el=>el.className||el.tagName));
+              if(blur.length) throw new Error(`${width}: runtime blur remains ${JSON.stringify(blur)}`);
+
+              const first=p.locator('.process-list>li').first(); const second=p.locator('.process-list>li').nth(1);
+              await first.scrollIntoViewIfNeeded(); await first.click(); await p.waitForTimeout(120);
+              const selected1=await first.evaluate(el=>({selected:el.classList.contains('is-selected'),border:getComputedStyle(el).borderColor,transform:getComputedStyle(el).transform,shadow:getComputedStyle(el).boxShadow}));
+              if(!selected1.selected||selected1.transform==='none'||selected1.shadow==='none') throw new Error(`${width}: selected tactile state missing ${JSON.stringify(selected1)}`);
+              await second.click(); await p.waitForTimeout(100);
+              if(await first.evaluate(el=>el.classList.contains('is-selected'))) throw new Error(`${width}: prior process selection did not clear`);
+              if(!await second.evaluate(el=>el.classList.contains('is-selected'))) throw new Error(`${width}: second process selection missing`);
+
+              if(width<=900){
+                await p.locator('.menu-button').click(); await p.waitForTimeout(450);
+                const menu=await p.evaluate(()=>{const e=document.querySelector('.site-menu'),r=e.getBoundingClientRect(),b=document.querySelector('.menu-backdrop'),bs=getComputedStyle(b);return {x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,open:e.classList.contains('open'),backdrop:bs.opacity,bg:bs.backgroundColor}});
+                if(!menu.open) throw new Error(`${width}: menu did not open`);
+                if(menu.x<=0||menu.y<=0||menu.w>=menu.vw-2||menu.h>=menu.vh-2) throw new Error(`${width}: menu still behaves full-screen ${JSON.stringify(menu)}`);
+                if(Number(menu.backdrop)<.5) throw new Error(`${width}: curtain too weak ${menu.backdrop}`);
+                await p.keyboard.press('Escape');
+              }
+
+              const rail=p.locator('.reference-grid'); await rail.scrollIntoViewIfNeeded();
+              const before=await rail.evaluate(el=>el.scrollLeft); await p.locator('[data-reference-next]').click(); await p.waitForTimeout(450); const after=await rail.evaluate(el=>el.scrollLeft);
+              if(after<=before+20) throw new Error(`${width}: horizontal rail did not move ${before}->${after}`);
+              const cacheReady=await p.evaluate(()=>window.__verospaceImageCacheV3 instanceof Map);
+              if(!cacheReady) throw new Error(`${width}: idle preload cache not initialized`);
+
+              await p.evaluate(()=>window.scrollTo(0,0)); await p.mouse.wheel(0,650); await p.waitForTimeout(250); const y=await p.evaluate(()=>scrollY);
+              if(y<100) throw new Error(`${width}: native vertical scroll failed ${y}`);
+              if(errors.length) throw new Error(`${width}: page errors ${errors.join(' | ')}`);
+              console.log(`GREEN ${width} refs=${base.count} rail=${after} scroll=${y}`); await ctx.close();
+            }
+            console.log('EXPERIENCE_V3_GREEN');
+          } finally {await browser.close()}
+          EOF
+          node qa-experience.mjs
