@@ -1,0 +1,5 @@
+{
+  "status": "RED",
+  "failure": "Error: 320: menu geometry bad {\"x\":7,\"y\":9,\"w\":320,\"h\":700,\"vw\":320,\"vh\":700,\"open\":true,\"aria\":\"false\",\"links\":[[\"Home\",254,28.34375],[\"Projects\",254,28.34375],[\"Services\",254,28.34375],[\"Process\",254,28.34375],[\"Contact\",254,28.34375]]}\n    at file:///home/runner/work/VeroSpace-/VeroSpace-/qa-live.mjs:24:121",
+  "report": []
+}
