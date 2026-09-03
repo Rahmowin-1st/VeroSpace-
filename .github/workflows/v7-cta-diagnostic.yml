@@ -1,0 +1,37 @@
+name: VeroSpace V7 CTA Diagnostic
+on:
+  push:
+    branches: [verospace-canonical-upgrade-v7]
+    paths: ['.github/workflows/v7-cta-diagnostic.yml']
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+      - run: python3 -m http.server 4173 >/tmp/http.log 2>&1 & sleep 1
+      - run: |
+          cat > diag.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const browser=await chromium.launch({headless:true});
+          for(const [width,height] of [[390,844],[1440,900]]){
+            const page=await browser.newPage({viewport:{width,height}});
+            await page.route('https://unsplash.com/**',r=>r.abort());
+            await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+            await page.waitForFunction(()=>document.querySelectorAll('.project-track figure.v7-current').length===5);
+            await page.locator('#projects').scrollIntoViewIfNeeded();
+            await page.waitForTimeout(700);
+            const rows=await page.locator('.project-card').evaluateAll(cards=>cards.map((card,i)=>{
+              const c=card.getBoundingClientRect(),p=card.querySelector('.project-preview').getBoundingClientRect(),b=card.querySelector('.project-open').getBoundingClientRect(),t=card.querySelector('.project-teaser').getBoundingClientRect();
+              const s=getComputedStyle(card.querySelector('.project-open'));
+              return {i:i+1,card:[c.left,c.right,c.width],preview:[p.left,p.right,p.width,p.top,p.bottom],cta:[b.left,b.right,b.width,b.top,b.bottom],teaserBottom:t.bottom,leftGap:b.left-c.left,rightGap:c.right-b.right,position:s.position,left:s.left,right:s.right,width:s.width};
+            }));
+            console.log('CTA_GEOMETRY_'+width,JSON.stringify(rows));
+            await page.close();
+          }
+          await browser.close();
+          EOF
+          node diag.mjs
