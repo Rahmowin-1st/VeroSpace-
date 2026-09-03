@@ -2,6 +2,7 @@ const COMMIT='e9e0d7b88554d387a8d3b17d390aff39ec34bd87';
 const BASE=`https://raw.githubusercontent.com/Rahmowin-1st/VeroSpace-/${COMMIT}/`;
 const ALLOWED=new Map([
   ['index.html','text/html; charset=utf-8'],
+  ['native.js','application/javascript; charset=utf-8'],
   ['v5.css','text/css; charset=utf-8'],
   ['v5.js','application/javascript; charset=utf-8'],
   ['assets/verospace-home-yellow.webp','image/webp'],
