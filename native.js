@@ -27,16 +27,15 @@ document.addEventListener('selectionchange',()=>{
 
 // Load the canonical layer after the base deferred scripts have initialized.
 document.addEventListener('DOMContentLoaded',()=>{
-  if(!document.querySelector('link[data-verospace-v7]')){
-    const link=document.createElement('link');
-    link.rel='stylesheet';
-    link.href='v7-canonical.css?v=20260903c1';
-    link.dataset.verospaceV7='true';
-    document.head.appendChild(link);
-  }
+  const loadCss=(href,key)=>{
+    if(document.querySelector(`link[data-${key}]`))return;
+    const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.setAttribute(`data-${key}`,'true');document.head.appendChild(link);
+  };
+  loadCss('v7-canonical.css?v=20260903c2','verospace-v7');
+  loadCss('v7-polish.css?v=20260903c2','verospace-v7-polish');
   if(!document.querySelector('script[data-verospace-v7]')){
     const script=document.createElement('script');
-    script.src='v7-canonical.js?v=20260903c1';
+    script.src='v7-canonical.js?v=20260903c2';
     script.async=false;
     script.dataset.verospaceV7='true';
     document.body.appendChild(script);
