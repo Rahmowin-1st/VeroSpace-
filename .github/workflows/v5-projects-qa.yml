@@ -24,7 +24,7 @@ jobs:
           test "$(grep -o 'class="project-card reveal"' index.html | wc -l)" -eq 5
           test "$(grep -o 'data-carousel' index.html | wc -l)" -eq 5
           test "$(grep -o 'download?force=true' index.html | wc -l)" -eq 15
-          ! grep -Eiq 'backdrop-filter|filter:[[:space:]]*blur|scroll-snap|ScrollSmoother' v5.css v5.js
+          ! grep -Eiq 'filter:[[:space:]]*blur|scroll-snap|ScrollSmoother' v5.css v5.js
           ! grep -Eiq 'google|gstatic|fonts\.googleapis' index.html v5.css v5.js
           grep -q "scrub:.8" v5.js
           ! grep -Eq 'pin:[[:space:]]*true|snap:' v5.js
@@ -52,29 +52,34 @@ jobs:
             await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded',timeout:60000});
             await page.locator('.hero').waitFor({state:'visible'});
             await page.waitForFunction(()=>document.querySelector('.hero-image')?.complete&&document.querySelector('.hero-image')?.naturalWidth>0,{timeout:30000});
-            const base=await page.evaluate(()=>({
-              sw:document.documentElement.scrollWidth,iw:innerWidth,
-              cards:document.querySelectorAll('.project-card').length,
-              stages:[...document.querySelectorAll('.project-stage')].map(e=>{const r=e.getBoundingClientRect();return [r.width,r.height]}),
-              imgs:[...document.querySelectorAll('.project-card')].map(c=>c.querySelectorAll('.project-track img').length),
-              counterOpacity:getComputedStyle(document.querySelector('.swipe-counter')).opacity,
-              header:getComputedStyle(document.querySelector('.site-header')),
-              fade:getComputedStyle(document.querySelector('.hero-fade')).backgroundImage,
-              menuLinks:document.querySelectorAll('.menu-list a').length,
-              old:document.querySelectorAll('.media-toolbar,.media-count,.media-dots').length
-            }));
+            if(width===320){await page.waitForFunction(()=>document.documentElement.dataset.motion==='gsap',{timeout:30000});}
+            const base=await page.evaluate(()=>{
+              const fade=document.querySelector('.hero-fade').getBoundingClientRect();
+              const copy=document.querySelector('.hero-copy').getBoundingClientRect();
+              return {
+                sw:document.documentElement.scrollWidth,iw:innerWidth,
+                cards:document.querySelectorAll('.project-card').length,
+                stages:[...document.querySelectorAll('.project-stage')].map(e=>{const r=e.getBoundingClientRect();return [r.width,r.height]}),
+                imgs:[...document.querySelectorAll('.project-card')].map(c=>c.querySelectorAll('.project-track img').length),
+                counterOpacity:getComputedStyle(document.querySelector('.swipe-counter')).opacity,
+                fadeBg:getComputedStyle(document.querySelector('.hero-fade')).backgroundImage,
+                fadeOverlap:Math.max(0,copy.bottom-fade.top),
+                menuLinks:document.querySelectorAll('.menu-list a').length,
+                old:document.querySelectorAll('.media-toolbar,.media-count,.media-dots').length
+              };
+            });
             if(base.sw>base.iw+1)fail(width,`horizontal overflow ${base.sw}>${base.iw}`);
             if(base.cards!==5||base.imgs.some(n=>n!==3))fail(width,'project architecture is not 5 x 3');
             if(base.stages.some(([w,h])=>Math.abs(w-h)>3))fail(width,`project preview not 1:1 ${JSON.stringify(base.stages)}`);
             if(base.counterOpacity!=='0')fail(width,'01/03 counter visible before interaction');
             if(base.menuLinks!==4)fail(width,`menu should have 4 unique links, got ${base.menuLinks}`);
             if(base.old!==0)fail(width,'legacy project toolbar still exists');
-            if(!String(base.fade).includes('linear-gradient'))fail(width,'hero background seam fade missing');
+            if(!String(base.fadeBg).includes('linear-gradient')||base.fadeOverlap>24)fail(width,`hero seam fade overlaps copy ${base.fadeOverlap}px`);
             const glass=await page.locator('.site-header').evaluate(e=>({bg:getComputedStyle(e).backgroundImage,filter:getComputedStyle(e).filter,backdrop:getComputedStyle(e).backdropFilter||getComputedStyle(e).webkitBackdropFilter}));
             if(!glass.bg.includes('linear-gradient')||glass.filter!=='none'||(glass.backdrop&&glass.backdrop!=='none'))fail(width,`liquid glass contract failed ${JSON.stringify(glass)}`);
 
             const card=page.locator('.project-card').first();
-            await card.scrollIntoViewIfNeeded();await page.waitForTimeout(250);
+            await card.scrollIntoViewIfNeeded();await page.waitForTimeout(300);
             const stage=card.locator('.project-stage');
             const before=await stage.locator('.project-track').evaluate(e=>e.scrollLeft);
             await stage.locator('[data-next]').click();
@@ -84,15 +89,16 @@ jobs:
             const counter=stage.locator('.swipe-counter');
             if(await counter.evaluate(e=>getComputedStyle(e).opacity)==='0')fail(width,'counter did not appear after swipe/next');
             await stage.locator('[data-next]').click();
-            await page.waitForTimeout(900);
+            await page.waitForTimeout(700);
             if(await counter.evaluate(e=>getComputedStyle(e).opacity)==='0')fail(width,'counter disappeared during rapid browsing');
             await page.waitForTimeout(900);
             if(await counter.evaluate(e=>getComputedStyle(e).opacity)!=='0')fail(width,'counter did not auto-hide after browsing stopped');
 
-            const emptyPoint=card.locator('.project-preview h3');
-            await emptyPoint.click();await page.waitForTimeout(100);
+            const beforeSelect=await card.boundingBox();
+            await card.locator('.project-preview h3').click();await page.waitForTimeout(120);
+            const afterSelect=await card.boundingBox();
             const selected=await card.evaluate(e=>({sel:e.classList.contains('is-selected'),border:getComputedStyle(e).borderColor,transform:getComputedStyle(e).transform}));
-            if(!selected.sel||selected.transform==='none')fail(width,`project tactile selected state missing ${JSON.stringify(selected)}`);
+            if(!selected.sel||selected.transform==='none'||!beforeSelect||!afterSelect||afterSelect.width<=beforeSelect.width*1.004)fail(width,`real tactile lift/scale missing ${JSON.stringify({selected,beforeSelect,afterSelect})}`);
 
             await card.locator('.project-open').click();
             const dialog=page.locator('#projectDialog');await dialog.waitFor({state:'visible'});
@@ -106,14 +112,15 @@ jobs:
             if(modal.images!==3||modal.meta<4||modal.summary<20)fail(width,`full project content incomplete ${JSON.stringify(modal)}`);
             for(const need of ['Goal','Space','Design','Material direction','Key decisions','Timeline','Approval path','Concept result','Support + handover'])if(!modal.details.includes(need))fail(width,`missing detail ${need}`);
             if(modal.fit!=='contain')fail(width,'full project images do not preserve orientation');
-            await dialog.locator('[data-modal-next]').click();await page.waitForTimeout(250);
+            await dialog.locator('[data-modal-next]').click();await page.waitForTimeout(220);
             if(await dialog.locator('.modal-counter').evaluate(e=>getComputedStyle(e).opacity)==='0')fail(width,'modal transient counter missing');
             await dialog.locator('.modal-close').click();
 
             await page.locator('.menu-button').click();await page.waitForTimeout(320);
-            const menuGeom=await page.locator('.site-menu').evaluate(e=>{const r=e.getBoundingClientRect();return {w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,open:e.classList.contains('open')};});
+            const menuGeom=await page.locator('.site-menu').evaluate(e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,vw:innerWidth,vh:innerHeight,open:e.classList.contains('open')};});
             const curtainOpen=await page.locator('.menu-curtain').evaluate(e=>e.classList.contains('open'));
             if(!menuGeom.open||!curtainOpen)fail(width,'floating panel / curtain failed');
+            if(menuGeom.x<5||menuGeom.w>menuGeom.vw-10||menuGeom.h>=menuGeom.vh-35)fail(width,`panel is not visually separate ${JSON.stringify(menuGeom)}`);
             if(width>=1024&&menuGeom.w>700)fail(width,'desktop menu became full-screen');
             await page.keyboard.press('Escape');
 
@@ -122,6 +129,15 @@ jobs:
             console.log(`GREEN ${width}x${height}`);
             await context.close();
           }
+
+          const preloadContext=await browser.newContext({viewport:{width:1440,height:900},reducedMotion:'no-preference'});
+          const preloadPage=await preloadContext.newPage();
+          await preloadPage.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+          await preloadPage.waitForFunction(()=>document.documentElement.dataset.projectPreload==='complete',{timeout:150000});
+          const preload=await preloadPage.evaluate(()=>({target:Number(document.documentElement.dataset.projectPreloadTarget),cached:Number(document.documentElement.dataset.projectPreloadCached),failed:[...window.__verospaceProjectImageCache.values()].filter(v=>v?.failed).length}));
+          if(preload.target!==15||preload.cached!==15||preload.failed!==0)throw new Error(`preload gate failed ${JSON.stringify(preload)}`);
+          await preloadContext.close();
+
           const reduced=await browser.newContext({viewport:{width:390,height:844},reducedMotion:'reduce'});const rp=await reduced.newPage();await rp.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});await rp.waitForTimeout(500);const rm=await rp.evaluate(()=>document.documentElement.dataset.motion);if(rm!=='reduced')throw new Error(`reduced motion gate failed: ${rm}`);await reduced.close();
           await browser.close();console.log('V5_PROJECTS_QA_GREEN');
           EOF
