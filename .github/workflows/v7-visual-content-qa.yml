@@ -1,0 +1,130 @@
+name: VeroSpace V7 Visual Content QA
+on:
+  push:
+    branches: [verospace-canonical-upgrade-v7]
+    paths: ['.github/workflows/v7-visual-content-qa.yml']
+permissions:
+  contents: read
+jobs:
+  visual-content:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+      - run: python3 -m http.server 4173 >/tmp/verospace-v7-visual-http.log 2>&1 & sleep 1
+      - name: Run visual/content gates
+        run: |
+          cat > qa-visual.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          import fs from 'node:fs';
+          const fail=m=>{throw new Error(m)};
+          fs.mkdirSync('qa-shots',{recursive:true});
+          const browser=await chromium.launch({headless:true});
+
+          async function ready(page){
+            await page.route('https://unsplash.com/**',r=>r.abort());
+            await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded',timeout:45000});
+            await page.waitForFunction(()=>document.querySelectorAll('.vs-select-trigger').length===2,{timeout:15000});
+            await page.waitForFunction(()=>document.querySelectorAll('.project-track figure.v7-current').length===5,{timeout:15000});
+          }
+
+          for(const [width,height] of [[390,844],[1440,900]]){
+            const context=await browser.newContext({viewport:{width,height}});
+            const page=await context.newPage();
+            await ready(page);
+
+            const shell=await page.evaluate(()=>{
+              const header=document.querySelector('.site-header');
+              const hs=getComputedStyle(header);
+              const fade=getComputedStyle(document.querySelector('.hero-fade'));
+              const menu=document.querySelector('#siteMenu');
+              return {
+                nativeSelects:document.querySelectorAll('select').length,
+                googleRuntime:[...document.querySelectorAll('link[href],script[src]')].filter(el=>/googleapis|gstatic|google\.com/i.test(el.href||el.src||'')).length,
+                blur:[...document.querySelectorAll('*')].filter(el=>{const s=getComputedStyle(el);return /blur\(/.test(String(s.backdropFilter||s.webkitBackdropFilter||'')+String(s.filter||''));}).length,
+                glassGradients:(hs.backgroundImage.match(/gradient\(/g)||[]).length,
+                fadeGradient:/gradient\(/.test(fade.backgroundImage),
+                menuLinks:menu.querySelectorAll('.menu-list a').length,
+                menuText:menu.textContent.replace(/\s+/g,' ').trim(),
+                pageOverflow:document.documentElement.scrollWidth-innerWidth
+              };
+            });
+            if(shell.nativeSelects!==0)fail(`${width}: native select remains`);
+            if(shell.googleRuntime!==0)fail(`${width}: Google runtime asset remains`);
+            if(shell.blur!==0)fail(`${width}: blur found`);
+            if(shell.glassGradients<2||!shell.fadeGradient)fail(`${width}: optical glass/hero fade missing`);
+            if(shell.menuLinks!==4||/Book consultation/i.test(shell.menuText))fail(`${width}: menu duplicate/structure wrong: ${shell.menuText}`);
+            if(shell.pageOverflow>1)fail(`${width}: horizontal overflow ${shell.pageOverflow}`);
+
+            await page.locator('#projects').scrollIntoViewIfNeeded();
+            await page.waitForTimeout(700);
+            const cards=page.locator('.project-card');
+            if(await cards.count()!==5)fail(`${width}: expected 5 projects`);
+            for(let i=0;i<5;i++){
+              const card=cards.nth(i);
+              const geom=await card.evaluate(card=>{
+                const stage=card.querySelector('.project-stage').getBoundingClientRect();
+                const preview=card.querySelector('.project-preview').getBoundingClientRect();
+                const cta=card.querySelector('.project-open').getBoundingClientRect();
+                const teaser=card.querySelector('.project-teaser').getBoundingClientRect();
+                return {ratio:stage.width/stage.height,previewTop:preview.top,previewBottom:preview.bottom,ctaTop:cta.top,ctaBottom:cta.bottom,ctaLeft:cta.left,ctaRight:cta.right,cardLeft:card.getBoundingClientRect().left,cardRight:card.getBoundingClientRect().right,teaserBottom:teaser.bottom};
+              });
+              if(Math.abs(geom.ratio-1)>.035)fail(`${width}: project ${i+1} image not 1:1 ${geom.ratio}`);
+              if(geom.ctaBottom>geom.previewBottom+1||geom.ctaTop<geom.previewTop)fail(`${width}: project ${i+1} CTA outside preview`);
+              if(geom.ctaLeft<geom.cardLeft+12||geom.ctaRight>geom.cardRight-12)fail(`${width}: project ${i+1} CTA edge placement bad`);
+              if(geom.ctaTop<geom.teaserBottom-70)fail(`${width}: project ${i+1} CTA collides with teaser`);
+            }
+
+            // Every project must open into a complete, structured case study.
+            const required=['Goal','Space','Design','Material direction','Key decisions','Timeline','Approval path','Concept result','Support + handover'];
+            for(let i=0;i<5;i++){
+              await cards.nth(i).locator('.project-open').click();
+              const dialog=page.locator('#projectDialog');
+              await dialog.waitFor({state:'visible'});
+              const detail=await dialog.evaluate((dialog,required)=>{
+                const labels=[...dialog.querySelectorAll('.detail-card>span')].map(el=>el.textContent.trim());
+                return {
+                  images:dialog.querySelectorAll('.modal-track figure').length,
+                  meta:dialog.querySelectorAll('.modal-meta span').length,
+                  sections:dialog.querySelectorAll('.detail-card').length,
+                  labels,
+                  title:dialog.querySelector('#modalTitle')?.textContent.trim(),
+                  summary:dialog.querySelector('#modalSummary')?.textContent.trim(),
+                  cta:dialog.querySelector('.modal-cta')?.textContent.trim(),
+                  arrows:[...dialog.querySelectorAll('.modal-arrow-group')].filter(el=>getComputedStyle(el).display!=='none').length,
+                  missing:required.filter(x=>!labels.includes(x))
+                };
+              },required);
+              if(detail.images!==3||detail.meta<4||detail.sections<9||detail.missing.length)fail(`${width}: project ${i+1} incomplete ${JSON.stringify(detail)}`);
+              if(!detail.title||detail.summary.length<25||!/Discuss a similar project/i.test(detail.cta||''))fail(`${width}: project ${i+1} modal hierarchy incomplete`);
+              if(detail.arrows!==0)fail(`${width}: modal arrows still visible`);
+              await page.locator('.modal-close').click();
+            }
+
+            await page.locator('.menu-button').click();
+            await page.waitForTimeout(220);
+            await page.screenshot({path:`qa-shots/${width}-menu.png`,fullPage:false});
+            await page.keyboard.press('Escape');
+            await page.locator('#projects').scrollIntoViewIfNeeded();
+            await page.screenshot({path:`qa-shots/${width}-projects.png`,fullPage:false});
+            await cards.first().locator('.project-open').click();
+            await page.screenshot({path:`qa-shots/${width}-project-modal.png`,fullPage:false});
+            await page.locator('.modal-close').click();
+            await page.locator('#contact').scrollIntoViewIfNeeded();
+            await page.screenshot({path:`qa-shots/${width}-consultation.png`,fullPage:false});
+            console.log(`VISUAL_CONTENT_GREEN ${width}x${height}`);
+            await context.close();
+          }
+          await browser.close();
+          console.log('V7_VISUAL_CONTENT_QA_GREEN');
+          EOF
+          node qa-visual.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: v7-visual-content-shots
+          path: qa-shots
+          if-no-files-found: ignore
