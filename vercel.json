@@ -3,17 +3,10 @@
   "cleanUrls": true,
   "trailingSlash": false,
   "rewrites": [
-    {
-      "source": "/assets/:path*",
-      "destination": "/api/asset?file=:path*"
-    }
-  ],
-  "headers": [
-    {
-      "source": "/assets/(.*)",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
-    }
+    { "source": "/", "destination": "/api/source?file=index.html" },
+    { "source": "/index.html", "destination": "/api/source?file=index.html" },
+    { "source": "/v5.css", "destination": "/api/source?file=v5.css" },
+    { "source": "/v5.js", "destination": "/api/source?file=v5.js" },
+    { "source": "/assets/:path*", "destination": "/api/source?file=assets/:path*" }
   ]
 }
