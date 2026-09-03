@@ -1,0 +1,36 @@
+name: VeroSpace V7 Unsplash Resolve
+on:
+  push:
+    branches: [verospace-canonical-upgrade-v7]
+    paths: ['.github/workflows/v7-unsplash-resolve.yml']
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Resolve project image URLs
+        run: |
+          urls=(
+          'https://unsplash.com/photos/OcxgtPN0FmM/download?force=true'
+          'https://unsplash.com/photos/uaO2jAFKR0c/download?force=true'
+          'https://unsplash.com/photos/U74CPDcq5OY/download?force=true'
+          'https://unsplash.com/photos/881IAs1vdE4/download?force=true'
+          'https://unsplash.com/photos/n4U6GwZJmBM/download?force=true'
+          'https://unsplash.com/photos/lq8FnmruSjo/download?force=true'
+          'https://unsplash.com/photos/G8kRVwlZK3Q/download?force=true'
+          'https://unsplash.com/photos/3bgpVpEZV6s/download?force=true'
+          'https://unsplash.com/photos/GRxzOdEUKVg/download?force=true'
+          'https://unsplash.com/photos/hjNTscPXJTg/download?force=true'
+          'https://unsplash.com/photos/rFpEHzGB37w/download?force=true'
+          'https://unsplash.com/photos/54xFukuLp1E/download?force=true'
+          'https://unsplash.com/photos/NMXNCYy-2ks/download?force=true'
+          'https://unsplash.com/photos/B6ZXOlMO3EY/download?force=true'
+          'https://unsplash.com/photos/mQmDscIIQfs/download?force=true'
+          )
+          i=0
+          for u in "${urls[@]}"; do
+            i=$((i+1))
+            printf 'IMG_%02d ' "$i"
+            curl -A 'Mozilla/5.0' -L --max-time 25 -sS -o /tmp/img "$u" -w 'code=%{http_code} type=%{content_type} bytes=%{size_download} final=%{url_effective}\n' || true
+            file -b --mime-type /tmp/img 2>/dev/null | sed 's/^/detected=/' || true
+          done
