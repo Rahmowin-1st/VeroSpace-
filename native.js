@@ -1,8 +1,8 @@
 // VeroSpace owns non-editable long-press and selection behavior.
-// Form fields remain fully native/editable for accessibility and usability.
+// Editable form fields remain selectable; native project/budget pickers are replaced by V7.
 const vsEditableTarget=target=>{
   const el=target instanceof Element?target:target?.parentElement;
-  return Boolean(el?.closest('input,textarea,select,[contenteditable="true"],[data-allow-select="true"]'));
+  return Boolean(el?.closest('input,textarea,[contenteditable="true"],[data-allow-select="true"]'));
 };
 
 document.addEventListener('contextmenu',event=>{
@@ -24,3 +24,21 @@ document.addEventListener('selectionchange',()=>{
   const anchor=selection.anchorNode instanceof Element?selection.anchorNode:selection.anchorNode?.parentElement;
   if(!vsEditableTarget(anchor))selection.removeAllRanges();
 });
+
+// Load the canonical layer after the base deferred scripts have initialized.
+document.addEventListener('DOMContentLoaded',()=>{
+  if(!document.querySelector('link[data-verospace-v7]')){
+    const link=document.createElement('link');
+    link.rel='stylesheet';
+    link.href='v7-canonical.css?v=20260903c1';
+    link.dataset.verospaceV7='true';
+    document.head.appendChild(link);
+  }
+  if(!document.querySelector('script[data-verospace-v7]')){
+    const script=document.createElement('script');
+    script.src='v7-canonical.js?v=20260903c1';
+    script.async=false;
+    script.dataset.verospaceV7='true';
+    document.body.appendChild(script);
+  }
+},{once:true});
