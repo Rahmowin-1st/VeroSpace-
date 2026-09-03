@@ -1,8 +1,8 @@
-name: VeroSpace V7 Visual Content QA V3
+name: VeroSpace V7 Visual Content QA V4
 on:
   push:
     branches: [verospace-canonical-upgrade-v7]
-    paths: ['.github/workflows/v7-visual-content-qa-v2.yml']
+    paths: ['.github/workflows/v7-visual-content-qa-v2.yml','v7-polish.css']
 jobs:
   acceptance:
     runs-on: ubuntu-latest
@@ -13,7 +13,7 @@ jobs:
         with: {node-version: 22}
       - run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
       - run: python3 -m http.server 4173 >/tmp/http.log 2>&1 & sleep 1
-      - name: Verify settled visual/content acceptance
+      - name: Verify visual/content acceptance including hero first paint
         run: |
           cat > qa.mjs <<'EOF'
           import {chromium} from 'playwright';
@@ -25,6 +25,19 @@ jobs:
             const page=await browser.newPage({viewport:{width,height}});
             await page.route('https://unsplash.com/**',r=>r.abort());
             await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+            const heroGate=async label=>{
+              const h=await page.evaluate(()=>{
+                const title=document.querySelector('#heroTitle');
+                const actions=[...document.querySelectorAll('.hero-actions button')];
+                const ts=getComputedStyle(title);
+                const rect=title.getBoundingClientRect();
+                return {title:document.querySelector('#heroTitle')?.textContent.trim()||'',opacity:Number(ts.opacity),visibility:ts.visibility,top:rect.top,bottom:rect.bottom,actions:actions.map(b=>{const s=getComputedStyle(b),r=b.getBoundingClientRect();return{text:b.textContent.trim(),opacity:Number(s.opacity),visibility:s.visibility,w:r.width,h:r.height}})};
+              });
+              if(!h.title||h.opacity<.99||h.visibility==='hidden'||h.actions.length!==2||h.actions.some(a=>a.opacity<.99||a.visibility==='hidden'||a.w<44||a.h<44))fail(`${width}: hero ${label} ${JSON.stringify(h)}`);
+            };
+            await heroGate('0ms');
+            await page.waitForTimeout(600);await heroGate('600ms');
+            await page.waitForTimeout(1000);await heroGate('1600ms');
             await page.waitForFunction(()=>document.querySelectorAll('.vs-select-trigger').length===2);
             await page.waitForFunction(()=>document.querySelectorAll('.project-track figure.v7-current').length===5);
             const base=await page.evaluate(()=>{
@@ -34,49 +47,35 @@ jobs:
             if(base.selects||base.google||base.blur||base.glass<2||base.menu!==4||base.overflow>1)fail(`${width}: shell gate ${JSON.stringify(base)}`);
 
             await page.locator('#home').screenshot({path:`qa-shots/${width}-hero.png`});
-            await page.locator('.menu-button').click();
-            await page.waitForTimeout(260);
-            await page.screenshot({path:`qa-shots/${width}-menu.png`});
-            await page.keyboard.press('Escape');
+            await page.locator('.menu-button').click();await page.waitForTimeout(260);await page.screenshot({path:`qa-shots/${width}-menu.png`});await page.keyboard.press('Escape');
 
             const cards=page.locator('.project-card');
             for(let i=0;i<5;i++){
-              const card=cards.nth(i);
-              await card.scrollIntoViewIfNeeded();
-              await page.waitForTimeout(950);
-              const g=await card.evaluate(card=>{const p=card.querySelector('.project-preview').getBoundingClientRect(),b=card.querySelector('.project-open').getBoundingClientRect(),s=card.querySelector('.project-stage').getBoundingClientRect();return{ratio:s.width/s.height,left:b.left-p.left,right:p.right-b.right,top:b.top,bottom:b.bottom,pTop:p.top,pBottom:p.bottom,transform:getComputedStyle(card.querySelector('.project-open')).transform,cardTransform:getComputedStyle(card).transform}});
+              const card=cards.nth(i);await card.scrollIntoViewIfNeeded();await page.waitForTimeout(950);
+              const g=await card.evaluate(card=>{const p=card.querySelector('.project-preview').getBoundingClientRect(),b=card.querySelector('.project-open').getBoundingClientRect(),s=card.querySelector('.project-stage').getBoundingClientRect();return{ratio:s.width/s.height,left:b.left-p.left,right:p.right-b.right,top:b.top,bottom:b.bottom,pTop:p.top,pBottom:p.bottom,transform:getComputedStyle(card.querySelector('.project-open')).transform}});
               if(Math.abs(g.ratio-1)>.035)fail(`${width}: project ${i+1} ratio ${g.ratio}`);
               if(g.left<12||g.right<12||Math.abs(g.left-g.right)>2)fail(`${width}: project ${i+1} CTA geometry ${JSON.stringify(g)}`);
               if(g.top<g.pTop||g.bottom>g.pBottom+1)fail(`${width}: project ${i+1} CTA outside preview`);
               if(i===0)await card.screenshot({path:`qa-shots/${width}-project-card.png`});
             }
-
             const required=['Goal','Space','Design','Material direction','Key decisions','Timeline','Approval path','Concept result','Support + handover'];
             for(let i=0;i<5;i++){
-              const card=cards.nth(i);
-              await card.scrollIntoViewIfNeeded();
-              await page.waitForTimeout(100);
-              await card.locator('.project-open').click();
+              const card=cards.nth(i);await card.scrollIntoViewIfNeeded();await page.waitForTimeout(100);await card.locator('.project-open').click();
               const dialog=page.locator('#projectDialog');await dialog.waitFor({state:'visible'});
               const d=await dialog.evaluate((el,required)=>{const labels=[...el.querySelectorAll('.detail-card>span')].map(x=>x.textContent.trim());return{images:el.querySelectorAll('.modal-track figure').length,meta:el.querySelectorAll('.modal-meta span').length,sections:el.querySelectorAll('.detail-card').length,missing:required.filter(x=>!labels.includes(x)),arrows:[...el.querySelectorAll('.modal-arrow-group')].filter(x=>getComputedStyle(x).display!=='none').length,cta:el.querySelector('.modal-cta')?.textContent||'',summary:el.querySelector('#modalSummary')?.textContent||''}},required);
               if(d.images!==3||d.meta<4||d.sections<9||d.missing.length||d.arrows||d.summary.trim().length<25||!/Discuss a similar project/i.test(d.cta))fail(`${width}: project ${i+1} detail ${JSON.stringify(d)}`);
               if(i===0)await page.screenshot({path:`qa-shots/${width}-project-modal.png`});
               await page.locator('.modal-close').click();
             }
-
-            await page.locator('#contact').scrollIntoViewIfNeeded();
-            await page.waitForTimeout(400);
-            await page.screenshot({path:`qa-shots/${width}-consultation.png`});
-            console.log(`V7_VISUAL_CONTENT_GREEN ${width}x${height}`);
-            await page.close();
+            await page.locator('#contact').scrollIntoViewIfNeeded();await page.waitForTimeout(400);await page.screenshot({path:`qa-shots/${width}-consultation.png`});
+            console.log(`V7_VISUAL_CONTENT_GREEN ${width}x${height}`);await page.close();
           }
-          await browser.close();
-          console.log('V7_VISUAL_CONTENT_QA_V3_GREEN');
+          await browser.close();console.log('V7_VISUAL_CONTENT_QA_V4_GREEN');
           EOF
           node qa.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: v7-visual-content-v3-shots
+          name: v7-visual-content-v4-shots
           path: qa-shots
           if-no-files-found: ignore
