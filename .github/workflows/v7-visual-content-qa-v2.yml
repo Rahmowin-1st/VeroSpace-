@@ -1,0 +1,54 @@
+name: VeroSpace V7 Visual Content QA V2
+on:
+  push:
+    branches: [verospace-canonical-upgrade-v7]
+    paths: ['.github/workflows/v7-visual-content-qa-v2.yml']
+jobs:
+  acceptance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+      - run: python3 -m http.server 4173 >/tmp/http.log 2>&1 & sleep 1
+      - name: Verify visual/content acceptance
+        run: |
+          cat > qa.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const fail=m=>{throw new Error(m)};
+          const browser=await chromium.launch({headless:true});
+          for(const [width,height] of [[390,844],[1440,900]]){
+            const page=await browser.newPage({viewport:{width,height}});
+            await page.route('https://unsplash.com/**',r=>r.abort());
+            await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded'});
+            await page.waitForFunction(()=>document.querySelectorAll('.vs-select-trigger').length===2);
+            await page.waitForFunction(()=>document.querySelectorAll('.project-track figure.v7-current').length===5);
+            const base=await page.evaluate(()=>{
+              const header=getComputedStyle(document.querySelector('.site-header'));
+              return {selects:document.querySelectorAll('select').length,google:[...document.querySelectorAll('link[href],script[src]')].filter(x=>/googleapis|gstatic|google\.com/i.test(x.href||x.src||'')).length,blur:[...document.querySelectorAll('*')].filter(x=>/blur\(/.test(String(getComputedStyle(x).backdropFilter||getComputedStyle(x).webkitBackdropFilter||'')+String(getComputedStyle(x).filter||''))).length,glass:(header.backgroundImage.match(/gradient\(/g)||[]).length,menu:document.querySelectorAll('.menu-list a').length,overflow:document.documentElement.scrollWidth-innerWidth};
+            });
+            if(base.selects||base.google||base.blur||base.glass<2||base.menu!==4||base.overflow>1)fail(`${width}: shell gate ${JSON.stringify(base)}`);
+            const cards=page.locator('.project-card');
+            for(let i=0;i<5;i++){
+              const g=await cards.nth(i).evaluate(card=>{const p=card.querySelector('.project-preview').getBoundingClientRect(),b=card.querySelector('.project-open').getBoundingClientRect(),s=card.querySelector('.project-stage').getBoundingClientRect();return{ratio:s.width/s.height,left:b.left-p.left,right:p.right-b.right,top:b.top,bottom:b.bottom,pTop:p.top,pBottom:p.bottom,transform:getComputedStyle(card.querySelector('.project-open')).transform}});
+              if(Math.abs(g.ratio-1)>.035)fail(`${width}: project ${i+1} ratio ${g.ratio}`);
+              if(g.left<12||g.right<12||Math.abs(g.left-g.right)>3)fail(`${width}: project ${i+1} CTA geometry ${JSON.stringify(g)}`);
+              if(g.top<g.pTop||g.bottom>g.pBottom+1)fail(`${width}: project ${i+1} CTA outside preview`);
+            }
+            const required=['Goal','Space','Design','Material direction','Key decisions','Timeline','Approval path','Concept result','Support + handover'];
+            for(let i=0;i<5;i++){
+              await cards.nth(i).locator('.project-open').click();
+              const dialog=page.locator('#projectDialog');await dialog.waitFor({state:'visible'});
+              const d=await dialog.evaluate((el,required)=>{const labels=[...el.querySelectorAll('.detail-card>span')].map(x=>x.textContent.trim());return{images:el.querySelectorAll('.modal-track figure').length,meta:el.querySelectorAll('.modal-meta span').length,sections:el.querySelectorAll('.detail-card').length,missing:required.filter(x=>!labels.includes(x)),arrows:[...el.querySelectorAll('.modal-arrow-group')].filter(x=>getComputedStyle(x).display!=='none').length,cta:el.querySelector('.modal-cta')?.textContent||'',summary:el.querySelector('#modalSummary')?.textContent||''}},required);
+              if(d.images!==3||d.meta<4||d.sections<9||d.missing.length||d.arrows||d.summary.trim().length<25||!/Discuss a similar project/i.test(d.cta))fail(`${width}: project ${i+1} detail ${JSON.stringify(d)}`);
+              await page.locator('.modal-close').click();
+            }
+            console.log(`V7_VISUAL_CONTENT_GREEN ${width}x${height}`);
+            await page.close();
+          }
+          await browser.close();
+          console.log('V7_VISUAL_CONTENT_QA_V2_GREEN');
+          EOF
+          node qa.mjs
