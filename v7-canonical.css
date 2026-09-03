@@ -1,0 +1,111 @@
+/* VeroSpace V7 canonical interaction layer — no native picker, no background blur. */
+:root{--vs-navy:#0b2138;--vs-navy-2:#173e65;--vs-gold:#d2a64e;--vs-ivory:#f7f3ec;--vs-paper:#fffdf8;--vs-text:#122238;--vs-muted:#6d7683;--vs-danger:#b64747;--vs-success:#2e9c62;--vs-offline:#8a9097}
+
+/* Blur-free optical Liquid Glass. */
+.site-header.liquid-glass{
+  --glass-x:50%;--glass-y:0%;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at var(--glass-x) var(--glass-y),rgba(255,255,255,.96) 0 5%,rgba(255,255,255,.34) 18%,transparent 42%),
+    linear-gradient(135deg,rgba(255,255,255,.88),rgba(250,246,236,.72) 54%,rgba(255,255,255,.82)),
+    linear-gradient(110deg,rgba(255,255,255,.42) 0 13%,transparent 24% 72%,rgba(210,166,78,.15) 91% 100%)!important;
+  border:1px solid rgba(255,255,255,.94)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,1),inset 0 -1px 0 rgba(11,33,56,.08),0 15px 42px rgba(11,33,56,.12)!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;filter:none!important;
+}
+.site-header.liquid-glass::before{
+  content:"";position:absolute;inset:1px;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(103deg,transparent 8%,rgba(255,255,255,.58) 24%,transparent 39% 68%,rgba(255,255,255,.24) 82%,transparent 94%);
+  transform:translateX(var(--glass-shift,-14%));opacity:.68;transition:transform .45s cubic-bezier(.16,1,.3,1),opacity .25s ease;
+}
+.site-header.liquid-glass::after{
+  content:"";position:absolute;inset:7px;border-radius:inherit;pointer-events:none;border:1px solid rgba(255,255,255,.38);box-shadow:inset 0 0 0 1px rgba(11,33,56,.035);
+}
+.site-header.liquid-glass>*{position:relative;z-index:2}
+.site-header.liquid-glass:active{--glass-shift:8%}
+
+/* Softer hero contrast and a clean seam into the page. */
+.hero-overlay{background:linear-gradient(90deg,rgba(5,14,24,.58) 0%,rgba(5,14,24,.36) 44%,rgba(5,14,24,.11) 78%,rgba(5,14,24,.03) 100%)!important}
+.hero-fade{position:absolute!important;left:0!important;right:0!important;bottom:-1px!important;height:24%!important;pointer-events:none!important;background:linear-gradient(180deg,transparent 0%,rgba(247,243,236,.10) 42%,rgba(247,243,236,.68) 76%,var(--vs-ivory) 100%)!important;z-index:1!important}
+.hero-copy{z-index:3!important}
+
+/* Menu stays a floating VeroSpace surface, not a second page. */
+.menu-curtain{background:rgba(6,17,29,.52)!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.site-menu{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;filter:none!important}
+.site-menu .menu-head strong{display:none!important}
+
+/* Canonical custom listboxes. The native select is removed by JS. */
+.vs-select-shell{position:relative;width:100%;min-width:0}
+.vs-select-trigger{
+  width:100%;min-height:62px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 18px;border-radius:20px;
+  border:1px solid rgba(11,33,56,.16);background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(252,248,241,.88));color:var(--vs-text);font-weight:700;text-align:left;
+  box-shadow:inset 0 1px 0 #fff,0 8px 20px rgba(11,33,56,.045);transition:border-color .18s ease,transform .18s ease,box-shadow .18s ease,background .18s ease
+}
+.vs-select-trigger::after{content:"⌄";font-size:20px;line-height:1;color:#30445b;transition:transform .2s ease}
+.vs-select-shell.open .vs-select-trigger::after{transform:rotate(180deg)}
+.vs-select-trigger:active{transform:translateY(2px) scale(.992)}
+.vs-select-shell.open .vs-select-trigger{border-color:rgba(210,166,78,.72);box-shadow:0 0 0 3px rgba(210,166,78,.12),inset 0 1px 0 #fff}
+.vs-select-shell.has-value .vs-select-trigger{color:var(--vs-navy)}
+.vs-select-list{
+  position:absolute;z-index:80;top:calc(100% + 9px);left:0;right:0;max-height:min(330px,48vh);overflow:auto;padding:8px;border-radius:22px;border:1px solid rgba(255,255,255,.9);
+  background:linear-gradient(155deg,#102c49,#0c2138);box-shadow:0 24px 70px rgba(6,20,34,.28),inset 0 1px 0 rgba(255,255,255,.16);opacity:0;visibility:hidden;transform:translateY(-7px) scale(.99);transform-origin:top;transition:.18s ease
+}
+.vs-select-shell.open-up .vs-select-list{top:auto;bottom:calc(100% + 9px);transform-origin:bottom}
+.vs-select-shell.open .vs-select-list{opacity:1;visibility:visible;transform:none}
+.vs-select-option{width:100%;min-height:52px;border:0;border-radius:15px;padding:0 14px;background:transparent;color:#eef4f9;text-align:left;font-weight:650;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.vs-select-option:hover,.vs-select-option:focus-visible{background:rgba(255,255,255,.095);outline:none}
+.vs-select-option[aria-selected="true"]{background:linear-gradient(135deg,rgba(210,166,78,.20),rgba(255,255,255,.07));color:#fff}
+.vs-select-option[aria-selected="true"]::after{content:"✓";color:#f2cc79;font-weight:900}
+.contact-form label.error .vs-select-trigger{border-color:var(--vs-danger)!important;box-shadow:0 0 0 3px rgba(182,71,71,.10)!important}
+.contact-form label.error input,.contact-form label.error textarea{border-color:var(--vs-danger)!important;box-shadow:0 0 0 3px rgba(182,71,71,.10)!important}
+.contact-form label>span b{display:inline-flex!important;align-items:center;min-height:25px;padding:0 10px;border:1px solid rgba(182,71,71,.68);border-radius:999px;color:#a83c3c;background:rgba(255,250,248,.62);font-size:10px;letter-spacing:.10em;text-transform:uppercase;white-space:nowrap}
+.contact-form small:not(:empty){display:block;color:var(--vs-danger);font-weight:750;margin-top:2px}
+
+/* Full-screen VeroSpace send experience. No browser alert, no spinner component. */
+.vs-send-layer{position:fixed;z-index:220;inset:0;display:grid;place-items:center;padding:20px;background:rgba(7,17,29,.62);opacity:0;visibility:hidden;pointer-events:none;transition:opacity .24s ease,visibility .24s ease}
+.vs-send-layer.open{opacity:1;visibility:visible;pointer-events:auto}
+.vs-send-edge{--edge:rgba(215,221,227,.68);position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,var(--edge),transparent 8%,transparent 92%,var(--edge)),linear-gradient(180deg,var(--edge),transparent 8%,transparent 92%,var(--edge));opacity:.48;animation:vsEdgePulse 1.75s ease-in-out infinite}
+.vs-send-layer[data-state="success"] .vs-send-edge{--edge:rgba(64,209,126,.82)}
+.vs-send-layer[data-state="failed"] .vs-send-edge{--edge:rgba(235,83,83,.82)}
+.vs-send-layer[data-state="offline"] .vs-send-edge{--edge:rgba(166,174,182,.72)}
+@keyframes vsEdgePulse{0%,100%{opacity:.36}50%{opacity:.78}}
+.vs-send-card{position:relative;z-index:2;width:min(390px,calc(100vw - 34px));padding:34px 26px 30px;border-radius:34px;text-align:center;color:#fff;background:linear-gradient(155deg,#112f4e,#091d32);border:1px solid rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 28px 80px rgba(0,10,20,.35)}
+.vs-send-core{width:86px;height:86px;margin:0 auto 20px;border-radius:50%;position:relative;display:grid;place-items:center;background:conic-gradient(from 0deg,#d9dde1 0 14%,rgba(255,255,255,.12) 14% 56%,#d9dde1 56% 70%,rgba(255,255,255,.12) 70% 100%);animation:vsCoreSpin 1.25s linear infinite}
+.vs-send-core::before{content:"";position:absolute;inset:7px;border-radius:50%;background:linear-gradient(145deg,#163b60,#0b2138);border:1px solid rgba(255,255,255,.12)}
+.vs-send-symbol{position:relative;z-index:2;font:800 28px/1 system-ui,sans-serif;color:#fff}
+@keyframes vsCoreSpin{to{transform:rotate(360deg)}}
+.vs-send-layer:not([data-state="sending"]) .vs-send-core{animation:none;background:rgba(255,255,255,.12)}
+.vs-send-layer[data-state="success"] .vs-send-core{background:#2e9c62}
+.vs-send-layer[data-state="failed"] .vs-send-core{background:#bd4545}
+.vs-send-layer[data-state="offline"] .vs-send-core{background:#707982}
+.vs-send-layer:not([data-state="sending"]) .vs-send-core::before{display:none}
+.vs-send-title{margin:0;font:500 38px/1 Georgia,"Times New Roman",serif;letter-spacing:-.02em}
+.vs-send-text{margin:11px auto 0;max-width:280px;color:#cbd5df;line-height:1.52}
+
+/* One-image-at-a-time project carousel with real drag-follow physics. */
+.project-stage,.modal-hero{touch-action:pan-y!important;overflow:hidden!important}
+.project-track,.modal-track{position:relative!important;display:block!important;height:100%!important;overflow:hidden!important;touch-action:pan-y!important;scroll-snap-type:none!important;scroll-behavior:auto!important}
+.project-track figure,.modal-track figure{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;margin:0!important;opacity:1!important;visibility:visible!important;pointer-events:none!important;will-change:transform!important;transform:translate3d(105%,0,0)}
+.project-track figure.v7-current,.modal-track figure.v7-current{transform:translate3d(0,0,0);z-index:2}
+.project-track figure.v7-next,.modal-track figure.v7-next{transform:translate3d(100%,0,0);z-index:3}
+.project-track img,.modal-track img{width:100%!important;height:100%!important;object-fit:cover!important;object-position:center!important;user-select:none!important;-webkit-user-drag:none!important;pointer-events:none!important;transform:scale(1.018)}
+.modal-track img{object-fit:contain!important;background:#081a2b}
+.project-arrow-group,.modal-arrow-group{display:none!important}
+.swipe-counter,.modal-counter{left:50%!important;right:auto!important;bottom:18px!important;transform:translate(-50%,8px)!important;min-width:76px!important;width:auto!important;padding:8px 12px!important;border-radius:999px!important;background:rgba(9,30,50,.88)!important;color:#fff!important;letter-spacing:.13em!important;font-size:11px!important;font-weight:800!important;opacity:0!important;visibility:hidden!important;transition:opacity .18s ease,transform .18s ease!important;pointer-events:none!important;z-index:8!important}
+.swipe-counter.v7-show,.modal-counter.v7-show{opacity:1!important;visibility:visible!important;transform:translate(-50%,0)!important}
+.project-stage.v7-dragging,.modal-hero.v7-dragging{cursor:grabbing}
+
+/* Stable preview fade and CTA zone. */
+.project-preview{position:relative!important;padding-bottom:112px!important}
+.project-curtain{position:absolute!important;left:0!important;right:0!important;bottom:0!important;height:190px!important;z-index:2!important;pointer-events:none!important;background:linear-gradient(180deg,rgba(255,253,248,0),rgba(255,253,248,.84) 44%,rgba(255,253,248,1) 72%)!important}
+.project-open{position:absolute!important;z-index:4!important;left:clamp(20px,4vw,34px)!important;right:clamp(20px,4vw,34px)!important;bottom:24px!important;width:auto!important;margin:0!important;min-height:58px!important}
+.project-open:active{transform:translateY(2px) scale(.99)!important}
+
+@media(max-width:900px){
+  .hero-overlay{background:linear-gradient(0deg,rgba(5,14,24,.69) 0%,rgba(5,14,24,.43) 42%,rgba(5,14,24,.17) 76%,rgba(5,14,24,.06) 100%)!important}
+  .hero-fade{height:19%!important}
+  .site-header.liquid-glass{background:radial-gradient(circle at var(--glass-x) var(--glass-y),rgba(255,255,255,.98) 0 6%,rgba(255,255,255,.32) 23%,transparent 46%),linear-gradient(135deg,rgba(255,255,255,.91),rgba(250,246,236,.77) 56%,rgba(255,255,255,.87))!important}
+  .vs-select-trigger{min-height:58px;border-radius:18px}
+  .vs-select-list{max-height:min(300px,46vh)}
+}
+@media(prefers-reduced-motion:reduce){.vs-send-edge,.vs-send-core{animation:none!important}.site-header.liquid-glass::before{transition:none!important}.swipe-counter,.modal-counter{transition:none!important}.project-track figure,.modal-track figure{will-change:auto!important}}
