@@ -1,0 +1,243 @@
+name: VeroSpace V7 Canonical QA
+on:
+  push:
+    branches: [verospace-canonical-upgrade-v7]
+    paths:
+      - 'v7-canonical.css'
+      - 'v7-polish.css'
+      - 'v7-canonical.js'
+      - 'native.js'
+      - 'api/consultation.js'
+      - '.github/workflows/v7-canonical-qa.yml'
+  workflow_dispatch:
+
+jobs:
+  canonical:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Runtime source audit
+        run: |
+          set -e
+          FILES="index.html native.js v5.css v5.js v7-canonical.css v7-polish.css v7-canonical.js api/consultation.js"
+          ! grep -niE 'fonts\.googleapis\.com|fonts\.gstatic\.com|mailto:|wa\.me/|whatsapp://' $FILES
+          ! grep -niE 'backdrop-filter:[^;]*blur\(|filter:[^;]*blur\(' v7-canonical.css v7-polish.css
+          grep -q "Sending…" v7-canonical.js
+          grep -q "Succeeded" v7-canonical.js
+          grep -q "Offline" v7-canonical.js
+          grep -q "15000" v7-canonical.js
+          grep -q "3000" v7-canonical.js
+          grep -q "Idempotency-Key" api/consultation.js
+          grep -q "website" api/consultation.js
+          echo STATIC_CANONICAL_GREEN
+      - name: Install Chromium QA
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm i playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Start local site
+        run: |
+          python3 -m http.server 4173 >/tmp/verospace-http.log 2>&1 &
+          echo $! > /tmp/verospace-http.pid
+          for i in {1..30}; do curl -fsS http://127.0.0.1:4173/ >/dev/null && break; sleep .2; done
+      - name: Run canonical browser gates
+        run: |
+          cat > qa-v7.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const fail=m=>{throw new Error(m)};
+          const browser=await chromium.launch({headless:true});
+          const sizes=[[320,700],[360,780],[390,844],[430,932],[768,1024],[1024,768],[1440,900],[1920,1080]];
+
+          async function ready(page){
+            await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded',timeout:45000});
+            await page.waitForFunction(()=>document.querySelectorAll('.vs-select-trigger').length===2,{timeout:15000});
+            await page.waitForFunction(()=>document.querySelectorAll('.project-track figure.v7-current').length===5,{timeout:15000});
+          }
+
+          for(const [width,height] of sizes){
+            const context=await browser.newContext({viewport:{width,height}});
+            const page=await context.newPage();
+            await page.route('https://unsplash.com/**',route=>route.abort());
+            await ready(page);
+            const audit=await page.evaluate(()=>{
+              const header=document.querySelector('.site-header');
+              const hs=getComputedStyle(header);
+              const all=[...document.querySelectorAll('*')];
+              const blurred=all.filter(el=>{
+                const s=getComputedStyle(el);
+                return String(s.backdropFilter||s.webkitBackdropFilter||'').includes('blur(')||String(s.filter||'').includes('blur(');
+              }).length;
+              return {
+                sw:document.documentElement.scrollWidth,iw:innerWidth,
+                nativeSelects:document.querySelectorAll('select').length,
+                customSelects:document.querySelectorAll('.vs-select-trigger').length,
+                projects:document.querySelectorAll('.project-card').length,
+                three:[...document.querySelectorAll('.project-track')].every(t=>t.querySelectorAll('figure').length===3),
+                arrows:[...document.querySelectorAll('.project-arrow-group,.modal-arrow-group')].filter(el=>getComputedStyle(el).display!=='none').length,
+                visibleCounters:[...document.querySelectorAll('.swipe-counter')].filter(el=>Number(getComputedStyle(el).opacity)>.05).length,
+                backdrop:hs.backdropFilter||hs.webkitBackdropFilter||'none',filter:hs.filter,blurred,
+                glassBg:hs.backgroundImage,
+                heroFade:getComputedStyle(document.querySelector('.hero-fade')).backgroundImage,
+                menuLinks:document.querySelectorAll('.menu-list a').length
+              };
+            });
+            if(audit.sw>audit.iw+1)fail(`${width}: horizontal overflow ${audit.sw}>${audit.iw}`);
+            if(audit.nativeSelects!==0||audit.customSelects!==2)fail(`${width}: native/custom selects ${audit.nativeSelects}/${audit.customSelects}`);
+            if(audit.projects!==5||!audit.three)fail(`${width}: project architecture broken`);
+            if(audit.arrows!==0||audit.visibleCounters!==0)fail(`${width}: persistent project controls visible`);
+            if(audit.blurred!==0||String(audit.backdrop).includes('blur')||String(audit.filter).includes('blur'))fail(`${width}: runtime blur found`);
+            if(!String(audit.glassBg).includes('gradient')||audit.menuLinks!==4)fail(`${width}: glass/menu gate failed`);
+            if(!String(audit.heroFade).includes('gradient'))fail(`${width}: hero seam missing`);
+
+            await page.locator('.menu-button').click();
+            await page.waitForTimeout(260);
+            const menu=await page.evaluate(()=>{const p=document.querySelector('.site-menu').getBoundingClientRect(),c=getComputedStyle(document.querySelector('.menu-curtain'));return {x:p.x,y:p.y,w:p.width,h:p.height,vw:innerWidth,vh:innerHeight,curtain:c.opacity,open:document.querySelector('.site-menu').classList.contains('open')}});
+            if(!menu.open||menu.x<=0||menu.y<=0||menu.w>=menu.vw||menu.h>=menu.vh||Number(menu.curtain)<.2)fail(`${width}: floating menu geometry bad ${JSON.stringify(menu)}`);
+            await page.keyboard.press('Escape');
+            await context.close();
+            console.log(`VIEWPORT_GREEN ${width}x${height}`);
+          }
+
+          // Consultation canonical timing/state test at mobile viewport.
+          {
+            const context=await browser.newContext({viewport:{width:390,height:844}});
+            const page=await context.newPage();
+            await page.route('https://unsplash.com/**',route=>route.abort());
+            let apiCalls=0;
+            let mode='success';
+            await page.route('**/api/consultation',async route=>{
+              apiCalls++;
+              if(mode==='success')return route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,id:'qa'})});
+              if(mode==='failed')return route.fulfill({status:500,contentType:'application/json',body:JSON.stringify({ok:false,error:'send_failed'})});
+              return route.abort('internetdisconnected');
+            });
+            await ready(page);
+            await page.locator('#contact').scrollIntoViewIfNeeded();
+
+            // Partial fill: only missing/invalid fields become red; Sending must not start.
+            await page.locator('input[name="name"]').fill('QA User');
+            await page.locator('input[name="email"]').fill('bad-email');
+            await page.locator('button[type="submit"]').click();
+            await page.waitForTimeout(420);
+            const invalid=await page.evaluate(()=>({
+              overlay:document.querySelector('.vs-send-layer')?.classList.contains('open'),
+              names:[...document.querySelectorAll('#consultationForm label.error')].map(l=>l.querySelector('input,textarea,[data-vs-native-replacement]')?.name||l.querySelector('.vs-select-shell')?.dataset.name),
+              focus:document.activeElement?.name||document.activeElement?.closest('.vs-select-shell')?.dataset.name||''
+            }));
+            if(invalid.overlay)fail('invalid form started Sending');
+            if(invalid.names.includes('name')||!invalid.names.includes('email')||!invalid.names.includes('project')||!invalid.names.includes('budget')||!invalid.names.includes('message'))fail(`field error targeting bad ${JSON.stringify(invalid)}`);
+            if(invalid.focus!=='email')fail(`first invalid focus wrong: ${invalid.focus}`);
+
+            // Fill using VeroSpace custom listboxes.
+            await page.locator('input[name="email"]').fill('qa@example.com');
+            const projectShell=page.locator('.vs-select-shell[data-name="project"]');
+            await projectShell.locator('.vs-select-trigger').click();
+            await projectShell.locator('.vs-select-option').nth(1).click();
+            const budgetShell=page.locator('.vs-select-shell[data-name="budget"]');
+            await budgetShell.locator('.vs-select-trigger').click();
+            await budgetShell.locator('.vs-select-option').nth(1).click();
+            await page.locator('textarea[name="message"]').fill('Kitchen and living space renovation with a clear timeline.');
+
+            // Success: Sending >=3s, duplicate click blocked, Success 3s, then clear.
+            const t0=Date.now();
+            await page.locator('button[type="submit"]').click();
+            await page.waitForTimeout(250);
+            if((await page.locator('.vs-send-title').textContent())!=='Sending…')fail('Sending state missing');
+            await page.locator('button[type="submit"]').click({force:true}).catch(()=>{});
+            await page.waitForTimeout(2350);
+            if((await page.locator('.vs-send-title').textContent())!=='Sending…')fail('Sending did not remain for 3s');
+            await page.waitForTimeout(650);
+            if((await page.locator('.vs-send-title').textContent())!=='Succeeded')fail('Succeeded state missing');
+            if(apiCalls!==1)fail(`duplicate submit was not blocked: ${apiCalls}`);
+            if(Date.now()-t0<3000)fail('Success arrived before 3s minimum');
+            await page.waitForTimeout(3100);
+            if(await page.locator('.vs-send-layer').evaluate(el=>el.classList.contains('open')))fail('Success state did not close after 3s');
+            const cleared=await page.evaluate(()=>({name:document.querySelector('input[name="name"]').value,email:document.querySelector('input[name="email"]').value,project:document.querySelector('input[name="project"]').value,budget:document.querySelector('input[name="budget"]').value,message:document.querySelector('textarea[name="message"]').value}));
+            if(Object.values(cleared).some(Boolean))fail(`success did not clear form ${JSON.stringify(cleared)}`);
+
+            // Failure: data remains after 3s Failed state.
+            mode='failed';
+            await page.locator('input[name="name"]').fill('QA User');
+            await page.locator('input[name="email"]').fill('qa@example.com');
+            await projectShell.locator('.vs-select-trigger').click(); await projectShell.locator('.vs-select-option').nth(1).click();
+            await budgetShell.locator('.vs-select-trigger').click(); await budgetShell.locator('.vs-select-option').nth(1).click();
+            await page.locator('textarea[name="message"]').fill('Keep this form after failure.');
+            await page.locator('button[type="submit"]').click();
+            await page.waitForTimeout(3150);
+            if((await page.locator('.vs-send-title').textContent())!=='Failed')fail('Failed state missing');
+            await page.waitForTimeout(3100);
+            if((await page.locator('textarea[name="message"]').inputValue())!=='Keep this form after failure.')fail('failure erased form data');
+
+            // Offline: wait/retry window <=15s, Offline 3s, data remains.
+            mode='offline';
+            await context.setOffline(true);
+            const offlineStart=Date.now();
+            await page.locator('button[type="submit"]').click();
+            await page.waitForTimeout(14000);
+            if((await page.locator('.vs-send-title').textContent())!=='Sending…')fail('Offline declared too early');
+            await page.waitForTimeout(1500);
+            if((await page.locator('.vs-send-title').textContent())!=='Offline')fail('Offline state missing after network window');
+            if(Date.now()-offlineStart<15000)fail('Offline network window shorter than 15s');
+            await page.waitForTimeout(3100);
+            if((await page.locator('textarea[name="message"]').inputValue())!=='Keep this form after failure.')fail('offline erased form data');
+            await context.setOffline(false);
+            await context.close();
+            console.log('CONSULTATION_CANONICAL_GREEN');
+          }
+
+          // Real project swipe physics + hint + autoplay/hold pause.
+          {
+            const context=await browser.newContext({viewport:{width:390,height:844}});
+            const page=await context.newPage();
+            await page.route('https://unsplash.com/**',route=>route.abort());
+            await ready(page);
+            const stage=page.locator('.project-stage').first();
+            await stage.scrollIntoViewIfNeeded();
+            await page.waitForTimeout(680);
+            const hint=await stage.evaluate(stage=>{
+              const t=stage.querySelector('.project-track'),slides=[...t.querySelectorAll('figure')],w=t.clientWidth;
+              const x=el=>new DOMMatrix(getComputedStyle(el).transform).m41;
+              return {index:t.dataset.v7Index,current:x(slides[0]),next:x(slides[1]),w,counter:Number(getComputedStyle(stage.querySelector('.swipe-counter')).opacity)};
+            });
+            if(hint.index!=='0'||!(hint.current< -4&&hint.current> -hint.w*.35)||!(hint.next<hint.w&&hint.next>hint.w*.55)||hint.counter>.05)fail(`first swipe hint bad ${JSON.stringify(hint)}`);
+            await page.waitForTimeout(1000);
+            if((await stage.locator('.project-track').getAttribute('data-v7-index'))!=='0')fail('hint changed slide');
+
+            const box=await stage.boundingBox(); if(!box)fail('stage box missing');
+            const y=box.y+box.height*.52,startX=box.x+box.width*.82,midX=box.x+box.width*.40;
+            await page.mouse.move(startX,y);await page.mouse.down();await page.mouse.move(midX,y,{steps:5});
+            const drag=await stage.evaluate(stage=>{
+              const t=stage.querySelector('.project-track'),slides=[...t.querySelectorAll('figure')],w=t.clientWidth;
+              const x=el=>new DOMMatrix(getComputedStyle(el).transform).m41;
+              return {a:x(slides.find(s=>s.classList.contains('v7-current'))),b:x(slides.find(s=>s.classList.contains('v7-next'))),w,counter:Number(getComputedStyle(stage.querySelector('.swipe-counter')).opacity)};
+            });
+            if(!(drag.a< -20&&drag.b>0&&drag.b<drag.w)||drag.counter<.5)fail(`finger-follow drag bad ${JSON.stringify(drag)}`);
+            await page.mouse.up();await page.waitForTimeout(520);
+            const after=await stage.locator('.project-track').getAttribute('data-v7-index');
+            if(after!=='1')fail(`one swipe did not advance exactly one image: ${after}`);
+            if(Number(await stage.locator('.swipe-counter').evaluate(el=>getComputedStyle(el).opacity))<.5)fail('counter disappeared too early');
+            await page.waitForTimeout(1550);
+            if(Number(await stage.locator('.swipe-counter').evaluate(el=>getComputedStyle(el).opacity))>.08)fail('counter did not hide after 1.5s');
+
+            // Hold pauses the 5s timer.
+            const holdBox=await stage.boundingBox();
+            await page.mouse.move(holdBox.x+holdBox.width*.7,holdBox.y+holdBox.height*.5);await page.mouse.down();
+            const heldIndex=await stage.locator('.project-track').getAttribute('data-v7-index');
+            await page.waitForTimeout(5400);
+            if((await stage.locator('.project-track').getAttribute('data-v7-index'))!==heldIndex)fail('autoplay moved while user held image');
+            await page.mouse.up();
+            await page.waitForTimeout(5250);
+            if((await stage.locator('.project-track').getAttribute('data-v7-index'))===heldIndex)fail('5s autoplay did not resume');
+            if(Number(await stage.locator('.swipe-counter').evaluate(el=>getComputedStyle(el).opacity))>.08)fail('autoplay should not show counter');
+            await context.close();
+            console.log('PROJECT_SWIPE_GREEN');
+          }
+
+          await browser.close();
+          console.log('V7_CANONICAL_QA_GREEN');
+          EOF
+          node qa-v7.mjs
