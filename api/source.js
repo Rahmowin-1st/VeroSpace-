@@ -1,12 +1,15 @@
-const COMMIT='d6ff1520dadb86cede6b3436d7f617411f2777ed';
+const COMMIT='0c24270bd54fc72dfb64d0aff0114aec2383c205';
 const BASE=`https://raw.githubusercontent.com/Rahmowin-1st/VeroSpace-/${COMMIT}/`;
 const ALLOWED=new Map([
   ['index.html','text/html; charset=utf-8'],
   ['native.js','application/javascript; charset=utf-8'],
   ['v5.css','text/css; charset=utf-8'],
   ['v5.js','application/javascript; charset=utf-8'],
-  ['v6-fixes.css','text/css; charset=utf-8'],
-  ['v6-fixes.js','application/javascript; charset=utf-8'],
+  ['v7-canonical.css','text/css; charset=utf-8'],
+  ['v7-canonical.js','application/javascript; charset=utf-8'],
+  ['v7-polish.css','text/css; charset=utf-8'],
+  ['v7-select-hotfix.js','application/javascript; charset=utf-8'],
+  ['v7-autoplay-timing-hotfix.js','application/javascript; charset=utf-8'],
   ['assets/verospace-home-yellow.webp','image/webp'],
   ['assets/verospace-logo.png','image/jpeg'],
   ['assets/verospace-featured-home.jpg','image/jpeg']
@@ -24,13 +27,7 @@ module.exports=async function handler(req,res){
   try{
     const upstream=await fetch(BASE+file,{headers:{'User-Agent':'VeroSpace/1.0'}});
     if(!upstream.ok)return res.status(502).end();
-    let bytes=Buffer.from(await upstream.arrayBuffer());
-    if(file==='index.html'){
-      let html=bytes.toString('utf8');
-      if(!html.includes('v6-fixes.css'))html=html.replace('</head>','  <link rel="stylesheet" href="/v6-fixes.css?v=20260903b1">\n</head>');
-      if(!html.includes('v6-fixes.js'))html=html.replace('</body>','  <script src="/v6-fixes.js?v=20260903b1" defer></script>\n</body>');
-      bytes=Buffer.from(html,'utf8');
-    }
+    const bytes=Buffer.from(await upstream.arrayBuffer());
     res.setHeader('Content-Type',type);
     res.setHeader('Cache-Control','public, max-age=0, s-maxage=31536000, immutable');
     res.setHeader('X-Content-Type-Options','nosniff');
