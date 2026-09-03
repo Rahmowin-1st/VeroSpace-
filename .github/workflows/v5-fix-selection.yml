@@ -1,0 +1,41 @@
+name: V5 Tactile Fix
+on:
+  push:
+    branches: [verospace-projects-v5]
+    paths: ['.github/workflows/v5-fix-selection.yml']
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: verospace-projects-v5}
+      - name: Patch source
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          js=Path('v5.js')
+          s=js.read_text()
+          old="setTimeout(()=>counter.classList.remove('show'),1450)"
+          assert old in s
+          s=s.replace(old,"setTimeout(()=>counter.classList.remove('show'),1100)")
+          js.write_text(s)
+
+          css=Path('v5.css')
+          c=css.read_text()
+          old=".selectable.is-selected,.project-card.is-selected{transform:translateY(-7px) scale(1.012);"
+          assert old in c
+          c=c.replace(old,".selectable.is-selected,.project-card.is-selected{transform:translateY(-7px) scale(1.012)!important;")
+          old2=".selectable.is-selected,.project-card.is-selected{transform:translateY(-4px) scale(1.008)}}"
+          assert old2 in c
+          c=c.replace(old2,".selectable.is-selected,.project-card.is-selected{transform:translateY(-4px) scale(1.008)!important}}")
+          css.write_text(c)
+          PY
+      - name: Commit fix
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v5.js v5.css
+          git commit -m 'fix: preserve tactile lift and settle swipe counter'
+          git push origin HEAD:verospace-projects-v5
