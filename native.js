@@ -31,24 +31,28 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(document.querySelector(`link[data-${key}]`))return;
     const link=document.createElement('link');link.rel='stylesheet';link.href=href;link.setAttribute(`data-${key}`,'true');document.head.appendChild(link);
   };
-  const loadHotfix=()=>{
-    if(document.querySelector('script[data-verospace-v7-select-hotfix]'))return;
-    const hotfix=document.createElement('script');
-    hotfix.src='v7-select-hotfix.js?v=20260903c3';
-    hotfix.async=false;
-    hotfix.dataset.verospaceV7SelectHotfix='true';
-    document.body.appendChild(hotfix);
+  const loadScript=(src,dataKey)=>{
+    if(document.querySelector(`script[data-${dataKey}]`))return;
+    const script=document.createElement('script');
+    script.src=src;
+    script.async=false;
+    script.setAttribute(`data-${dataKey}`,'true');
+    document.body.appendChild(script);
   };
-  loadCss('v7-canonical.css?v=20260903c3','verospace-v7');
-  loadCss('v7-polish.css?v=20260903c3','verospace-v7-polish');
+  const loadV7Extras=()=>{
+    loadScript('v7-select-hotfix.js?v=20260903c4','verospace-v7-select-hotfix');
+    loadScript('v7-autoplay-timing-hotfix.js?v=20260903c4','verospace-v7-autoplay-timing');
+  };
+  loadCss('v7-canonical.css?v=20260903c4','verospace-v7');
+  loadCss('v7-polish.css?v=20260903c4','verospace-v7-polish');
   if(!document.querySelector('script[data-verospace-v7]')){
     const script=document.createElement('script');
-    script.src='v7-canonical.js?v=20260903c3';
+    script.src='v7-canonical.js?v=20260903c4';
     script.async=false;
     script.dataset.verospaceV7='true';
-    script.addEventListener('load',loadHotfix,{once:true});
+    script.addEventListener('load',loadV7Extras,{once:true});
     document.body.appendChild(script);
   }else{
-    loadHotfix();
+    loadV7Extras();
   }
 },{once:true});
