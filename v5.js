@@ -173,7 +173,7 @@
     counter.textContent=`${String(index+1).padStart(2,'0')} / ${String(total).padStart(2,'0')}`;
     counter.classList.add('show');
     clearTimeout(counterTimers.get(counter));
-    const timer=setTimeout(()=>counter.classList.remove('show'),1450);
+    const timer=setTimeout(()=>counter.classList.remove('show'),1100);
     counterTimers.set(counter,timer);
   };
 
