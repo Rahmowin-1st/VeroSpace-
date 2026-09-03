@@ -1,0 +1,29 @@
+/* VeroSpace V7 finishing layer — tactile project selection + responsive integrity. */
+.project-card{transition:translate .28s cubic-bezier(.16,1,.3,1),scale .28s cubic-bezier(.16,1,.3,1),box-shadow .28s ease,outline-color .28s ease;outline:2px solid transparent;outline-offset:0}
+.project-card.v7-selected{translate:0 -5px;scale:1.008;outline-color:rgba(210,166,78,.82);box-shadow:0 24px 62px rgba(11,33,56,.15),0 0 0 5px rgba(210,166,78,.09)!important}
+.project-card.v7-selected .project-open{background:linear-gradient(135deg,#173f68,#0b2138)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 13px 30px rgba(11,33,56,.18)!important}
+.project-open,.primary-button,.secondary-button,.header-cta,.menu-button,.menu-close,.vs-select-trigger{transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease!important}
+.project-open:active,.primary-button:active,.secondary-button:active,.header-cta:active,.menu-button:active,.menu-close:active{transform:translateY(2px) scale(.985)!important}
+
+/* Keep project media a strict one-frame viewport at every width. */
+.project-stage{aspect-ratio:1/1!important;min-height:0!important}
+.project-track,.project-track figure{border-radius:inherit!important}
+.project-track figure{overflow:hidden!important}
+
+/* Prevent an old scroll-track width from leaking into layout. */
+.project-track,.modal-track{max-width:100%!important;scrollbar-width:none!important}
+.project-track::-webkit-scrollbar,.modal-track::-webkit-scrollbar{display:none!important}
+
+@media(max-width:768px){
+  .project-preview{padding:24px 20px 110px!important}
+  .project-open{left:18px!important;right:18px!important;bottom:20px!important;min-height:56px!important}
+  .project-curtain{height:170px!important}
+  .vs-send-card{padding:30px 22px 27px;border-radius:30px}
+  .vs-send-title{font-size:34px}
+}
+@media(max-width:360px){
+  .project-preview{padding-left:17px!important;padding-right:17px!important}
+  .project-open{left:15px!important;right:15px!important}
+  .vs-select-option{font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){.project-card{transition:none!important}.project-card.v7-selected{translate:0 -3px;scale:1.004}}
