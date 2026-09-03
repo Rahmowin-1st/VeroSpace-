@@ -4,6 +4,11 @@
 .project-card.v7-selected .project-open{background:linear-gradient(135deg,#173f68,#0b2138)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.16),0 13px 30px rgba(11,33,56,.18)!important}
 .project-open,.primary-button,.secondary-button,.header-cta,.menu-button,.menu-close,.vs-select-trigger{transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease!important}
 
+/* Hero copy must be present on first paint even while external motion libraries load. */
+.hero-copy .eyebrow,.hero h1 span,.hero h1 em,.hero-copy>p:not(.eyebrow),.hero-actions>*,.hero-reassurance{opacity:1!important;transform:none!important;visibility:visible!important}
+.hero-copy{text-shadow:0 2px 20px rgba(4,14,24,.28)}
+.hero-overlay{background:linear-gradient(90deg,rgba(5,14,24,.52) 0%,rgba(5,14,24,.30) 43%,rgba(5,14,24,.10) 76%,rgba(5,14,24,.025) 100%)!important}
+
 /* Project CTA is an anchored action, never a horizontally drifting reveal child. */
 .project-open{transform:none!important}
 .project-open.is-pressing,.project-open:active{transform:translateY(2px) scale(.985)!important}
@@ -21,6 +26,10 @@
 .project-track,.modal-track{max-width:100%!important;scrollbar-width:none!important}
 .project-track::-webkit-scrollbar,.modal-track::-webkit-scrollbar{display:none!important}
 
+@media(max-width:900px){
+  .hero-overlay{background:linear-gradient(0deg,rgba(5,14,24,.69) 0%,rgba(5,14,24,.42) 42%,rgba(5,14,24,.14) 75%,rgba(5,14,24,.035) 100%)!important}
+  .hero-copy{bottom:82px!important}
+}
 @media(max-width:768px){
   .project-preview{padding:24px 20px 110px!important}
   .project-open{left:18px!important;right:18px!important;bottom:20px!important;min-height:56px!important}
@@ -29,6 +38,7 @@
   .vs-send-title{font-size:34px}
 }
 @media(max-width:360px){
+  .hero-copy{bottom:74px!important}
   .project-preview{padding-left:17px!important;padding-right:17px!important}
   .project-open{left:15px!important;right:15px!important}
   .vs-select-option{font-size:14px}
