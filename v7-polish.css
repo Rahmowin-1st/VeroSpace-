@@ -5,6 +5,9 @@
 .project-open,.primary-button,.secondary-button,.header-cta,.menu-button,.menu-close,.vs-select-trigger{transition:transform .18s ease,box-shadow .18s ease,background .18s ease,border-color .18s ease!important}
 .project-open:active,.primary-button:active,.secondary-button:active,.header-cta:active,.menu-button:active,.menu-close:active{transform:translateY(2px) scale(.985)!important}
 
+/* The 1.5s counter timeout is the full visible lifetime, not timeout + a long fade. */
+.swipe-counter,.modal-counter{transition:opacity .06s ease,transform .06s ease!important}
+
 /* Keep project media a strict one-frame viewport at every width. */
 .project-stage{aspect-ratio:1/1!important;min-height:0!important}
 .project-track,.project-track figure{border-radius:inherit!important}
@@ -26,4 +29,4 @@
   .project-open{left:15px!important;right:15px!important}
   .vs-select-option{font-size:14px}
 }
-@media(prefers-reduced-motion:reduce){.project-card{transition:none!important}.project-card.v7-selected{translate:0 -3px;scale:1.004}}
+@media(prefers-reduced-motion:reduce){.project-card{transition:none!important}.project-card.v7-selected{translate:0 -3px;scale:1.004}.swipe-counter,.modal-counter{transition:none!important}}
