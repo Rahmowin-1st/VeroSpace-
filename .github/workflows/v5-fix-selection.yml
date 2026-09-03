@@ -1,4 +1,4 @@
-name: V5 Motion Containment Fix
+name: V5 Image URL Resolver
 on:
   push:
     branches: [verospace-projects-v5]
@@ -6,31 +6,31 @@ on:
 permissions:
   contents: write
 jobs:
-  patch:
+  resolve:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with: {ref: verospace-projects-v5}
-      - name: Contain off-screen motion without reducing GSAP
+      - name: Resolve Unsplash download redirects
         run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('v5.css')
-          s=p.read_text()
-          old="html{scroll-behavior:smooth;scroll-padding-top:108px;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif}"
-          new="html{scroll-behavior:smooth;scroll-padding-top:108px;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;overflow-x:clip;max-width:100%}"
-          assert old in s
-          s=s.replace(old,new)
-          old2="body{margin:0;overflow-x:hidden;background:linear-gradient(180deg,var(--paper) 0%,var(--paper2) 48%,#f4eee4 100%);color:var(--ink)}"
-          new2="body{margin:0;overflow-x:clip;max-width:100%;background:linear-gradient(180deg,var(--paper) 0%,var(--paper2) 48%,#f4eee4 100%);color:var(--ink)}"
-          assert old2 in s
-          s=s.replace(old2,new2)
-          p.write_text(s)
-          PY
-      - name: Commit containment fix
+          mkdir -p .qa
+          : > .qa/unsplash-resolved.txt
+          for id in \
+            OcxgtPN0FmM uaO2jAFKR0c U74CPDcq5OY \
+            881IAs1vdE4 n4U6GwZJmBM lq8FnmruSjo \
+            G8kRVwlZK3Q 3bgpVpEZV6s GRxzOdEUKVg \
+            hjNTscPXJTg rFpEHzGB37w 54xFukuLp1E \
+            NMXNCYy-2ks B6ZXOlMO3EY mQmDscIIQfs
+          do
+            url="https://unsplash.com/photos/${id}/download?force=true"
+            final=$(curl -L --max-time 30 --retry 2 --retry-delay 1 -sS -o /dev/null -w '%{url_effective}' "$url")
+            status=$(curl -L --max-time 30 --retry 2 --retry-delay 1 -sS -o /dev/null -w '%{http_code}' "$url")
+            printf '%s\t%s\t%s\n' "$id" "$status" "$final" | tee -a .qa/unsplash-resolved.txt
+          done
+      - name: Persist resolver result
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add v5.css
-          git commit -m 'fix: contain GSAP motion inside viewport'
+          git add .qa/unsplash-resolved.txt
+          git commit -m 'test: persist resolved project image URLs'
           git push origin HEAD:verospace-projects-v5
