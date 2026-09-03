@@ -1,6 +1,6 @@
 const EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const clean=(value,max=1000)=>String(value??'').replace(/[\u0000-\u001F\u007F]/g,' ').trim().slice(0,max);
-const esc=value=>clean(value,5000).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#039;'}[ch]));
+const esc=value=>clean(value,5000).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
 
 const recent=globalThis.__VEROSPACE_REQUEST_IDS__||(globalThis.__VEROSPACE_REQUEST_IDS__=new Map());
 const REQUEST_TTL=10*60*1000;
