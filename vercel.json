@@ -8,6 +8,8 @@
     { "source": "/native.js", "destination": "/api/source?file=native.js" },
     { "source": "/v5.css", "destination": "/api/source?file=v5.css" },
     { "source": "/v5.js", "destination": "/api/source?file=v5.js" },
+    { "source": "/v6-fixes.css", "destination": "/api/source?file=v6-fixes.css" },
+    { "source": "/v6-fixes.js", "destination": "/api/source?file=v6-fixes.js" },
     { "source": "/assets/:path*", "destination": "/api/source?file=assets/:path*" }
   ]
 }
