@@ -1,4 +1,4 @@
-name: V5 Hero Seam Fix
+name: V5 Motion Containment Fix
 on:
   push:
     branches: [verospace-projects-v5]
@@ -11,24 +11,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: {ref: verospace-projects-v5}
-      - name: Keep fade below hero copy
+      - name: Contain off-screen motion without reducing GSAP
         run: |
           python3 - <<'PY'
           from pathlib import Path
           p=Path('v5.css')
           s=p.read_text()
-          old='.hero-fade{position:absolute;z-index:1;left:0;right:0;bottom:-1px;height:190px;'
+          old="html{scroll-behavior:smooth;scroll-padding-top:108px;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif}"
+          new="html{scroll-behavior:smooth;scroll-padding-top:108px;background:var(--paper);color:var(--ink);font-family:Arial,Helvetica,sans-serif;overflow-x:clip;max-width:100%}"
           assert old in s
-          s=s.replace(old,'.hero-fade{position:absolute;z-index:1;left:0;right:0;bottom:-1px;height:110px;')
-          old2='.hero-fade{height:145px}'
+          s=s.replace(old,new)
+          old2="body{margin:0;overflow-x:hidden;background:linear-gradient(180deg,var(--paper) 0%,var(--paper2) 48%,#f4eee4 100%);color:var(--ink)}"
+          new2="body{margin:0;overflow-x:clip;max-width:100%;background:linear-gradient(180deg,var(--paper) 0%,var(--paper2) 48%,#f4eee4 100%);color:var(--ink)}"
           assert old2 in s
-          s=s.replace(old2,'.hero-fade{height:88px}')
+          s=s.replace(old2,new2)
           p.write_text(s)
           PY
-      - name: Commit seam fix
+      - name: Commit containment fix
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add v5.css
-          git commit -m 'fix: keep hero fade below interactive copy'
+          git commit -m 'fix: contain GSAP motion inside viewport'
           git push origin HEAD:verospace-projects-v5
