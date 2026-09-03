@@ -2,11 +2,23 @@ const EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const clean=(value,max=1000)=>String(value??'').replace(/[\u0000-\u001F\u007F]/g,' ').trim().slice(0,max);
 const esc=value=>clean(value,5000).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
 
+const recent=globalThis.__VEROSPACE_REQUEST_IDS__||(globalThis.__VEROSPACE_REQUEST_IDS__=new Map());
+const REQUEST_TTL=10*60*1000;
+const rememberRequest=id=>{
+  const now=Date.now();
+  for(const [key,time] of recent){if(now-time>REQUEST_TTL)recent.delete(key);}
+  if(!id)return false;
+  if(recent.has(id))return true;
+  recent.set(id,now);
+  return false;
+};
+
 module.exports=async function handler(req,res){
   if(req.method!=='POST'){
     res.setHeader('Allow','POST');
     return res.status(405).json({ok:false,error:'method_not_allowed'});
   }
+
   const apiKey=process.env.RESEND_API_KEY;
   const recipient=process.env.CONSULTATION_TO;
   if(!apiKey||!recipient)return res.status(503).json({ok:false,error:'mail_not_configured'});
@@ -16,8 +28,23 @@ module.exports=async function handler(req,res){
     try{body=JSON.parse(body);}catch{return res.status(400).json({ok:false,error:'invalid_json'});}
   }
   body=body||{};
-  const name=clean(body.name,120),email=clean(body.email,200),project=clean(body.project,140),budget=clean(body.budget,100),message=clean(body.message,3000),requestId=clean(body.requestId||req.headers['x-request-id'],100);
-  if(!name||!EMAIL_RE.test(email)||!project||!budget||message.length<3)return res.status(400).json({ok:false,error:'invalid_fields'});
+
+  // Honeypot: bots receive a harmless success response without sending mail.
+  const website=clean(body.website,200);
+  if(website)return res.status(200).json({ok:true,id:null});
+
+  const name=clean(body.name,120);
+  const email=clean(body.email,200);
+  const project=clean(body.project,140);
+  const budget=clean(body.budget,100);
+  const message=clean(body.message,3000);
+  const requestId=clean(body.requestId||req.headers['x-request-id'],120);
+
+  if(!name||!EMAIL_RE.test(email)||!project||!budget||message.length<3){
+    return res.status(400).json({ok:false,error:'invalid_fields'});
+  }
+  if(!requestId)return res.status(400).json({ok:false,error:'missing_request_id'});
+  if(rememberRequest(requestId))return res.status(409).json({ok:false,error:'duplicate_request'});
 
   const from=process.env.RESEND_FROM||'VeroSpace <onboarding@resend.dev>';
   const subject=`VeroSpace consultation — ${project}`;
@@ -32,17 +59,20 @@ module.exports=async function handler(req,res){
         'Authorization':`Bearer ${apiKey}`,
         'Content-Type':'application/json',
         'User-Agent':'VeroSpace/1.0',
-        ...(requestId?{'Idempotency-Key':`verospace-consultation/${requestId}`}:{})
+        'Idempotency-Key':`verospace-consultation/${requestId}`
       },
       body:JSON.stringify(payload)
     });
     const data=await response.json().catch(()=>({}));
     if(!response.ok){
+      // Allow retry after a server/provider failure; Resend idempotency still protects duplicates.
+      recent.delete(requestId);
       console.error('Resend error',response.status,data?.message||data?.name||'unknown');
       return res.status(response.status>=500?502:500).json({ok:false,error:'send_failed'});
     }
     return res.status(200).json({ok:true,id:data.id||null});
   }catch(error){
+    recent.delete(requestId);
     console.error('Consultation send exception',error);
     return res.status(502).json({ok:false,error:'send_unavailable'});
   }
