@@ -8,10 +8,10 @@
   <meta name="color-scheme" content="light">
   <title>VeroSpace — Interior Design & Renovation</title>
   <link rel="preload" as="image" href="assets/verospace-home-yellow.webp" type="image/webp" fetchpriority="high">
-  <link rel="stylesheet" href="v4.css?v=20260902p4">
+  <link rel="stylesheet" href="v5.css?v=20260903a1">
 </head>
 <body>
-  <header class="site-header" id="top">
+  <header class="site-header liquid-glass" id="top">
     <a class="brand" href="#home" aria-label="VeroSpace home">
       <span class="brand-mark"><img src="assets/verospace-logo.png" alt="VeroSpace logo" width="160" height="160"></span>
       <span class="brand-word">VeroSpace</span>
@@ -20,45 +20,43 @@
       <a href="#projects">Projects</a>
       <a href="#services">Service</a>
       <a href="#process">Process</a>
+      <a href="#contact">Consultation</a>
     </nav>
     <div class="header-actions">
-      <button class="header-cta" type="button" data-scroll="#contact">Book consultation</button>
-      <button class="menu-button" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteMenu"><span></span><span></span><span></span></button>
+      <button class="header-cta pressable" type="button" data-scroll="#contact">Book consultation</button>
+      <button class="menu-button pressable" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="siteMenu"><span></span><span></span><span></span></button>
     </div>
   </header>
 
   <button class="menu-curtain" type="button" data-menu-close aria-label="Close navigation" tabindex="-1"></button>
   <aside class="site-menu" id="siteMenu" aria-hidden="true" inert aria-label="VeroSpace navigation">
     <div class="menu-head">
-      <div><span>VeroSpace · studio</span><strong>Move with a clear next step.</strong></div>
-      <button class="menu-close" type="button" data-menu-close aria-label="Close menu">×</button>
+      <div>
+        <span>VeroSpace · Navigate</span>
+        <strong>One clear route through the site.</strong>
+      </div>
+      <button class="menu-close pressable" type="button" data-menu-close aria-label="Close menu">×</button>
     </div>
-    <nav class="menu-grid" aria-label="Expanded navigation">
-      <a href="#home"><small>01</small><strong>Home</strong><i>↗</i></a>
-      <a href="#projects"><small>02</small><strong>Projects</strong><i>↗</i></a>
-      <a href="#services"><small>03</small><strong>Service</strong><i>↗</i></a>
-      <a href="#process"><small>04</small><strong>Process</strong><i>↗</i></a>
-      <a class="menu-wide" href="#contact"><small>05</small><strong>Contact</strong><i>↗</i></a>
+    <nav class="menu-list" aria-label="Expanded navigation">
+      <a href="#projects"><small>01</small><strong>Projects</strong><i>↗</i></a>
+      <a href="#services"><small>02</small><strong>Service</strong><i>↗</i></a>
+      <a href="#process"><small>03</small><strong>Process</strong><i>↗</i></a>
+      <a href="#contact"><small>04</small><strong>Consultation</strong><i>↗</i></a>
     </nav>
-    <div class="menu-cta-card">
-      <span>Start a project</span>
-      <h2>Bring the space. We’ll define the next decision.</h2>
-      <button class="primary-button" type="button" data-scroll="#contact">Book consultation <i>↗</i></button>
-      <small>Private · in-site request</small>
-    </div>
   </aside>
 
   <main>
     <section class="hero" id="home" aria-labelledby="heroTitle">
       <img class="hero-image" src="assets/verospace-home-yellow.webp" alt="Bright compact interior with warm timber, loft, kitchen and natural light" width="720" height="900" fetchpriority="high" decoding="async">
       <div class="hero-overlay" aria-hidden="true"></div>
+      <div class="hero-fade" aria-hidden="true"></div>
       <div class="hero-copy">
         <p class="eyebrow light">Residential interiors · renovation · coordination</p>
         <h1 id="heroTitle"><span>A calmer home.</span><em>Built around how you live.</em></h1>
-        <p>Layout, materials and renovation resolved as one design direction.</p>
+        <p><strong>Layout, materials and renovation</strong> resolved as one design direction.</p>
         <div class="hero-actions">
-          <button class="primary-button" type="button" data-scroll="#contact">Book a consultation</button>
-          <button class="secondary-button" type="button" data-scroll="#projects">Explore projects</button>
+          <button class="primary-button pressable" type="button" data-scroll="#contact">Book a consultation</button>
+          <button class="secondary-button pressable" type="button" data-scroll="#projects">Explore projects</button>
         </div>
         <div class="hero-reassurance"><b>✓</b><span>No polished brief needed.</span></div>
       </div>
@@ -68,155 +66,200 @@
       <div class="trust-intro reveal">
         <p class="eyebrow">What you can expect</p>
         <h2 id="trustTitle">Clarity before commitment.</h2>
-        <p>Trust comes from visible decisions—not invented claims.</p>
+        <p><strong>Scope, approvals and changes stay visible.</strong> Trust comes from decisions you can review—not invented claims.</p>
       </div>
       <div class="trust-grid">
-        <article class="trust-card reveal"><span>01</span><h3>Scope first</h3><p>What changes, what stays and what matters most are agreed before styling.</p></article>
-        <article class="trust-card reveal"><span>02</span><h3>Approval gates</h3><p>Key layout, material and budget decisions pause for your approval before moving forward.</p></article>
-        <article class="trust-card reveal"><span>03</span><h3>Change control</h3><p>New ideas are checked against scope, cost and timing instead of quietly drifting into the build.</p></article>
-        <article class="trust-card reveal"><span>04</span><h3>Support after handover</h3><p>Final notes, open questions and agreed follow-up items stay documented after the main work closes.</p></article>
+        <article class="trust-card reveal selectable"><span>01</span><h3>Scope first</h3><p><strong>Agree what changes.</strong> Styling comes after the real problem is defined.</p></article>
+        <article class="trust-card reveal selectable"><span>02</span><h3>Approval gates</h3><p><strong>Pause before commitment.</strong> Layout, material and budget decisions wait for review.</p></article>
+        <article class="trust-card reveal selectable"><span>03</span><h3>Change control</h3><p><strong>Protect cost and timing.</strong> New ideas are checked before they quietly expand the scope.</p></article>
+        <article class="trust-card reveal selectable"><span>04</span><h3>Support after handover</h3><p><strong>Keep loose ends visible.</strong> Final notes and follow-up items stay documented.</p></article>
       </div>
     </section>
 
     <section class="projects-section" id="projects" aria-labelledby="projectsTitle">
       <div class="section-head reveal">
-        <div><p class="eyebrow">Project studies</p><h2 id="projectsTitle">One project. More than one angle.</h2></div>
-        <p>Each study uses one coherent three-image photographic series. Swipe the card before opening it.</p>
+        <div>
+          <p class="eyebrow">Selected project studies</p>
+          <h2 id="projectsTitle">Read the idea. Swipe the space.</h2>
+        </div>
+        <p>Each project uses <strong>one coherent three-image series</strong>. Preview the direction here; open the project for the complete breakdown.</p>
       </div>
 
       <div class="project-list">
         <article class="project-card reveal" data-project="compact-oak">
-          <div class="project-media" data-carousel>
+          <div class="project-stage" data-carousel>
             <div class="project-track">
-              <figure><img src="https://unsplash.com/photos/OcxgtPN0FmM/download?force=true" alt="Colorado tiny home living and dining interior" loading="eager" decoding="async"></figure>
-              <figure><img src="https://unsplash.com/photos/uaO2jAFKR0c/download?force=true" alt="Colorado tiny home living area and built-in furniture" loading="lazy" decoding="async"></figure>
-              <figure><img src="https://unsplash.com/photos/U74CPDcq5OY/download?force=true" alt="Colorado tiny home compact kitchen and storage" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/OcxgtPN0FmM/download?force=true" alt="Colorado tiny home living and dining interior" loading="eager" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/uaO2jAFKR0c/download?force=true" alt="Colorado tiny home living area and built-in furniture" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/U74CPDcq5OY/download?force=true" alt="Colorado tiny home compact kitchen and storage" loading="lazy" decoding="async"></figure>
             </div>
-            <div class="media-toolbar"><span class="media-count">01 / 03</span><div class="media-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div><button type="button" data-prev aria-label="Previous image">←</button><button type="button" data-next aria-label="Next image">→</button></div>
+            <div class="project-arrow-group" aria-label="Project image controls"><button class="pressable" type="button" data-prev aria-label="Previous image">←</button><button class="pressable" type="button" data-next aria-label="Next image">→</button></div>
+            <div class="swipe-counter" aria-live="polite">01 / 03</div>
           </div>
-          <div class="project-copy">
+          <div class="project-preview">
             <div class="project-kicker"><span>01 · Compact home</span><b>Concept study</b></div>
             <h3>Compact Oak Home</h3>
-            <p class="project-summary">Use vertical space without making daily life feel compressed.</p>
-            <dl><div><dt>Goal</dt><dd>More storage and clearer movement in a tiny footprint.</dd></div><div><dt>Decisions</dt><dd>Built-ins, compact circulation and warm timber as one visual system.</dd></div><div><dt>Design result</dt><dd>Every edge works harder while the room still reads as one calm space.</dd></div></dl>
-            <button class="project-open" type="button">Open project <span>↗</span></button>
+            <p class="project-summary">A small footprint that needs to feel <strong>useful, calm and visually open</strong> at the same time.</p>
+            <div class="project-teaser">
+              <p><strong>Goal.</strong> Add storage and clearer movement without making the home feel tighter.</p>
+              <p><strong>Core move.</strong> Treat joinery, circulation and warm timber as one system.</p>
+              <p><strong>Direction.</strong> Let vertical space work harder while daylight keeps the room light.</p>
+            </div>
+            <div class="project-curtain" aria-hidden="true"></div>
+            <button class="project-open pressable" type="button">Explore project <span>↗</span></button>
           </div>
         </article>
 
         <article class="project-card reveal" data-project="brass-bath">
-          <div class="project-media" data-carousel>
+          <div class="project-stage" data-carousel>
             <div class="project-track">
-              <figure><img src="https://unsplash.com/photos/881IAs1vdE4/download?force=true" alt="Endicott farmhouse bathroom sink and mirror" loading="lazy" decoding="async"></figure>
-              <figure><img src="https://unsplash.com/photos/n4U6GwZJmBM/download?force=true" alt="Endicott farmhouse bathroom with clawfoot tub" loading="lazy" decoding="async"></figure>
-              <figure><img src="https://unsplash.com/photos/lq8FnmruSjo/download?force=true" alt="Endicott farmhouse brass bath hardware detail" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/881IAs1vdE4/download?force=true" alt="Endicott farmhouse bathroom sink and mirror" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/n4U6GwZJmBM/download?force=true" alt="Endicott farmhouse bathroom with clawfoot tub" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/lq8FnmruSjo/download?force=true" alt="Endicott farmhouse brass bath hardware detail" loading="lazy" decoding="async"></figure>
             </div>
-            <div class="media-toolbar"><span class="media-count">01 / 03</span><div class="media-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div><button type="button" data-prev aria-label="Previous image">←</button><button type="button" data-next aria-label="Next image">→</button></div>
+            <div class="project-arrow-group"><button class="pressable" type="button" data-prev aria-label="Previous image">←</button><button class="pressable" type="button" data-next aria-label="Next image">→</button></div>
+            <div class="swipe-counter" aria-live="polite">01 / 03</div>
           </div>
-          <div class="project-copy">
+          <div class="project-preview">
             <div class="project-kicker"><span>02 · Bathroom</span><b>Concept study</b></div>
             <h3>Brass Bath House</h3>
-            <p class="project-summary">Make a small bathroom feel intentional rather than over-decorated.</p>
-            <dl><div><dt>Goal</dt><dd>Calm function with character that will age well.</dd></div><div><dt>Decisions</dt><dd>White shell, warm timber and one controlled brass language.</dd></div><div><dt>Design result</dt><dd>Texture and hardware carry the room without visual noise.</dd></div></dl>
-            <button class="project-open" type="button">Open project <span>↗</span></button>
+            <p class="project-summary">A compact bathroom shaped around <strong>quiet function and one controlled material language</strong>.</p>
+            <div class="project-teaser">
+              <p><strong>Goal.</strong> Give a small room character without over-decorating it.</p>
+              <p><strong>Core move.</strong> Keep the shell simple and let timber, brass and proportion carry the identity.</p>
+              <p><strong>Direction.</strong> Detail where touch matters; simplify everywhere else.</p>
+            </div>
+            <div class="project-curtain" aria-hidden="true"></div>
+            <button class="project-open pressable" type="button">Explore project <span>↗</span></button>
           </div>
         </article>
 
         <article class="project-card reveal" data-project="liberty-hearth">
-          <div class="project-media" data-carousel>
+          <div class="project-stage" data-carousel>
             <div class="project-track">
-              <figure><img src="https://unsplash.com/photos/G8kRVwlZK3Q/download?force=true" alt="Liberty farmhouse living room with stone fireplace" loading="lazy" decoding="async"></figure>
-              <figure><img src="https://unsplash.com/photos/3bgpVpEZV6s/download?force=true" alt="Liberty farmhouse living room, timber ceiling and stair" loading="lazy" decoding="async"></figure>
-              <figure><img src="https://unsplash.com/photos/GRxzOdEUKVg/download?force=true" alt="Liberty farmhouse living room with patterned rug and fireplace" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/G8kRVwlZK3Q/download?force=true" alt="Liberty farmhouse living room with stone fireplace" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/3bgpVpEZV6s/download?force=true" alt="Liberty farmhouse living room, timber ceiling and stair" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/GRxzOdEUKVg/download?force=true" alt="Liberty farmhouse living room with patterned rug and fireplace" loading="lazy" decoding="async"></figure>
             </div>
-            <div class="media-toolbar"><span class="media-count">01 / 03</span><div class="media-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div><button type="button" data-prev aria-label="Previous image">←</button><button type="button" data-next aria-label="Next image">→</button></div>
+            <div class="project-arrow-group"><button class="pressable" type="button" data-prev aria-label="Previous image">←</button><button class="pressable" type="button" data-next aria-label="Next image">→</button></div>
+            <div class="swipe-counter" aria-live="polite">01 / 03</div>
           </div>
-          <div class="project-copy">
+          <div class="project-preview">
             <div class="project-kicker"><span>03 · Living room</span><b>Concept study</b></div>
             <h3>Liberty Hearth</h3>
-            <p class="project-summary">Let architecture lead instead of competing with it.</p>
-            <dl><div><dt>Goal</dt><dd>A strong gathering room with warmth and breathing space.</dd></div><div><dt>Decisions</dt><dd>Fireplace as anchor, low furniture rhythm and restrained contrast.</dd></div><div><dt>Design result</dt><dd>The room feels grounded from every viewpoint, not only one hero angle.</dd></div></dl>
-            <button class="project-open" type="button">Open project <span>↗</span></button>
+            <p class="project-summary">A gathering room where <strong>architecture stays in charge</strong> and furniture supports it.</p>
+            <div class="project-teaser">
+              <p><strong>Goal.</strong> Build warmth and presence without crowding the fireplace or ceiling structure.</p>
+              <p><strong>Core move.</strong> Use the hearth as the anchor and keep the furniture rhythm low.</p>
+              <p><strong>Direction.</strong> Strong focal point, restrained contrast, generous breathing room.</p>
+            </div>
+            <div class="project-curtain" aria-hidden="true"></div>
+            <button class="project-open pressable" type="button">Explore project <span>↗</span></button>
           </div>
         </article>
 
         <article class="project-card reveal" data-project="accord-living">
-          <div class="project-media" data-carousel>
+          <div class="project-stage" data-carousel>
             <div class="project-track">
-              <figure><img src="https://unsplash.com/photos/hjNTscPXJTg/download?force=true" alt="Accord modern living room with exposed beams" loading="lazy" decoding="async"></figure>
-              <figure><img src="https://unsplash.com/photos/rFpEHzGB37w/download?force=true" alt="Accord modern living room with wood stove and sectional" loading="lazy" decoding="async"></figure>
-              <figure><img src="https://unsplash.com/photos/54xFukuLp1E/download?force=true" alt="Accord modern living room with fireplace and exposed beams" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/hjNTscPXJTg/download?force=true" alt="Accord modern living room with exposed beams" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/rFpEHzGB37w/download?force=true" alt="Accord modern living room with wood stove and sectional" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/54xFukuLp1E/download?force=true" alt="Accord modern living room with fireplace and exposed beams" loading="lazy" decoding="async"></figure>
             </div>
-            <div class="media-toolbar"><span class="media-count">01 / 03</span><div class="media-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div><button type="button" data-prev aria-label="Previous image">←</button><button type="button" data-next aria-label="Next image">→</button></div>
+            <div class="project-arrow-group"><button class="pressable" type="button" data-prev aria-label="Previous image">←</button><button class="pressable" type="button" data-next aria-label="Next image">→</button></div>
+            <div class="swipe-counter" aria-live="polite">01 / 03</div>
           </div>
-          <div class="project-copy">
+          <div class="project-preview">
             <div class="project-kicker"><span>04 · Living room</span><b>Concept study</b></div>
             <h3>Accord Living</h3>
-            <p class="project-summary">Balance generous windows, heavy timber and everyday comfort.</p>
-            <dl><div><dt>Goal</dt><dd>Keep the room warm without making it visually heavy.</dd></div><div><dt>Decisions</dt><dd>Neutral upholstery, breathing room around beams and simple lighting layers.</dd></div><div><dt>Design result</dt><dd>Architecture stays visible while seating still feels comfortable and usable.</dd></div></dl>
-            <button class="project-open" type="button">Open project <span>↗</span></button>
+            <p class="project-summary">A generous room balancing <strong>heavy timber, big openings and everyday comfort</strong>.</p>
+            <div class="project-teaser">
+              <p><strong>Goal.</strong> Keep the architecture warm without letting it become visually heavy.</p>
+              <p><strong>Core move.</strong> Give beams breathing room and keep upholstery quiet.</p>
+              <p><strong>Direction.</strong> Natural structure first; comfort layered around it.</p>
+            </div>
+            <div class="project-curtain" aria-hidden="true"></div>
+            <button class="project-open pressable" type="button">Explore project <span>↗</span></button>
           </div>
         </article>
 
         <article class="project-card reveal" data-project="cabin-table">
-          <div class="project-media" data-carousel>
+          <div class="project-stage" data-carousel>
             <div class="project-track">
-              <figure><img src="https://unsplash.com/photos/NMXNCYy-2ks/download?force=true" alt="Cuddebackville cabin dining area with timber walls" loading="lazy" decoding="async"></figure>
-              <figure><img src="https://unsplash.com/photos/B6ZXOlMO3EY/download?force=true" alt="Cuddebackville cabin dining area with stair and leather chair" loading="lazy" decoding="async"></figure>
-              <figure><img src="https://unsplash.com/photos/mQmDscIIQfs/download?force=true" alt="Cuddebackville cabin dining table at large window" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/NMXNCYy-2ks/download?force=true" alt="Cuddebackville cabin dining area with timber walls" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/B6ZXOlMO3EY/download?force=true" alt="Cuddebackville cabin dining area with stair and leather chair" loading="lazy" decoding="async"></figure>
+              <figure data-position="center"><img src="https://unsplash.com/photos/mQmDscIIQfs/download?force=true" alt="Cuddebackville cabin dining table at large window" loading="lazy" decoding="async"></figure>
             </div>
-            <div class="media-toolbar"><span class="media-count">01 / 03</span><div class="media-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div><button type="button" data-prev aria-label="Previous image">←</button><button type="button" data-next aria-label="Next image">→</button></div>
+            <div class="project-arrow-group"><button class="pressable" type="button" data-prev aria-label="Previous image">←</button><button class="pressable" type="button" data-next aria-label="Next image">→</button></div>
+            <div class="swipe-counter" aria-live="polite">01 / 03</div>
           </div>
-          <div class="project-copy">
+          <div class="project-preview">
             <div class="project-kicker"><span>05 · Dining</span><b>Concept study</b></div>
             <h3>Cabin Table</h3>
-            <p class="project-summary">Give dining a real place in a compact timber interior.</p>
-            <dl><div><dt>Goal</dt><dd>Make the dining zone useful without blocking circulation or views.</dd></div><div><dt>Decisions</dt><dd>Light table footprint, visual connection to the stair and daylight-led placement.</dd></div><div><dt>Design result</dt><dd>A distinct gathering zone that still belongs to the larger room.</dd></div></dl>
-            <button class="project-open" type="button">Open project <span>↗</span></button>
+            <p class="project-summary">A dining zone designed to feel <strong>intentional without interrupting circulation or views</strong>.</p>
+            <div class="project-teaser">
+              <p><strong>Goal.</strong> Give dining a real place inside a compact timber interior.</p>
+              <p><strong>Core move.</strong> Keep the table footprint light and connect it visually to stair and window.</p>
+              <p><strong>Direction.</strong> A distinct gathering zone that still belongs to the larger room.</p>
+            </div>
+            <div class="project-curtain" aria-hidden="true"></div>
+            <button class="project-open pressable" type="button">Explore project <span>↗</span></button>
           </div>
         </article>
       </div>
 
-      <p class="source-note reveal">Photography above is used as licensed visual reference for VeroSpace concept studies; it is not presented as completed VeroSpace client work.</p>
+      <p class="source-note reveal">Photography is used as licensed visual reference for VeroSpace concept studies. It is <strong>not presented as completed VeroSpace client work.</strong></p>
     </section>
 
     <section class="service-section" id="services" aria-labelledby="serviceTitle">
-      <div class="section-head reveal"><div><p class="eyebrow">Service</p><h2 id="serviceTitle">Fewer surprises. Better decisions.</h2></div><p>The job is not just making a room look good. It is keeping decisions connected from first plan to handover.</p></div>
+      <div class="section-head reveal">
+        <div><p class="eyebrow">Service</p><h2 id="serviceTitle">Fewer surprises. Better decisions.</h2></div>
+        <p>VeroSpace connects <strong>design, renovation planning and decision control</strong> so the room does not become a sequence of unrelated choices.</p>
+      </div>
       <div class="service-grid">
-        <article class="service-card reveal"><span>01</span><h3>Interior direction</h3><p>Layout, materials, lighting, furniture and storage as one system.</p></article>
-        <article class="service-card reveal"><span>02</span><h3>Renovation planning</h3><p>Scope and priorities resolved before work starts changing the space.</p></article>
-        <article class="service-card reveal"><span>03</span><h3>Approval control</h3><p>Decision points are visible, reviewable and approved before the next stage.</p></article>
-        <article class="service-card reveal"><span>04</span><h3>Customer support</h3><p>Questions, changes and agreed follow-up items have a clear place instead of disappearing into chat history.</p></article>
+        <article class="service-card reveal selectable"><span>01</span><h3>Interior direction</h3><p><strong>One visual system.</strong> Layout, material, lighting, furniture and storage work together.</p></article>
+        <article class="service-card reveal selectable"><span>02</span><h3>Renovation planning</h3><p><strong>Scope before disruption.</strong> Priorities are resolved before work starts changing the space.</p></article>
+        <article class="service-card reveal selectable"><span>03</span><h3>Approval control</h3><p><strong>No silent decisions.</strong> Critical choices are visible and reviewable before the next stage.</p></article>
+        <article class="service-card reveal selectable"><span>04</span><h3>Customer support</h3><p><strong>Questions stay attached to decisions.</strong> Changes and follow-up items have a clear home.</p></article>
       </div>
     </section>
 
     <section class="control-section reveal" aria-labelledby="controlTitle">
-      <div><p class="eyebrow">Client control</p><h2 id="controlTitle">You should know what is approved—and what is still open.</h2></div>
+      <div><p class="eyebrow light">Client control</p><h2 id="controlTitle">Know what is approved—and what is still open.</h2></div>
       <div class="control-steps">
-        <article><b>01</b><div><h3>Review</h3><p>See the decision in context.</p></div></article>
+        <article><b>01</b><div><h3>Review</h3><p>See the choice in context.</p></div></article>
         <article><b>02</b><div><h3>Approve</h3><p>Confirm before the next stage.</p></div></article>
         <article><b>03</b><div><h3>Document</h3><p>Keep the agreed direction visible.</p></div></article>
       </div>
     </section>
 
     <section class="process-section" id="process" aria-labelledby="processTitle">
-      <div class="section-head reveal"><div><p class="eyebrow">Process</p><h2 id="processTitle">Know what happens next.</h2></div><p>Five stages. Each one closes a specific uncertainty.</p></div>
+      <div class="section-head reveal"><div><p class="eyebrow">Process</p><h2 id="processTitle">Know what happens next.</h2></div><p>Five stages. Each one closes a different uncertainty before the next one begins.</p></div>
       <ol class="process-list">
-        <li class="reveal"><span>01</span><div><h3>Consult</h3><p>Space, goals, budget and constraints.</p></div></li>
-        <li class="reveal"><span>02</span><div><h3>Plan</h3><p>Flow, zoning, storage and priorities.</p></div></li>
-        <li class="reveal"><span>03</span><div><h3>Design</h3><p>Materials, light, furniture and details.</p></div></li>
-        <li class="reveal"><span>04</span><div><h3>Approve + coordinate</h3><p>Critical choices are confirmed before build decisions move.</p></div></li>
-        <li class="reveal"><span>05</span><div><h3>Handover + support</h3><p>Final checks, documentation and agreed follow-up.</p></div></li>
+        <li class="reveal selectable"><span>01</span><div><h3>Consult</h3><p><strong>Define the problem:</strong> space, goals, budget and constraints.</p></div></li>
+        <li class="reveal selectable"><span>02</span><div><h3>Plan</h3><p><strong>Resolve the structure:</strong> flow, zoning, storage and priorities.</p></div></li>
+        <li class="reveal selectable"><span>03</span><div><h3>Design</h3><p><strong>Build the language:</strong> materials, light, furniture and details.</p></div></li>
+        <li class="reveal selectable"><span>04</span><div><h3>Approve + coordinate</h3><p><strong>Lock critical choices</strong> before build decisions move.</p></div></li>
+        <li class="reveal selectable"><span>05</span><div><h3>Handover + support</h3><p><strong>Close the loop:</strong> final checks, documentation and agreed follow-up.</p></div></li>
       </ol>
     </section>
 
     <section class="final-cta reveal" aria-label="Start a VeroSpace project">
-      <p class="eyebrow light">Ready when the problem is clear</p>
-      <h2>You do not need a finished brief.<br>Start with what is not working.</h2>
-      <button class="primary-button light-button" type="button" data-scroll="#contact">Book a consultation <span>↗</span></button>
+      <p class="eyebrow light">Start from the real problem</p>
+      <h2>You do not need a finished brief.<br><strong>Bring what is not working.</strong></h2>
+      <button class="light-button pressable" type="button" data-scroll="#contact">Book a consultation <span>↗</span></button>
     </section>
 
     <section class="contact-section" id="contact" aria-labelledby="contactTitle">
-      <div class="contact-copy reveal"><p class="eyebrow">Consultation</p><h2 id="contactTitle">Bring four things.</h2><p>The space, what needs to change, budget range and timing. That is enough to begin.</p><ul><li>No sales call hidden behind the form.</li><li>Your request stays inside VeroSpace.</li><li>We start from the problem, not a package.</li></ul></div>
+      <div class="contact-copy reveal">
+        <p class="eyebrow">Consultation</p>
+        <h2 id="contactTitle">Bring four things.</h2>
+        <p><strong>The space, the problem, the budget range and timing.</strong> That is enough to begin.</p>
+        <ul>
+          <li>No polished presentation required.</li>
+          <li>Critical decisions are documented.</li>
+          <li>We start from the problem—not a package.</li>
+        </ul>
+      </div>
       <form class="contact-form reveal" id="consultationForm" novalidate>
         <label class="hp" aria-hidden="true">Website<input name="website" tabindex="-1" autocomplete="off"></label>
         <label><span>Full name <b>Required</b></span><input name="name" autocomplete="name" required placeholder="Your name"><small data-error="name"></small></label>
@@ -224,35 +267,42 @@
         <label><span>Project type <b>Required</b></span><select name="project" required><option value="">Choose one</option><option>Full-home interior design</option><option>Renovation</option><option>Kitchen / bathroom</option><option>Single-room design</option></select><small data-error="project"></small></label>
         <label><span>Budget range <b>Required</b></span><select name="budget" required><option value="">Choose one</option><option>$25k–$50k</option><option>$50k–$100k</option><option>$100k–$250k</option><option>$250k+</option></select><small data-error="budget"></small></label>
         <label class="full"><span>Tell us about the space <b>Required</b></span><textarea name="message" required minlength="3" rows="5" placeholder="Property, rooms, goals, timeline..."></textarea><small data-error="message"></small></label>
-        <div class="form-footer full"><button class="primary-button" type="submit">Request consultation</button><p id="formStatus" role="status" aria-live="polite"></p></div>
+        <div class="form-footer full"><button class="primary-button pressable" type="submit">Request consultation</button><p id="formStatus" role="status" aria-live="polite"></p></div>
       </form>
     </section>
   </main>
 
   <footer class="footer">
     <a href="#home" class="footer-brand" aria-label="VeroSpace home"><img src="assets/verospace-logo.png" alt="VeroSpace" width="160" height="160"><strong>VeroSpace</strong></a>
-    <nav aria-label="Footer navigation"><a href="#projects">Projects</a><a href="#services">Service</a><a href="#process">Process</a><a href="#contact">Contact</a></nav>
+    <nav aria-label="Footer navigation"><a href="#projects">Projects</a><a href="#services">Service</a><a href="#process">Process</a><a href="#contact">Consultation</a></nav>
     <p>Interior design · renovation · coordination</p>
   </footer>
 
   <dialog class="project-dialog" id="projectDialog" aria-labelledby="modalTitle">
     <div class="modal-shell">
-      <button class="modal-close" type="button" aria-label="Close project">×</button>
-      <div class="modal-media" data-modal-carousel>
+      <button class="modal-close pressable" type="button" aria-label="Close project">×</button>
+      <section class="modal-hero">
         <div class="modal-track"></div>
-        <div class="modal-toolbar"><span class="modal-count">01 / 03</span><div class="modal-dots" aria-hidden="true"><i class="active"></i><i></i><i></i></div><button type="button" data-modal-prev aria-label="Previous image">←</button><button type="button" data-modal-next aria-label="Next image">→</button></div>
-      </div>
-      <div class="modal-copy">
-        <p class="eyebrow" id="modalKicker">Concept study</p>
-        <h2 id="modalTitle">Project</h2>
-        <p id="modalSummary"></p>
-        <div class="modal-facts"><article><span>Goal</span><p id="modalGoal"></p></article><article><span>Decisions</span><p id="modalDecisions"></p></article><article><span>Design result</span><p id="modalResult"></p></article><article><span>Approval points</span><p id="modalApproval">Layout direction → material language → scope before coordination.</p></article></div>
-        <button class="primary-button modal-cta" type="button" data-scroll="#contact">Discuss a similar project <span>↗</span></button>
-      </div>
+        <div class="modal-arrow-group"><button class="pressable" type="button" data-modal-prev aria-label="Previous image">←</button><button class="pressable" type="button" data-modal-next aria-label="Next image">→</button></div>
+        <div class="modal-counter" aria-live="polite">01 / 03</div>
+      </section>
+      <section class="modal-content">
+        <div class="modal-title-block">
+          <p class="eyebrow" id="modalKicker">Concept study</p>
+          <h2 id="modalTitle">Project</h2>
+          <p id="modalSummary"></p>
+          <div class="modal-meta" id="modalMeta"></div>
+        </div>
+        <div class="modal-section-grid" id="modalSections"></div>
+        <div class="modal-closeout">
+          <div><span>Concept transparency</span><p>This page explains a VeroSpace design study. It does not claim a completed client commission.</p></div>
+          <button class="primary-button pressable modal-cta" type="button" data-scroll="#contact">Discuss a similar project <span>↗</span></button>
+        </div>
+      </section>
     </div>
   </dialog>
 
   <script src="native.js?v=20260902u1" defer></script>
-  <script src="v4.js?v=20260902p4" defer></script>
+  <script src="v5.js?v=20260903a1" defer></script>
 </body>
 </html>
