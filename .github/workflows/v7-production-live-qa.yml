@@ -1,0 +1,124 @@
+name: VeroSpace V7 Production Live QA
+on:
+  push:
+    branches: [verospace-canonical-upgrade-v7]
+    paths: ['.github/workflows/v7-production-live-qa.yml']
+jobs:
+  live-production:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: 22}
+      - run: npm init -y >/dev/null 2>&1 && npm i playwright@1.55.0 >/dev/null 2>&1 && npx playwright install --with-deps chromium >/dev/null 2>&1
+      - name: Public production browser matrix
+        run: |
+          cat > qa-production.mjs <<'EOF'
+          import {chromium} from 'playwright';
+          const TARGET='https://verospace-landing.vercel.app/';
+          const fail=m=>{throw new Error(m)};
+          const browser=await chromium.launch({headless:true});
+          const sizes=[[320,700],[360,780],[390,844],[430,932],[768,1024],[1024,768],[1366,768],[1440,900],[1600,900],[1920,1080]];
+          for(const [width,height] of sizes){
+            const context=await browser.newContext({viewport:{width,height}});
+            const page=await context.newPage();
+            const fatal=[];
+            page.on('pageerror',e=>fatal.push(`pageerror:${String(e)}`));
+            page.on('console',m=>{
+              if(m.type()==='error'){
+                const t=m.text();
+                if(!/favicon|Failed to load resource.*404/i.test(t))fatal.push(`console:${t}`);
+              }
+            });
+            await page.goto(TARGET,{waitUntil:'domcontentloaded',timeout:60000});
+            await page.waitForSelector('#heroTitle',{state:'visible',timeout:20000});
+            await page.waitForFunction(()=>document.querySelectorAll('.project-track figure.v7-current').length===5,{timeout:20000});
+            await page.waitForFunction(()=>document.querySelectorAll('.vs-select-trigger').length===2,{timeout:20000});
+
+            const y0=await page.evaluate(()=>scrollY);
+            await page.waitForTimeout(1700);
+            const y1=await page.evaluate(()=>scrollY);
+            if(y0!==0||y1!==0)fail(`${width}: initial scroll moved ${y0}->${y1}`);
+
+            const shell=await page.evaluate(()=>{
+              const title=document.querySelector('#heroTitle');
+              const actions=[...document.querySelectorAll('.hero-actions button')];
+              const menu=document.querySelector('#siteMenu');
+              return {
+                overflow:document.documentElement.scrollWidth-innerWidth,
+                nativeSelects:document.querySelectorAll('select').length,
+                customSelects:document.querySelectorAll('.vs-select-trigger').length,
+                cards:document.querySelectorAll('.project-card').length,
+                docks:document.querySelectorAll('.mobile-journey-dock,.hero-dock,.hero-rail').length,
+                heroTitle:title?.textContent.trim()||'',
+                heroOpacity:Number(getComputedStyle(title).opacity),
+                actions:actions.map(b=>{const s=getComputedStyle(b),r=b.getBoundingClientRect();return{t:b.textContent.trim(),o:Number(s.opacity),v:s.visibility,w:r.width,h:r.height}}),
+                htmlSnap:getComputedStyle(document.documentElement).scrollSnapType,
+                bodySnap:getComputedStyle(document.body).scrollSnapType,
+                menuLinks:menu?.querySelectorAll('.menu-list a').length||0
+              };
+            });
+            if(shell.overflow>1)fail(`${width}: horizontal overflow ${shell.overflow}`);
+            if(shell.nativeSelects!==0||shell.customSelects!==2||shell.cards!==5||shell.docks!==0||shell.menuLinks!==4)fail(`${width}: shell ${JSON.stringify(shell)}`);
+            if(!shell.heroTitle||shell.heroOpacity<.99||shell.actions.length!==2||shell.actions[0].t!=='Book a consultation'||shell.actions[1].t!=='Explore projects'||shell.actions.some(a=>a.o<.99||a.v==='hidden'||a.w<44||a.h<44))fail(`${width}: hero ${JSON.stringify(shell)}`);
+            if((shell.htmlSnap&&shell.htmlSnap!=='none')||(shell.bodySnap&&shell.bodySnap!=='none'))fail(`${width}: scroll snap ${shell.htmlSnap}/${shell.bodySnap}`);
+
+            await page.mouse.move(Math.min(width-20,Math.max(20,width/2)),Math.min(height-20,Math.max(20,height/2)));
+            await page.mouse.wheel(0,520);await page.waitForTimeout(320);
+            const down=await page.evaluate(()=>scrollY);
+            if(down<80)fail(`${width}: native wheel failed ${down}`);
+            await page.mouse.wheel(0,-520);await page.waitForTimeout(320);
+
+            const cards=page.locator('.project-card');
+            for(let i=0;i<5;i++){
+              const card=cards.nth(i);
+              await card.scrollIntoViewIfNeeded();
+              await page.waitForTimeout(500);
+              await page.waitForFunction(index=>{
+                const card=document.querySelectorAll('.project-card')[index];
+                if(!card)return false;
+                const imgs=[...card.querySelectorAll('.project-track img')];
+                return imgs.length===3&&imgs.every(img=>img.complete&&img.naturalWidth>100&&img.naturalHeight>100);
+              },i,{timeout:30000});
+              const imageState=await card.locator('.project-track img').evaluateAll(imgs=>imgs.map(img=>({src:img.currentSrc||img.src,w:img.naturalWidth,h:img.naturalHeight,complete:img.complete})));
+              if(imageState.length!==3||imageState.some(img=>!img.complete||img.w<=100||img.h<=100))fail(`${width}: project ${i+1} images ${JSON.stringify(imageState)}`);
+              const geom=await card.evaluate(card=>{const p=card.querySelector('.project-preview').getBoundingClientRect(),b=card.querySelector('.project-open').getBoundingClientRect(),s=card.querySelector('.project-stage').getBoundingClientRect();return{ratio:s.width/s.height,left:b.left-p.left,right:p.right-b.right,top:b.top,bottom:b.bottom,pTop:p.top,pBottom:p.bottom}});
+              if(Math.abs(geom.ratio-1)>.035||geom.left<12||geom.right<12||Math.abs(geom.left-geom.right)>2||geom.top<geom.pTop||geom.bottom>geom.pBottom+1)fail(`${width}: project ${i+1} geometry ${JSON.stringify(geom)}`);
+            }
+
+            if(width===390||width===1440){
+              const required=['Goal','Space','Design','Material direction','Key decisions','Timeline','Approval path','Concept result','Support + handover'];
+              for(let i=0;i<5;i++){
+                const card=cards.nth(i);await card.scrollIntoViewIfNeeded();await page.waitForTimeout(120);
+                await card.locator('.project-open').click();
+                const dialog=page.locator('#projectDialog');await dialog.waitFor({state:'visible',timeout:10000});
+                const d=await dialog.evaluate((el,req)=>{const labels=[...el.querySelectorAll('.detail-card>span')].map(x=>x.textContent.trim());return{images:el.querySelectorAll('.modal-track figure').length,meta:el.querySelectorAll('.modal-meta span').length,sections:el.querySelectorAll('.detail-card').length,missing:req.filter(x=>!labels.includes(x)),arrows:[...el.querySelectorAll('.modal-arrow-group')].filter(x=>getComputedStyle(x).display!=='none').length,cta:el.querySelector('.modal-cta')?.textContent.trim()||'',summary:el.querySelector('#modalSummary')?.textContent.trim()||''}},required);
+                if(d.images!==3||d.meta<4||d.sections<9||d.missing.length||d.arrows||d.summary.length<25||!/Discuss a similar project/i.test(d.cta))fail(`${width}: modal ${i+1} ${JSON.stringify(d)}`);
+                await page.locator('.modal-close').click();
+              }
+
+              await page.locator('.menu-button').click();await page.waitForTimeout(240);
+              const menu=await page.locator('#siteMenu').evaluate(el=>{const s=getComputedStyle(el);return{links:el.querySelectorAll('.menu-list a').length,opacity:Number(s.opacity),visibility:s.visibility,bgColor:s.backgroundColor,bgImage:s.backgroundImage,text:el.textContent.replace(/\s+/g,' ').trim()}});
+              if(menu.links!==4||menu.opacity<.99||menu.visibility==='hidden'||/Book consultation/i.test(menu.text)||((!menu.bgImage||menu.bgImage==='none')&&/rgba\([^)]*,\s*0\s*\)/.test(menu.bgColor)))fail(`${width}: menu ${JSON.stringify(menu)}`);
+              await page.keyboard.press('Escape');await page.waitForTimeout(180);
+              const expanded=await page.locator('.menu-button').getAttribute('aria-expanded');
+              if(expanded!=='false')fail(`${width}: menu escape did not close`);
+            }
+
+            const api=await context.request.get('https://verospace-landing.vercel.app/api/consultation');
+            if(api.status()!==405)fail(`${width}: consultation GET ${api.status()}`);
+
+            const source=await context.request.get('https://verospace-landing.vercel.app/v7-canonical.js');
+            if(source.status()!==200)fail(`${width}: canonical source ${source.status()}`);
+            const js=await source.text();
+            if(/addEventListener\(\s*['"]scroll['"]/.test(js)||/scrollTop\s*=/.test(js)||/scroll-snap/i.test(js))fail(`${width}: prohibited canonical scroll code`);
+
+            if(fatal.length)fail(`${width}: runtime errors ${JSON.stringify(fatal.slice(0,6))}`);
+            console.log(`PRODUCTION_GREEN ${width}x${height}`);
+            await context.close();
+          }
+          await browser.close();
+          console.log('VEROSPACE_PRODUCTION_LIVE_QA_GREEN');
+          EOF
+          node qa-production.mjs
