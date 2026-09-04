@@ -39,9 +39,14 @@ document.addEventListener('DOMContentLoaded',()=>{
     script.setAttribute(`data-${dataKey}`,'true');
     document.body.appendChild(script);
   };
+  const loadV8Header=()=>{
+    loadCss('v8-liquid-header.css?v=20260904a1','verospace-v8-liquid-header');
+    loadScript('v8-liquid-header.js?v=20260904a1','verospace-v8-liquid-header-runtime');
+  };
   const loadV7Extras=()=>{
     loadScript('v7-select-hotfix.js?v=20260903c4','verospace-v7-select-hotfix');
     loadScript('v7-autoplay-timing-hotfix.js?v=20260903c4','verospace-v7-autoplay-timing');
+    loadV8Header();
   };
   loadCss('v7-canonical.css?v=20260903c4','verospace-v7');
   loadCss('v7-polish.css?v=20260903c4','verospace-v7-polish');
