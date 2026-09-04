@@ -1,4 +1,4 @@
-const COMMIT='d23406d220ea98920d79728eef0029ef6cab2a11';
+const COMMIT='b00d71e3c2cf5181220ed4cd2b856a914211de73';
 const BASE=`https://raw.githubusercontent.com/Rahmowin-1st/VeroSpace-/${COMMIT}/`;
 const ALLOWED=new Map([
   ['index.html','text/html; charset=utf-8'],
@@ -10,8 +10,8 @@ const ALLOWED=new Map([
   ['v7-polish.css','text/css; charset=utf-8'],
   ['v7-select-hotfix.js','application/javascript; charset=utf-8'],
   ['v7-autoplay-timing-hotfix.js','application/javascript; charset=utf-8'],
-  ['v8-liquid-header.css','text/css; charset=utf-8'],
-  ['v8-liquid-header.js','application/javascript; charset=utf-8'],
+  ['v9-floating-liquid.css','text/css; charset=utf-8'],
+  ['v9-floating-liquid.js','application/javascript; charset=utf-8'],
   ['assets/verospace-home-yellow.webp','image/webp'],
   ['assets/verospace-logo.png','image/jpeg'],
   ['assets/verospace-featured-home.jpg','image/jpeg']
