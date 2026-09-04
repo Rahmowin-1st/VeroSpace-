@@ -13,6 +13,8 @@
     { "source": "/v7-polish.css", "destination": "/api/source?file=v7-polish.css" },
     { "source": "/v7-select-hotfix.js", "destination": "/api/source?file=v7-select-hotfix.js" },
     { "source": "/v7-autoplay-timing-hotfix.js", "destination": "/api/source?file=v7-autoplay-timing-hotfix.js" },
+    { "source": "/v8-liquid-header.css", "destination": "/api/source?file=v8-liquid-header.css" },
+    { "source": "/v8-liquid-header.js", "destination": "/api/source?file=v8-liquid-header.js" },
     { "source": "/assets/:path*", "destination": "/api/source?file=assets/:path*" }
   ]
 }
