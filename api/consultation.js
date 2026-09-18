@@ -2,6 +2,21 @@ const EMAIL_RE=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const clean=(value,max=1000)=>String(value??'').replace(/[\u0000-\u001F\u007F]/g,' ').trim().slice(0,max);
 const esc=value=>clean(value,5000).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
 
+const ALLOWED_ORIGINS=new Set([
+  'https://verospace-landing.vercel.app',
+  'https://shahbozs-amazing-site.webflow.io'
+]);
+const applyCors=(req,res)=>{
+  const origin=String(req.headers.origin||'');
+  if(ALLOWED_ORIGINS.has(origin)){
+    res.setHeader('Access-Control-Allow-Origin',origin);
+    res.setHeader('Vary','Origin');
+    res.setHeader('Access-Control-Allow-Methods','POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers','Content-Type, X-Request-Id');
+  }
+  return origin;
+};
+
 const recent=globalThis.__VEROSPACE_REQUEST_IDS__||(globalThis.__VEROSPACE_REQUEST_IDS__=new Map());
 const REQUEST_TTL=10*60*1000;
 const rememberRequest=id=>{
@@ -14,6 +29,11 @@ const rememberRequest=id=>{
 };
 
 module.exports=async function handler(req,res){
+  const origin=applyCors(req,res);
+  if(req.method==='OPTIONS'){
+    if(!ALLOWED_ORIGINS.has(origin))return res.status(403).end();
+    return res.status(204).end();
+  }
   if(req.method!=='POST'){
     res.setHeader('Allow','POST');
     return res.status(405).json({ok:false,error:'method_not_allowed'});
