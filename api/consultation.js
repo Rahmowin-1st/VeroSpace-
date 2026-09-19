@@ -99,3 +99,5 @@ module.exports=async function handler(req,res){
 };
 
 // Canonical QA trigger: no runtime behavior change.
+
+// Webflow CORS redeploy trigger 2026-09-19
